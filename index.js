@@ -1,6 +1,5 @@
 const express = require('express');
 const crypto = require('crypto');
-const path = require('path');
 const app = express();
 
 app.use(express.json());
@@ -37,7 +36,7 @@ async function db(method, path, body) {
 app.post('/auth/login', async (req, res) => {
   try {
     const { email, senha } = req.body;
-    if (!email || !senha) return res.json({ error: 'E-mail e senha obrigatórios.' });
+    if (!email || !senha) return res.json({ error: 'E-mail e senha obrigatÃ³rios.' });
     const rows = await db('GET', `usuarios?email=eq.${encodeURIComponent(email.toLowerCase())}&select=*`);
     const user = rows[0];
     if (!user || user.senha_hash !== hash(senha)) return res.json({ error: 'E-mail ou senha incorretos.' });
@@ -62,11 +61,11 @@ app.post('/auth/check', async (req, res) => {
 async function auth(req, res, next) {
   try {
     const hdr = req.headers.authorization;
-    if (!hdr || !hdr.startsWith('Bearer ')) return res.status(401).json({ error: 'Não autorizado.' });
+    if (!hdr || !hdr.startsWith('Bearer ')) return res.status(401).json({ error: 'NÃ£o autorizado.' });
     const tk = hdr.replace('Bearer ', '');
     const rows = await db('GET', `usuarios?token=eq.${encodeURIComponent(tk)}&select=*`);
     const user = rows[0];
-    if (!user) return res.status(401).json({ error: 'Sessão inválida.' });
+    if (!user) return res.status(401).json({ error: 'SessÃ£o invÃ¡lida.' });
     if (!user.ativo) return res.status(403).json({ error: 'Assinatura inativa.' });
     req.user = user;
     next();
@@ -76,7 +75,7 @@ async function auth(req, res, next) {
 app.post('/calcular', auth, (req, res) => {
   const { fechamento, var_sp500, var_micro, vix } = req.body;
   if ([fechamento, var_sp500, var_micro, vix].some(v => typeof v !== 'number' || isNaN(v)))
-    return res.json({ error: 'Dados inválidos.' });
+    return res.json({ error: 'Dados invÃ¡lidos.' });
   const R = Math.sqrt(252);
   const justo = fechamento * (1 + var_sp500 / 100);
   const justissimo = fechamento * (1 + var_micro / 100);
@@ -85,7 +84,7 @@ app.post('/calcular', auth, (req, res) => {
 });
 
 app.post('/webhook/kiwify', async (req, res) => {
-  if (req.headers['x-webhook-secret'] !== WEBHOOK_SECRET) return res.status(401).json({ error: 'Não autorizado.' });
+  if (req.headers['x-webhook-secret'] !== WEBHOOK_SECRET) return res.status(401).json({ error: 'NÃ£o autorizado.' });
   const { evento, email, order_id } = req.body;
   if (!email) return res.json({ ok: false });
   const k = email.toLowerCase();
@@ -108,7 +107,7 @@ app.post('/webhook/kiwify', async (req, res) => {
 
 app.post('/admin/criar-usuario', async (req, res) => {
   const { admin_key, email, senha } = req.body;
-  if (admin_key !== ADMIN_KEY) return res.status(403).json({ error: 'Não autorizado.' });
+  if (admin_key !== ADMIN_KEY) return res.status(403).json({ error: 'NÃ£o autorizado.' });
   const rows = await db('GET', `usuarios?email=eq.${encodeURIComponent(email.toLowerCase())}&select=email`);
   if (rows[0]) {
     await db('PATCH', `usuarios?email=eq.${encodeURIComponent(email.toLowerCase())}`, { senha_hash: hash(senha), ativo: true });
@@ -119,5 +118,4 @@ app.post('/admin/criar-usuario', async (req, res) => {
 });
 
 app.get('/health', (req, res) => res.json({ status: 'ok', versao: '4.0' }));
-
 module.exports = app;
