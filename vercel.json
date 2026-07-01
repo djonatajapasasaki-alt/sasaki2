@@ -1,5 +1,9 @@
 {
   "version": 2,
+  "builds": [
+    { "src": "index.js", "use": "@vercel/node" },
+    { "src": "index.html", "use": "@vercel/static" }
+  ],
   "routes": [
     { "src": "/auth/login", "dest": "/index.js" },
     { "src": "/auth/check", "dest": "/index.js" },
