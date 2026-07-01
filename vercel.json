@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "routes": [
+    { "src": "/auth/login", "dest": "/index.js" },
+    { "src": "/auth/check", "dest": "/index.js" },
+    { "src": "/calcular", "dest": "/index.js" },
+    { "src": "/webhook/kiwify", "dest": "/index.js" },
+    { "src": "/admin/criar-usuario", "dest": "/index.js" },
+    { "src": "/health", "dest": "/index.js" },
+    { "src": "/(.*)", "dest": "/index.html" }
+  ]
+}
