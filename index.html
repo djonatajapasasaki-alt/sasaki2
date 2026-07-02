@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CÃLCULO VOL. SASAKI</title>
+<title>CÁLCULO VOL. SASAKI</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -33,7 +33,7 @@
 html { background:var(--bg); color:var(--white); font-family:var(--sans); }
 body { min-height:100vh; }
 
-/* â”€â”€ LOGIN â”€â”€ */
+/* ── LOGIN ── */
 #login-screen {
   min-height:100vh; display:flex; align-items:center; justify-content:center;
   background: radial-gradient(ellipse at 50% -20%, #1a1040 0%, var(--bg) 65%);
@@ -85,7 +85,7 @@ input:focus { border-color:var(--gold); box-shadow:0 0 0 3px rgba(212,168,67,.1)
 }
 .login-footer { margin-top:24px; text-align:center; font-size:11px; color:var(--gray); }
 
-/* â”€â”€ APP â”€â”€ */
+/* ── APP ── */
 #app-screen { display:none; min-height:100vh; }
 
 .topbar {
@@ -178,7 +178,7 @@ input:focus { border-color:var(--gold); box-shadow:0 0 0 3px rgba(212,168,67,.1)
 .result-value.purple { color:#c4b5fd; }
 .result-value.empty  { color:var(--border2); font-size:20px; }
 
-/* BOTÃƒO */
+/* BOTÃO */
 .btn-calc {
   width:100%; margin-top:18px; padding:14px;
   background:transparent; color:var(--gold);
@@ -242,16 +242,16 @@ input:focus { border-color:var(--gold); box-shadow:0 0 0 3px rgba(212,168,67,.1)
 <div id="login-screen">
   <div class="login-box">
     <div class="logo">
-      <div class="logo-icon">âš¡</div>
-      <div class="logo-eyebrow">Metodologia ProprietÃ¡ria</div>
-      <div class="logo-title">CÃLCULO VOL. SASAKI</div>
+      <div class="logo-icon">⚡</div>
+      <div class="logo-eyebrow">Metodologia Proprietária</div>
+      <div class="logo-title">CÁLCULO VOL. SASAKI</div>
       <div class="logo-line"></div>
       <div class="logo-sub">Acesso exclusivo para assinantes</div>
     </div>
     <label class="lbl" for="email">E-mail</label>
     <input type="email" id="email" placeholder="seu@email.com" autocomplete="email">
     <label class="lbl" for="senha">Senha</label>
-    <input type="password" id="senha" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" autocomplete="current-password">
+    <input type="password" id="senha" placeholder="••••••••" autocomplete="current-password">
     <button class="btn-login" id="btn-login" onclick="fazerLogin()">ENTRAR</button>
     <div class="login-err" id="login-err"></div>
     <div class="login-footer">Problemas de acesso? Entre em contato com o suporte.</div>
@@ -261,7 +261,7 @@ input:focus { border-color:var(--gold); box-shadow:0 0 0 3px rgba(212,168,67,.1)
 <!-- APP -->
 <div id="app-screen">
   <div class="topbar">
-    <div class="topbar-brand"><span>âš¡</span> VOL. SASAKI â€” WIN</div>
+    <div class="topbar-brand"><span>⚡</span> VOL. SASAKI — WIN</div>
     <div class="topbar-right">
       <span class="user-badge" id="user-email-label"></span>
       <button class="btn-logout" onclick="fazerLogout()">SAIR</button>
@@ -269,47 +269,47 @@ input:focus { border-color:var(--gold); box-shadow:0 0 0 3px rgba(212,168,67,.1)
   </div>
 
   <div class="main">
-    <div class="page-eyebrow">Metodologia ProprietÃ¡ria</div>
-    <div class="page-title">Calculadora WIN â€” Ãndice Futuro</div>
-    <div class="blocked-banner" id="blocked-banner">âš  Sua assinatura estÃ¡ inativa. Renove para continuar.</div>
+    <div class="page-eyebrow">Metodologia Proprietária</div>
+    <div class="page-title">Calculadora WIN — Índice Futuro</div>
+    <div class="blocked-banner" id="blocked-banner">⚠ Sua assinatura está inativa. Renove para continuar.</div>
 
     <!-- JUSTO -->
     <div class="section">
-      <div class="section-header"><div class="section-pip"></div><span class="section-title">Justo & JustÃ­ssimo</span></div>
+      <div class="section-header"><div class="section-pip"></div><span class="section-title">Justo & Justíssimo</span></div>
       <div class="section-body">
         <div class="field-row">
-          <div class="field"><label>Fechamento Ãndice</label><input type="number" id="fechamento" placeholder="174080" step="1"></div>
+          <div class="field"><label>Fechamento Índice</label><input type="number" id="fechamento" placeholder="174080" step="1"></div>
           <div class="field"><label>Var. S&P 500 Fut. (%)</label><input type="number" id="var_sp500" placeholder="0.12" step="0.01"></div>
         </div>
         <div class="field-row single">
           <div class="field"><label>Var. Micro S&P 500 (%)</label><input type="number" id="var_micro" placeholder="0.11" step="0.01"></div>
         </div>
         <div class="results-grid">
-          <div class="result-card gold"><div class="result-label">Justo</div><div class="result-value gold empty" id="res-justo">â€”</div></div>
-          <div class="result-card purple"><div class="result-label">JustÃ­ssimo</div><div class="result-value purple empty" id="res-justissimo">â€”</div></div>
+          <div class="result-card gold"><div class="result-label">Justo</div><div class="result-value gold empty" id="res-justo">—</div></div>
+          <div class="result-card purple"><div class="result-label">Justíssimo</div><div class="result-value purple empty" id="res-justissimo">—</div></div>
         </div>
       </div>
     </div>
 
     <!-- VIX -->
     <div class="section">
-      <div class="section-header"><div class="section-pip"></div><span class="section-title">Bandas de Volatilidade â€” VIX</span></div>
+      <div class="section-header"><div class="section-pip"></div><span class="section-title">Bandas de Volatilidade — VIX</span></div>
       <div class="section-body">
         <div class="field-row single">
-          <div class="field"><label>VIX Futuro (cotaÃ§Ã£o)</label><input type="number" id="vix" placeholder="19.28" step="0.01"></div>
+          <div class="field"><label>VIX Futuro (cotação)</label><input type="number" id="vix" placeholder="19.28" step="0.01"></div>
         </div>
         <div class="results-grid">
-          <div class="result-card green"><div class="result-label">MÃ¡xima</div><div class="result-value green empty" id="res-maxima">â€”</div></div>
-          <div class="result-card red"><div class="result-label">MÃ­nima</div><div class="result-value red empty" id="res-minima">â€”</div></div>
+          <div class="result-card green"><div class="result-label">Máxima</div><div class="result-value green empty" id="res-maxima">—</div></div>
+          <div class="result-card red"><div class="result-label">Mínima</div><div class="result-value red empty" id="res-minima">—</div></div>
         </div>
       </div>
     </div>
 
-    <button class="btn-calc" id="btn-calc" onclick="calcular()">â–¶ CALCULAR</button>
+    <button class="btn-calc" id="btn-calc" onclick="calcular()">▶ CALCULAR</button>
 
     <!-- GRADE VOL -->
     <div class="section" style="margin-top:16px;">
-      <div class="section-header"><div class="section-pip"></div><span class="section-title">Grade de Volatilidade â€” 29 NÃ­veis</span></div>
+      <div class="section-header"><div class="section-pip"></div><span class="section-title">Grade de Volatilidade — 29 Níveis</span></div>
       <div class="section-body" style="padding:16px 0;">
         <div style="padding:0 22px 16px; display:flex; align-items:flex-end; gap:12px;">
           <div class="field" style="flex:1;">
@@ -322,10 +322,10 @@ input:focus { border-color:var(--gold); box-shadow:0 0 0 3px rgba(212,168,67,.1)
           <table class="grade-table">
             <thead>
               <tr>
-                <th>NÃ­vel</th>
+                <th>Nível</th>
                 <th>Vol %</th>
                 <th style="text-align:right;">Pontos</th>
-                <th style="text-align:right;">Ãndice</th>
+                <th style="text-align:right;">Índice</th>
               </tr>
             </thead>
             <tbody id="grade-tbody">
@@ -361,7 +361,7 @@ function fazerLogin() {
     localStorage.setItem('sasaki_user', JSON.stringify(data));
     mostrarApp(data);
   })
-  .catch(() => showErr('Erro de conexÃ£o. Tente novamente.'))
+  .catch(() => showErr('Erro de conexão. Tente novamente.'))
   .finally(() => { btn.disabled = false; btn.innerHTML = 'ENTRAR'; });
 }
 
@@ -433,19 +433,19 @@ function calcular() {
     document.getElementById('res-minima').classList.remove('empty');
   })
   .catch(() => alert('Erro ao calcular.'))
-  .finally(() => { btn.disabled = false; btn.innerHTML = 'â–¶ CALCULAR'; });
+  .finally(() => { btn.disabled = false; btn.innerHTML = '▶ CALCULAR'; });
 }
 
 const NIVEIS = [
-  {label:'NotÃ­cias',   pct: 0.0532, tipo:'noticias'},
-  {label:'NotÃ­cias',   pct: 0.0494, tipo:'noticias'},
-  {label:'NotÃ­cias',   pct: 0.0456, tipo:'noticias'},
-  {label:'NotÃ­cias',   pct: 0.0418, tipo:'noticias'},
-  {label:'NotÃ­cias',   pct: 0.0380, tipo:'noticias'},
-  {label:'NotÃ­cias',   pct: 0.0342, tipo:'noticias'},
-  {label:'NotÃ­cias',   pct: 0.0304, tipo:'noticias'},
-  {label:'NotÃ­cias',   pct: 0.0266, tipo:'noticias'},
-  {label:'NotÃ­cias',   pct: 0.0228, tipo:'noticias'},
+  {label:'Notícias',   pct: 0.0532, tipo:'noticias'},
+  {label:'Notícias',   pct: 0.0494, tipo:'noticias'},
+  {label:'Notícias',   pct: 0.0456, tipo:'noticias'},
+  {label:'Notícias',   pct: 0.0418, tipo:'noticias'},
+  {label:'Notícias',   pct: 0.0380, tipo:'noticias'},
+  {label:'Notícias',   pct: 0.0342, tipo:'noticias'},
+  {label:'Notícias',   pct: 0.0304, tipo:'noticias'},
+  {label:'Notícias',   pct: 0.0266, tipo:'noticias'},
+  {label:'Notícias',   pct: 0.0228, tipo:'noticias'},
   {label:'EXTREMO',    pct: 0.0190, tipo:'extremo'},
   {label:'P. SE LIGA', pct: 0.0152, tipo:'pselliga'},
   {label:'PB',         pct: 0.0114, tipo:'pb'},
@@ -457,15 +457,15 @@ const NIVEIS = [
   {label:'PB',         pct:-0.0114, tipo:'pb'},
   {label:'P. SE LIGA', pct:-0.0152, tipo:'pselliga'},
   {label:'EXTREMO',    pct:-0.0190, tipo:'extremo'},
-  {label:'NotÃ­cias',   pct:-0.0228, tipo:'noticias'},
-  {label:'NotÃ­cias',   pct:-0.0266, tipo:'noticias'},
-  {label:'NotÃ­cias',   pct:-0.0304, tipo:'noticias'},
-  {label:'NotÃ­cias',   pct:-0.0342, tipo:'noticias'},
-  {label:'NotÃ­cias',   pct:-0.0380, tipo:'noticias'},
-  {label:'NotÃ­cias',   pct:-0.0418, tipo:'noticias'},
-  {label:'NotÃ­cias',   pct:-0.0456, tipo:'noticias'},
-  {label:'NotÃ­cias',   pct:-0.0494, tipo:'noticias'},
-  {label:'NotÃ­cias',   pct:-0.0532, tipo:'noticias'},
+  {label:'Notícias',   pct:-0.0228, tipo:'noticias'},
+  {label:'Notícias',   pct:-0.0266, tipo:'noticias'},
+  {label:'Notícias',   pct:-0.0304, tipo:'noticias'},
+  {label:'Notícias',   pct:-0.0342, tipo:'noticias'},
+  {label:'Notícias',   pct:-0.0380, tipo:'noticias'},
+  {label:'Notícias',   pct:-0.0418, tipo:'noticias'},
+  {label:'Notícias',   pct:-0.0456, tipo:'noticias'},
+  {label:'Notícias',   pct:-0.0494, tipo:'noticias'},
+  {label:'Notícias',   pct:-0.0532, tipo:'noticias'},
 ];
 
 function calcularGrade() {
@@ -477,7 +477,7 @@ function calcularGrade() {
     const idx = ajuste * (1 + n.pct);
     const pts = Math.abs(n.pct) * ajuste;
     const pctStr = n.pct === 0 ? 'AJUSTE' : (n.pct > 0 ? '+' : '') + (n.pct * 100).toFixed(2).replace('.', ',') + '%';
-    const ptsStr = n.pct === 0 ? 'â€”' : pts.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+    const ptsStr = n.pct === 0 ? '—' : pts.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
     const idxStr = idx.toLocaleString('pt-BR', {minimumFractionDigits:0, maximumFractionDigits:0});
     const idxClass = n.pct > 0 ? 'idx-up' : n.pct < 0 ? 'idx-down' : 'idx-mid';
     const lblColor = {extremo:'color:var(--red)',pselliga:'color:var(--orange)',pb:'color:var(--green)',pimp:'color:var(--purple)',abertura:'color:var(--gold2)'}[n.tipo] || 'color:var(--light)';
