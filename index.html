@@ -357,7 +357,7 @@ function calcularDolar(){
   const justo=arredondarMeio(fechamento*(1+var_dxy/100));
   const maxJusto=arredondarMeio(justo*(1+0.50/100));
   const minJusto=arredondarMeio(justo*(1-0.50/100));
-  const justissimo=arredondarMeio((eurbrl/eurusd)+frp0);
+  const eurusdReal=eurusd>10?eurusd/1000:eurusd; const justissimo=arredondarMeio((eurbrl/eurusdReal)+frp0);
   const setVal=(id,v,cls)=>{const el=document.getElementById(id);el.textContent=fmt2(v);el.className='result-value '+cls;};
   setVal('d_res_justo',justo,'gold');
   setVal('d_res_max_justo',maxJusto,'green');
