@@ -210,6 +210,9 @@ input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.1);}
             <div class="field"><label>EUR/USD</label><input type="number" id="d_eurusd" placeholder="1143.50" step="0.01"></div>
             <div class="field"><label>FRP0</label><input type="number" id="d_frp0" placeholder="18.10" step="0.01"></div>
           </div>
+          <div class="field-row single" style="margin-top:0;">
+            <div class="field"><label>FRP0 PTAX</label><input type="number" id="d_frp0_ptax" placeholder="18.10" step="0.01"></div>
+          </div>
           <div class="results-grid">
             <div class="result-card gold"><div class="result-label">Justo</div><div class="result-value gold empty" id="d_res_justo">—</div></div>
             <div class="result-card green"><div class="result-label">Máx. Justo</div><div class="result-value green empty" id="d_res_max_justo">—</div></div>
@@ -350,6 +353,7 @@ function calcularDolar(){
   const eurbrl=parseFloat(document.getElementById('d_eurbrl').value);
   const eurusd=parseFloat(document.getElementById('d_eurusd').value);
   const frp0=parseFloat(document.getElementById('d_frp0').value);
+  const frp0_ptax=parseFloat(document.getElementById('d_frp0_ptax').value)||frp0;
   const ptax1=parseFloat(document.getElementById('d_ptax1').value)||0;
   const ptax2=parseFloat(document.getElementById('d_ptax2').value)||0;
   const ptax3=parseFloat(document.getElementById('d_ptax3').value)||0;
@@ -373,7 +377,7 @@ function calcularDolar(){
       return;
     }
     const varPct=i<2?0.50:0.38;
-    const centro=arredondarMeio(ptax+frp0);
+    const centro=arredondarMeio(ptax+frp0_ptax);
     const maxPtax=arredondarMeio(centro*(1+varPct/100));
     const minPtax=arredondarMeio(centro*(1-varPct/100));
     const stressMax=maxPtax+10;
