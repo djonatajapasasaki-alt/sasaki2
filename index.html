@@ -230,8 +230,10 @@ input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.1);}
             <div class="field"><label>PTAX 02</label><input type="number" id="d_ptax2" placeholder="5137.10" step="0.01"></div>
             <div class="field"><label>PTAX 03</label><input type="number" id="d_ptax3" placeholder="0" step="0.01"></div>
           </div>
-          <div class="field-row single" style="margin-top:12px;">
-            <div class="field"><label>FRP0 PTAX</label><input type="number" id="d_frp0_ptax" placeholder="18.10" step="0.01"></div>
+          <div class="field-row three">
+            <div class="field"><label>FRP0 PTAX 01</label><input type="number" id="d_frp0_ptax1" placeholder="18.10" step="0.01"></div>
+            <div class="field"><label>FRP0 PTAX 02</label><input type="number" id="d_frp0_ptax2" placeholder="18.10" step="0.01"></div>
+            <div class="field"><label>FRP0 PTAX 03</label><input type="number" id="d_frp0_ptax3" placeholder="18.10" step="0.01"></div>
           </div>
           <div id="d_ptax_results"></div>
         </div>
@@ -468,7 +470,10 @@ function calcularDolar(){
   const eurbrl=parseFloat(document.getElementById('d_eurbrl').value);
   const eurusd=parseFloat(document.getElementById('d_eurusd').value);
   const frp0=parseFloat(document.getElementById('d_frp0').value);
-  const frp0_ptax=parseFloat(document.getElementById('d_frp0_ptax').value)||frp0;
+  const frp0_ptax1=parseFloat(document.getElementById('d_frp0_ptax1').value)||frp0;
+  const frp0_ptax2=parseFloat(document.getElementById('d_frp0_ptax2').value)||frp0;
+  const frp0_ptax3=parseFloat(document.getElementById('d_frp0_ptax3').value)||frp0;
+  const frp0_ptaxArr=[frp0_ptax1,frp0_ptax2,frp0_ptax3];
   const ptax1=parseFloat(document.getElementById('d_ptax1').value)||0;
   const ptax2=parseFloat(document.getElementById('d_ptax2').value)||0;
   const ptax3=parseFloat(document.getElementById('d_ptax3').value)||0;
@@ -492,7 +497,8 @@ function calcularDolar(){
       return;
     }
     const varPct=i<2?0.50:0.38;
-    const centro=arredondarMeio(ptax+frp0_ptax);
+    const frp0p=frp0_ptaxArr[i]||frp0;
+    const centro=arredondarMeio(ptax+frp0p);
     const maxPtax=arredondarMeio(centro*(1+varPct/100));
     const minPtax=arredondarMeio(centro*(1-varPct/100));
     const stressMax=maxPtax+10;
