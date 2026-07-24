@@ -292,7 +292,33 @@ input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.1);}
         </div>
       </div>
 
-      <button class="btn-calc" id="btn-calc-dolar" onclick="calcularDolar();calcularOC1Base()">▶ CALCULAR DÓLAR</button>
+
+      <!-- CME -->
+      <div class="section">
+        <div class="section-header"><div class="section-pip"></div><span class="section-title">CME — Futuros Real Brasileiro</span></div>
+        <div class="section-body">
+          <div class="field-row three">
+            <div class="field"><label>Durar</label><input type="number" id="d_cme_durar" placeholder="0.1967" step="0.0001"></div>
+            <div class="field"><label>Anterior</label><input type="number" id="d_cme_ant" placeholder="0.19605" step="0.0001"></div>
+            <div class="field"><label>Acordo</label><input type="number" id="d_cme_acordo" placeholder="0.1964" step="0.0001"></div>
+          </div>
+          <div class="field-row three">
+            <div class="field"><label>Abrir</label><input type="number" id="d_cme_abrir" placeholder="0.1964" step="0.0001"></div>
+            <div class="field"><label>Alto</label><input type="number" id="d_cme_alto" placeholder="0.1968" step="0.0001"></div>
+            <div class="field"><label>Baixo</label><input type="number" id="d_cme_baixo" placeholder="0.1963" step="0.0001"></div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px;">
+            <div class="result-card gold"><div class="result-label">Durar</div><div class="result-value gold empty" id="r_cme_durar">—</div></div>
+            <div class="result-card blue"><div class="result-label">Anterior</div><div class="result-value blue empty" id="r_cme_ant">—</div></div>
+            <div class="result-card purple"><div class="result-label">Acordo</div><div class="result-value purple empty" id="r_cme_acordo">—</div></div>
+            <div class="result-card green"><div class="result-label">Abrir</div><div class="result-value green empty" id="r_cme_abrir">—</div></div>
+            <div class="result-card green"><div class="result-label">Alto</div><div class="result-value green empty" id="r_cme_alto">—</div></div>
+            <div class="result-card red"><div class="result-label">Baixo</div><div class="result-value red empty" id="r_cme_baixo">—</div></div>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-calc" id="btn-calc-dolar" onclick="calcularDolar();calcularOC1Base();calcularCME()">▶ CALCULAR DÓLAR</button>
       <div class="section" style="margin-top:14px;">
         <div class="section-header"><div class="section-pip"></div><span class="section-title">Grade de Volatilidade — 27 Níveis</span></div>
         <div class="section-body" style="padding:14px 0;">
@@ -461,6 +487,27 @@ function calcularOC1Base(){
     el.textContent = fmt2(res); el.classList.remove('empty');
   }
 }
+
+// ── CME ──
+function calcularCME(){
+  const campos = {
+    durar:'d_cme_durar', ant:'d_cme_ant', acordo:'d_cme_acordo',
+    abrir:'d_cme_abrir', alto:'d_cme_alto', baixo:'d_cme_baixo'
+  };
+  const results = {
+    durar:'r_cme_durar', ant:'r_cme_ant', acordo:'r_cme_acordo',
+    abrir:'r_cme_abrir', alto:'r_cme_alto', baixo:'r_cme_baixo'
+  };
+  Object.keys(campos).forEach(k=>{
+    const val = parseFloat(document.getElementById(campos[k]).value);
+    if(!isNaN(val) && val > 0){
+      const res = arredondarMeio(1/val*1000);
+      const el = document.getElementById(results[k]);
+      el.textContent = fmt2(res);
+      el.classList.remove('empty');
+    }
+  });
+}
 </script>
 
 <script>
@@ -602,6 +649,27 @@ function calcularOC1Base(){
     const el = document.getElementById('r_sonho_d1');
     el.textContent = fmt2(res); el.classList.remove('empty');
   }
+}
+
+// ── CME ──
+function calcularCME(){
+  const campos = {
+    durar:'d_cme_durar', ant:'d_cme_ant', acordo:'d_cme_acordo',
+    abrir:'d_cme_abrir', alto:'d_cme_alto', baixo:'d_cme_baixo'
+  };
+  const results = {
+    durar:'r_cme_durar', ant:'r_cme_ant', acordo:'r_cme_acordo',
+    abrir:'r_cme_abrir', alto:'r_cme_alto', baixo:'r_cme_baixo'
+  };
+  Object.keys(campos).forEach(k=>{
+    const val = parseFloat(document.getElementById(campos[k]).value);
+    if(!isNaN(val) && val > 0){
+      const res = arredondarMeio(1/val*1000);
+      const el = document.getElementById(results[k]);
+      el.textContent = fmt2(res);
+      el.classList.remove('empty');
+    }
+  });
 }
 </script>
 </body>
