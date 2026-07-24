@@ -102,6 +102,10 @@ input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.1);}
 @keyframes spin{to{transform:rotate(360deg);}}
 .blocked-banner{background:rgba(255,58,58,.07);border:1px solid rgba(255,58,58,.2);border-radius:10px;padding:16px 22px;margin-bottom:24px;font-size:14px;color:var(--red);display:none;}
 @media(max-width:640px){.field-row,.field-row.three{grid-template-columns:1fr;}.ptax-grid{grid-template-columns:1fr;}.topbar{padding:12px 16px;}}
+
+.oc1-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-top:10px;}
+.base-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px;}
+.sonho-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;}
 </style>
 </head>
 <body>
@@ -232,7 +236,61 @@ input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.1);}
           <div id="d_ptax_results"></div>
         </div>
       </div>
-      <button class="btn-calc" id="btn-calc-dolar" onclick="calcularDolar()">▶ CALCULAR DÓLAR</button>
+
+      <!-- OC1 -->
+      <div class="section">
+        <div class="section-header"><div class="section-pip"></div><span class="section-title">OC1 — Parâmetros B3</span></div>
+        <div class="section-body">
+          <div class="field-row single">
+            <div class="field"><label>DIF OPER CASADA — COMPRA (R$/US$)</label><input type="number" id="d_casado" placeholder="10.68" step="0.01"></div>
+          </div>
+          <div class="field-row" style="grid-template-columns:1fr 1fr 1fr 1fr;">
+            <div class="field"><label>Fechamento</label><input type="number" id="d_oc1_fech" placeholder="5.0715" step="0.0001"></div>
+            <div class="field"><label>Mínima</label><input type="number" id="d_oc1_min" placeholder="5.0715" step="0.0001"></div>
+            <div class="field"><label>Média</label><input type="number" id="d_oc1_med" placeholder="5.0715" step="0.0001"></div>
+            <div class="field"><label>Máxima</label><input type="number" id="d_oc1_max" placeholder="5.0715" step="0.0001"></div>
+          </div>
+          <div class="oc1-grid">
+            <div class="result-card gold"><div class="result-label">OC1 Fechamento</div><div class="result-value gold empty" id="r_oc1_fech">—</div></div>
+            <div class="result-card blue"><div class="result-label">OC1 Mínima</div><div class="result-value blue empty" id="r_oc1_min">—</div></div>
+            <div class="result-card purple"><div class="result-label">OC1 Média</div><div class="result-value purple empty" id="r_oc1_med">—</div></div>
+            <div class="result-card green"><div class="result-label">OC1 Máxima</div><div class="result-value green empty" id="r_oc1_max">—</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BASE -->
+      <div class="section">
+        <div class="section-header"><div class="section-pip"></div><span class="section-title">Base — Parâmetro de Abertura</span></div>
+        <div class="section-body">
+          <div class="field-row">
+            <div class="field"><label>Parâmetro Abertura B3</label><input type="number" id="d_param_ab" placeholder="5.0693" step="0.0001"></div>
+            <div class="field"><label>Sem Ouver (B3)</label><input type="number" id="d_sem_ouver" placeholder="5069.30" step="0.01"></div>
+          </div>
+          <div class="base-grid">
+            <div class="result-card gold"><div class="result-label">Com Ouver (Casado)</div><div class="result-value gold empty" id="r_base_ouver">—</div></div>
+            <div class="result-card blue"><div class="result-label">Sem Ouver</div><div class="result-value blue empty" id="r_base_sem">—</div></div>
+            <div class="result-card green"><div class="result-label">Com FRP0</div><div class="result-value green empty" id="r_base_frp0">—</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SONHO D1 D2 -->
+      <div class="section">
+        <div class="section-header"><div class="section-pip"></div><span class="section-title">Sonho — D1 & D2</span></div>
+        <div class="section-body">
+          <div class="field-row">
+            <div class="field"><label>Dólar BMF Spot 2 Dias (D2)</label><input type="number" id="d_spot_d2" placeholder="5.0890" step="0.0001"></div>
+            <div class="field"><label>Dólar Spot BMF 1 Dia (D1)</label><input type="number" id="d_spot_d1" placeholder="5.0868" step="0.0001"></div>
+          </div>
+          <div class="sonho-grid">
+            <div class="result-card gold"><div class="result-label">Sonho D2</div><div class="result-value gold empty" id="r_sonho_d2">—</div></div>
+            <div class="result-card purple"><div class="result-label">Sonho D1</div><div class="result-value purple empty" id="r_sonho_d1">—</div></div>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-calc" id="btn-calc-dolar" onclick="calcularDolar();calcularOC1Base()">▶ CALCULAR DÓLAR</button>
       <div class="section" style="margin-top:14px;">
         <div class="section-header"><div class="section-pip"></div><span class="section-title">Grade de Volatilidade — 27 Níveis</span></div>
         <div class="section-body" style="padding:14px 0;">
@@ -344,6 +402,63 @@ function calcularGradeIndice(){
     tbody.innerHTML+=`<tr class="row-${n.tipo}"><td style="font-size:10px;${lc}">${n.label}</td><td style="color:var(--light);font-size:11px;">${pctStr}</td><td class="pts-val" style="text-align:right;">${ptsStr}</td><td class="${ic}" style="text-align:right;font-size:13px;font-weight:500;">${idxStr}</td></tr>`;
   });
 }
+
+// ── OC1, BASE, SONHO ──
+function calcularOC1Base(){
+  const casado = parseFloat(document.getElementById('d_casado').value);
+  const frp0   = parseFloat(document.getElementById('d_frp0').value);
+  
+  // OC1
+  const oc1Fields = {fech:'d_oc1_fech', min:'d_oc1_min', med:'d_oc1_med', max:'d_oc1_max'};
+  const oc1Results = {fech:'r_oc1_fech', min:'r_oc1_min', med:'r_oc1_med', max:'r_oc1_max'};
+  if(!isNaN(casado)){
+    Object.keys(oc1Fields).forEach(k=>{
+      const val = parseFloat(document.getElementById(oc1Fields[k]).value);
+      if(!isNaN(val)){
+        const v = val > 100 ? val : val * 1000; // aceita 5.0715 ou 5071.5
+        const res = arredondarMeio(v + casado);
+        const el = document.getElementById(oc1Results[k]);
+        el.textContent = fmt2(res); el.classList.remove('empty');
+      }
+    });
+  }
+
+  // BASE
+  const paramAb = parseFloat(document.getElementById('d_param_ab').value);
+  const semOuver = parseFloat(document.getElementById('d_sem_ouver').value);
+  if(!isNaN(paramAb) && !isNaN(casado)){
+    const pAb = paramAb > 100 ? paramAb : paramAb * 1000;
+    const comOuver = arredondarMeio(pAb + casado);
+    const el1 = document.getElementById('r_base_ouver');
+    el1.textContent = fmt2(comOuver); el1.classList.remove('empty');
+  }
+  if(!isNaN(semOuver)){
+    const so = semOuver > 100 ? semOuver : semOuver * 1000;
+    const el2 = document.getElementById('r_base_sem');
+    el2.textContent = fmt2(arredondarMeio(so)); el2.classList.remove('empty');
+    if(!isNaN(frp0)){
+      const comFrp0 = arredondarMeio(so + frp0);
+      const el3 = document.getElementById('r_base_frp0');
+      el3.textContent = fmt2(comFrp0); el3.classList.remove('empty');
+    }
+  }
+
+  // SONHO D1 D2
+  const spotD2 = parseFloat(document.getElementById('d_spot_d2').value);
+  const spotD1 = parseFloat(document.getElementById('d_spot_d1').value);
+  if(!isNaN(spotD2) && !isNaN(casado)){
+    const d2 = spotD2 > 100 ? spotD2 : spotD2 * 1000;
+    const res = arredondarMeio(d2 + casado);
+    const el = document.getElementById('r_sonho_d2');
+    el.textContent = fmt2(res); el.classList.remove('empty');
+  }
+  if(!isNaN(spotD1) && !isNaN(casado)){
+    const d1 = spotD1 > 100 ? spotD1 : spotD1 * 1000;
+    const res = arredondarMeio(d1 + casado);
+    const el = document.getElementById('r_sonho_d1');
+    el.textContent = fmt2(res); el.classList.remove('empty');
+  }
+}
 </script>
 
 <script>
@@ -424,6 +539,63 @@ function calcularGradeDolar(){
     const lc={extremo:'color:var(--red)',pselliga:'color:var(--orange)',pb:'color:var(--green)',pimp:'color:var(--purple)',pbaixa:'color:var(--blue)',abertura:'color:var(--gold2)'}[n.tipo]||'color:var(--light)';
     tbody.innerHTML+=`<tr class="row-${n.tipo}"><td style="font-size:10px;${lc}">${n.label}</td><td style="color:var(--light);font-size:11px;">${pctStr}</td><td class="pts-val" style="text-align:right;">${ptsStr}</td><td class="${ic}" style="text-align:right;font-size:13px;font-weight:500;">${idxStr}</td></tr>`;
   });
+}
+
+// ── OC1, BASE, SONHO ──
+function calcularOC1Base(){
+  const casado = parseFloat(document.getElementById('d_casado').value);
+  const frp0   = parseFloat(document.getElementById('d_frp0').value);
+  
+  // OC1
+  const oc1Fields = {fech:'d_oc1_fech', min:'d_oc1_min', med:'d_oc1_med', max:'d_oc1_max'};
+  const oc1Results = {fech:'r_oc1_fech', min:'r_oc1_min', med:'r_oc1_med', max:'r_oc1_max'};
+  if(!isNaN(casado)){
+    Object.keys(oc1Fields).forEach(k=>{
+      const val = parseFloat(document.getElementById(oc1Fields[k]).value);
+      if(!isNaN(val)){
+        const v = val > 100 ? val : val * 1000; // aceita 5.0715 ou 5071.5
+        const res = arredondarMeio(v + casado);
+        const el = document.getElementById(oc1Results[k]);
+        el.textContent = fmt2(res); el.classList.remove('empty');
+      }
+    });
+  }
+
+  // BASE
+  const paramAb = parseFloat(document.getElementById('d_param_ab').value);
+  const semOuver = parseFloat(document.getElementById('d_sem_ouver').value);
+  if(!isNaN(paramAb) && !isNaN(casado)){
+    const pAb = paramAb > 100 ? paramAb : paramAb * 1000;
+    const comOuver = arredondarMeio(pAb + casado);
+    const el1 = document.getElementById('r_base_ouver');
+    el1.textContent = fmt2(comOuver); el1.classList.remove('empty');
+  }
+  if(!isNaN(semOuver)){
+    const so = semOuver > 100 ? semOuver : semOuver * 1000;
+    const el2 = document.getElementById('r_base_sem');
+    el2.textContent = fmt2(arredondarMeio(so)); el2.classList.remove('empty');
+    if(!isNaN(frp0)){
+      const comFrp0 = arredondarMeio(so + frp0);
+      const el3 = document.getElementById('r_base_frp0');
+      el3.textContent = fmt2(comFrp0); el3.classList.remove('empty');
+    }
+  }
+
+  // SONHO D1 D2
+  const spotD2 = parseFloat(document.getElementById('d_spot_d2').value);
+  const spotD1 = parseFloat(document.getElementById('d_spot_d1').value);
+  if(!isNaN(spotD2) && !isNaN(casado)){
+    const d2 = spotD2 > 100 ? spotD2 : spotD2 * 1000;
+    const res = arredondarMeio(d2 + casado);
+    const el = document.getElementById('r_sonho_d2');
+    el.textContent = fmt2(res); el.classList.remove('empty');
+  }
+  if(!isNaN(spotD1) && !isNaN(casado)){
+    const d1 = spotD1 > 100 ? spotD1 : spotD1 * 1000;
+    const res = arredondarMeio(d1 + casado);
+    const el = document.getElementById('r_sonho_d1');
+    el.textContent = fmt2(res); el.classList.remove('empty');
+  }
 }
 </script>
 </body>
