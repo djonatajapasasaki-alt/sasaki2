@@ -382,7 +382,7 @@ function mudarTab(tab,el){
 }
 function fmt3(n){return n.toLocaleString('pt-BR',{minimumFractionDigits:3,maximumFractionDigits:3});}
 function fmt2(n){return n.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
-function arredondarMeio(v){return Math.round(v*2)/2;}
+function arredondarMeio(v){return v>=0?Math.round(v*2+0.4999999)/2:Math.round(v*2-0.4999999)/2;}
 
 function calcularIndice(){
   const fechamento=parseFloat(document.getElementById('i_fechamento').value);
