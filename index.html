@@ -270,14 +270,13 @@ input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.1);}
       <div class="section">
         <div class="section-header"><div class="section-pip"></div><span class="section-title">Base — Parâmetro de Abertura</span></div>
         <div class="section-body">
-          <div class="field-row">
+          <div class="field-row single">
             <div class="field"><label>Parâmetro Abertura B3</label><input type="number" id="d_param_ab" placeholder="5.0693" step="0.0001"></div>
-            <div class="field"><label>Sem Ouver (B3)</label><input type="number" id="d_sem_ouver" placeholder="5069.30" step="0.01"></div>
           </div>
           <div class="base-grid">
-            <div class="result-card gold"><div class="result-label">Com Ouver (Casado)</div><div class="result-value gold empty" id="r_base_ouver">—</div></div>
-            <div class="result-card blue"><div class="result-label">Sem Ouver</div><div class="result-value blue empty" id="r_base_sem">—</div></div>
+            <div class="result-card gold"><div class="result-label">Com Casado</div><div class="result-value gold empty" id="r_base_ouver">—</div></div>
             <div class="result-card green"><div class="result-label">Com FRP0</div><div class="result-value green empty" id="r_base_frp0">—</div></div>
+            <div class="result-card blue"><div class="result-label">Sem Ouver</div><div class="result-value blue empty" id="r_base_sem">—</div></div>
           </div>
         </div>
       </div>
@@ -456,22 +455,24 @@ function calcularOC1Base(){
 
   // BASE
   const paramAb = parseFloat(document.getElementById('d_param_ab').value);
-  const semOuver = parseFloat(document.getElementById('d_sem_ouver').value);
-  if(!isNaN(paramAb) && !isNaN(casado)){
+  if(!isNaN(paramAb)){
     const pAb = paramAb > 100 ? paramAb : paramAb * 1000;
-    const comOuver = arredondarMeio(pAb + casado);
-    const el1 = document.getElementById('r_base_ouver');
-    el1.textContent = fmt2(comOuver); el1.classList.remove('empty');
-  }
-  if(!isNaN(semOuver)){
-    const so = semOuver > 100 ? semOuver : semOuver * 1000;
-    const el2 = document.getElementById('r_base_sem');
-    el2.textContent = fmt2(arredondarMeio(so)); el2.classList.remove('empty');
-    if(!isNaN(frp0)){
-      const comFrp0 = arredondarMeio(so + frp0);
-      const el3 = document.getElementById('r_base_frp0');
-      el3.textContent = fmt2(comFrp0); el3.classList.remove('empty');
+    // Com Casado
+    if(!isNaN(casado)){
+      const el1 = document.getElementById('r_base_ouver');
+      el1.textContent = fmt2(arredondarMeio(pAb + casado));
+      el1.classList.remove('empty');
     }
+    // Com FRP0
+    if(!isNaN(frp0)){
+      const el3 = document.getElementById('r_base_frp0');
+      el3.textContent = fmt2(arredondarMeio(pAb + frp0));
+      el3.classList.remove('empty');
+    }
+    // Sem Ouver (valor puro)
+    const el2 = document.getElementById('r_base_sem');
+    el2.textContent = fmt2(arredondarMeio(pAb));
+    el2.classList.remove('empty');
   }
 
   // SONHO D1 D2
@@ -619,22 +620,24 @@ function calcularOC1Base(){
 
   // BASE
   const paramAb = parseFloat(document.getElementById('d_param_ab').value);
-  const semOuver = parseFloat(document.getElementById('d_sem_ouver').value);
-  if(!isNaN(paramAb) && !isNaN(casado)){
+  if(!isNaN(paramAb)){
     const pAb = paramAb > 100 ? paramAb : paramAb * 1000;
-    const comOuver = arredondarMeio(pAb + casado);
-    const el1 = document.getElementById('r_base_ouver');
-    el1.textContent = fmt2(comOuver); el1.classList.remove('empty');
-  }
-  if(!isNaN(semOuver)){
-    const so = semOuver > 100 ? semOuver : semOuver * 1000;
-    const el2 = document.getElementById('r_base_sem');
-    el2.textContent = fmt2(arredondarMeio(so)); el2.classList.remove('empty');
-    if(!isNaN(frp0)){
-      const comFrp0 = arredondarMeio(so + frp0);
-      const el3 = document.getElementById('r_base_frp0');
-      el3.textContent = fmt2(comFrp0); el3.classList.remove('empty');
+    // Com Casado
+    if(!isNaN(casado)){
+      const el1 = document.getElementById('r_base_ouver');
+      el1.textContent = fmt2(arredondarMeio(pAb + casado));
+      el1.classList.remove('empty');
     }
+    // Com FRP0
+    if(!isNaN(frp0)){
+      const el3 = document.getElementById('r_base_frp0');
+      el3.textContent = fmt2(arredondarMeio(pAb + frp0));
+      el3.classList.remove('empty');
+    }
+    // Sem Ouver (valor puro)
+    const el2 = document.getElementById('r_base_sem');
+    el2.textContent = fmt2(arredondarMeio(pAb));
+    el2.classList.remove('empty');
   }
 
   // SONHO D1 D2
