@@ -106,6 +106,32 @@ input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.1);}
 .oc1-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-top:10px;}
 .base-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px;}
 .sonho-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;}
+
+.table-data{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px;margin-top:10px;}
+.table-data th{padding:8px 12px;text-align:left;font-size:8px;letter-spacing:2px;color:var(--gray);text-transform:uppercase;border-bottom:1px solid var(--border);background:var(--bg2);}
+.table-data td{padding:7px 12px;border-bottom:1px solid rgba(26,26,53,.5);color:var(--light);}
+.table-data tr:hover td{background:rgba(255,255,255,.015);}
+.table-data td.up{color:var(--green);}.table-data td.dn{color:var(--red);}.table-data td.mid{color:var(--gold2);}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;}
+.badge.alto{background:rgba(255,58,58,.15);color:var(--red);}
+.badge.medio{background:rgba(255,140,0,.15);color:var(--orange);}
+.badge.baixo{background:rgba(0,217,126,.15);color:var(--green);}
+.score-bar{display:flex;align-items:center;gap:8px;}
+.score-val{font-family:var(--mono);font-size:20px;font-weight:700;}
+.score-val.bull{color:var(--green);}.score-val.bear{color:var(--red);}.score-val.neut{color:var(--gray);}
+.pivot-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-top:10px;}
+.pivot-card{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 14px;text-align:center;}
+.pivot-card .plbl{font-size:8px;letter-spacing:2px;color:var(--gray);text-transform:uppercase;margin-bottom:6px;}
+.pivot-card .pval{font-family:var(--mono);font-size:15px;font-weight:500;}
+.pval.r{color:var(--red);}.pval.s{color:var(--green);}.pval.p{color:var(--gold2);}
+.kelly-result{background:linear-gradient(135deg,rgba(212,168,67,.1),rgba(212,168,67,.05));border:1px solid var(--gold3);border-radius:10px;padding:20px;text-align:center;margin-top:12px;}
+.kelly-pct{font-family:var(--mono);font-size:36px;font-weight:700;color:var(--gold2);}
+.kelly-label{font-size:11px;color:var(--gray);margin-top:6px;letter-spacing:2px;text-transform:uppercase;}
+.upload-area{border:2px dashed var(--border2);border-radius:10px;padding:30px;text-align:center;cursor:pointer;transition:border-color .2s;margin-bottom:14px;}
+.upload-area:hover{border-color:var(--gold);}
+.upload-area p{color:var(--gray);font-size:13px;margin-top:8px;}
+.pl-positivo{color:var(--green);font-family:var(--mono);}
+.pl-negativo{color:var(--red);font-family:var(--mono);}
 </style>
 </head>
 <body>
@@ -148,6 +174,10 @@ input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.1);}
     <div class="tabs-inner">
       <button class="tab active" onclick="mudarTab('indice',this)">⚡ ÍNDICE WIN</button>
       <button class="tab" onclick="mudarTab('dolar',this)">💵 DÓLAR WDO</button>
+      <button class="tab" onclick="mudarTab('analise',this)">📊 ANÁLISE</button>
+      <button class="tab" onclick="mudarTab('volatilidade',this)">📈 VOLATILIDADE</button>
+      <button class="tab" onclick="mudarTab('gestao',this)">💼 GESTÃO</button>
+      <button class="tab" onclick="mudarTab('agenda',this)">📅 AGENDA</button>
     </div>
   </div>
   <div class="main">
@@ -335,6 +365,236 @@ input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.1);}
             <table class="grade-table">
               <thead><tr><th>Nível</th><th>Vol %</th><th style="text-align:right">Pontos</th><th style="text-align:right">Dólar</th></tr></thead>
               <tbody id="d_grade_tbody"><tr><td colspan="4" style="color:var(--gray);padding:20px;text-align:center;">Preencha o Centro e clique em ATUALIZAR</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ ABA ANÁLISE ═══ -->
+    <div id="tab-analise" class="tab-content">
+      <div class="page-eyebrow">Análise Técnica</div>
+      <div class="page-title">Confluência & Pivôs</div>
+
+      <!-- PIVÔS -->
+      <div class="section">
+        <div class="section-header"><div class="section-pip"></div><span class="section-title">Pontos de Pivô — Padrão & Camarilla</span></div>
+        <div class="section-body">
+          <div class="field-row three">
+            <div class="field"><label>Máxima Anterior</label><input type="number" id="a_high" placeholder="175000" step="1"></div>
+            <div class="field"><label>Mínima Anterior</label><input type="number" id="a_low" placeholder="172000" step="1"></div>
+            <div class="field"><label>Fechamento Anterior</label><input type="number" id="a_close" placeholder="173500" step="1"></div>
+          </div>
+          <button class="btn-calc" style="margin-top:12px;" onclick="calcularPivos()">▶ CALCULAR PIVÔS</button>
+          <div id="pivos_resultado" style="margin-top:14px;"></div>
+        </div>
+      </div>
+
+      <!-- CONFLUÊNCIA -->
+      <div class="section">
+        <div class="section-header"><div class="section-pip"></div><span class="section-title">Score de Confluência</span></div>
+        <div class="section-body">
+          <p style="font-size:12px;color:var(--gray);margin-bottom:16px;">Marque os sinais presentes no momento:</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;color:var(--light);font-size:13px;"><input type="checkbox" id="c_tendencia" style="width:16px;height:16px;accent-color:var(--gold);background:var(--card);"> Tendência alinhada (M5+M15+M60)</label>
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;color:var(--light);font-size:13px;"><input type="checkbox" id="c_pivo" style="width:16px;height:16px;accent-color:var(--gold);"> Preço no pivô/suporte/resistência</label>
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;color:var(--light);font-size:13px;"><input type="checkbox" id="c_vol" style="width:16px;height:16px;accent-color:var(--gold);"> Volatilidade favorável (VIX ok)</label>
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;color:var(--light);font-size:13px;"><input type="checkbox" id="c_ewz" style="width:16px;height:16px;accent-color:var(--gold);"> EWZ alinhado com WIN</label>
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;color:var(--light);font-size:13px;"><input type="checkbox" id="c_sp" style="width:16px;height:16px;accent-color:var(--gold);"> S&P 500 na direção do trade</label>
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;color:var(--light);font-size:13px;"><input type="checkbox" id="c_dolar" style="width:16px;height:16px;accent-color:var(--gold);"> Dólar favorável ao cenário</label>
+          </div>
+          <div style="display:flex;align-items:center;gap:16px;margin-bottom:12px;">
+            <div class="field" style="flex:1;"><label>Direção do Trade</label>
+              <select id="c_direcao" style="background:#00e07a;border:1.5px solid var(--green);border-radius:8px;padding:11px 14px;color:#000;font-family:var(--mono);font-size:14px;font-weight:700;width:100%;outline:none;">
+                <option value="compra">COMPRA</option>
+                <option value="venda">VENDA</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn-calc" onclick="calcularConfluencia()">▶ CALCULAR SCORE</button>
+          <div id="confluencia_resultado" style="margin-top:14px;"></div>
+        </div>
+      </div>
+
+      <!-- ZONA DE TRAVA -->
+      <div class="section">
+        <div class="section-header"><div class="section-pip"></div><span class="section-title">Zona de Trava</span></div>
+        <div class="section-body">
+          <div class="field-row three">
+            <div class="field"><label>Preço Atual</label><input type="number" id="zt_preco" placeholder="175000" step="1"></div>
+            <div class="field"><label>Score Confluência</label><input type="number" id="zt_score" placeholder="4" step="1" min="-2" max="6"></div>
+            <div class="field"><label>VIX Atual</label><input type="number" id="zt_vix" placeholder="19.28" step="0.01"></div>
+          </div>
+          <button class="btn-calc" onclick="calcularZonaTrava()">▶ CALCULAR ZONA</button>
+          <div id="zona_trava_resultado" style="margin-top:14px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ ABA VOLATILIDADE ═══ -->
+    <div id="tab-volatilidade" class="tab-content">
+      <div class="page-eyebrow">Análise Quantitativa</div>
+      <div class="page-title">Volatilidade EWMA</div>
+
+      <!-- UPLOAD CSV -->
+      <div class="section">
+        <div class="section-header"><div class="section-pip"></div><span class="section-title">Importar Histórico — CSV Tryd/Profit</span></div>
+        <div class="section-body">
+          <div class="upload-area" onclick="document.getElementById('csv_input').click()">
+            <div style="font-size:32px;">📂</div>
+            <p>Clique para selecionar o arquivo CSV exportado do Tryd/Profit</p>
+            <p style="font-size:11px;margin-top:4px;">Formato: Data;Abertura;Máxima;Mínima;Fechamento</p>
+          </div>
+          <input type="file" id="csv_input" accept=".csv,.txt" style="display:none" onchange="importarCSV(this)">
+          <div id="csv_status" style="display:none;padding:10px 14px;border-radius:7px;font-size:13px;margin-top:10px;"></div>
+        </div>
+      </div>
+
+      <!-- EWMA -->
+      <div class="section">
+        <div class="section-header"><div class="section-pip"></div><span class="section-title">EWMA — λ = 0,94 (RiskMetrics)</span></div>
+        <div class="section-body" style="padding:14px 0;">
+          <div style="padding:0 20px 14px;display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;">
+            <div class="field" style="flex:1;min-width:120px;"><label>Ativo</label>
+              <select id="ewma_ativo" style="background:#00e07a;border:1.5px solid var(--green);border-radius:8px;padding:11px 14px;color:#000;font-family:var(--mono);font-size:14px;font-weight:700;width:100%;outline:none;">
+                <option value="WIN">WIN</option>
+                <option value="WDO">WDO</option>
+              </select>
+            </div>
+            <div class="field" style="flex:1;min-width:120px;"><label>λ Lambda</label><input type="number" id="ewma_lambda" value="0.94" step="0.01" min="0.01" max="0.99" style="background:#00e07a;border:1.5px solid var(--green);border-radius:8px;padding:11px 14px;color:#000;font-family:var(--mono);font-size:14px;font-weight:700;width:100%;outline:none;"></div>
+            <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="calcularEWMA()">CALCULAR</button>
+          </div>
+          <div id="ewma_resumo" style="padding:0 20px 14px;display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;"></div>
+          <div style="overflow-x:auto;">
+            <table class="table-data" id="ewma_tabela">
+              <thead><tr><th>Data</th><th>Fechamento</th><th>Retorno %</th><th>Vol Diária %</th><th>Vol Anual %</th></tr></thead>
+              <tbody id="ewma_tbody"><tr><td colspan="5" style="color:var(--gray);padding:20px;text-align:center;">Importe o histórico CSV para calcular</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ ABA GESTÃO ═══ -->
+    <div id="tab-gestao" class="tab-content">
+      <div class="page-eyebrow">Gestão de Risco</div>
+      <div class="page-title">Position Sizing & Log</div>
+
+      <!-- KELLY + POSITION SIZING -->
+      <div class="section">
+        <div class="section-header"><div class="section-pip"></div><span class="section-title">Kelly & Position Sizing</span></div>
+        <div class="section-body">
+          <div class="field-row">
+            <div class="field"><label>Capital Total (R$)</label><input type="number" id="g_capital" placeholder="10000" step="100"></div>
+            <div class="field"><label>Risco por Trade (%)</label><input type="number" id="g_risco_pct" placeholder="1" step="0.1"></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>Taxa de Acerto (%)</label><input type="number" id="g_acerto" placeholder="60" step="1"></div>
+            <div class="field"><label>Payoff (ganho/perda)</label><input type="number" id="g_payoff" placeholder="1.5" step="0.1"></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>Stop (pontos)</label><input type="number" id="g_stop" placeholder="200" step="1"></div>
+            <div class="field"><label>Valor do Ponto (R$)</label><input type="number" id="g_val_ponto" placeholder="0.20" step="0.01"></div>
+          </div>
+          <button class="btn-calc" onclick="calcularKelly()">▶ CALCULAR SIZING</button>
+          <div id="kelly_resultado" style="margin-top:14px;"></div>
+        </div>
+      </div>
+
+      <!-- LOG DE SINAIS -->
+      <div class="section">
+        <div class="section-header"><div class="section-pip"></div><span class="section-title">Log de Operações</span></div>
+        <div class="section-body">
+          <div class="field-row three">
+            <div class="field"><label>Data</label><input type="date" id="log_data"></div>
+            <div class="field"><label>Ativo</label>
+              <select id="log_ativo" style="background:#00e07a;border:1.5px solid var(--green);border-radius:8px;padding:11px 14px;color:#000;font-family:var(--mono);font-size:14px;font-weight:700;width:100%;outline:none;">
+                <option>WIN</option><option>WDO</option>
+              </select>
+            </div>
+            <div class="field"><label>Score</label><input type="number" id="log_score" placeholder="4" min="-2" max="6" step="1"></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>Preço Entrada</label><input type="number" id="log_entrada" placeholder="175000" step="1"></div>
+            <div class="field"><label>Preço Fechamento</label><input type="number" id="log_fechamento" placeholder="175200" step="1"></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>Contratos</label><input type="number" id="log_contratos" placeholder="1" step="1"></div>
+            <div class="field"><label>Leitura / Observação</label><input type="text" id="log_leitura" placeholder="Compra no suporte..." style="background:#00e07a;border:1.5px solid var(--green);border-radius:8px;padding:11px 14px;color:#000;font-family:var(--mono);font-size:14px;font-weight:700;width:100%;outline:none;"></div>
+          </div>
+          <button class="btn-calc" onclick="salvarLog()">▶ SALVAR OPERAÇÃO</button>
+          <div id="log_status" style="margin-top:10px;font-size:13px;display:none;"></div>
+        </div>
+      </div>
+
+      <!-- RESUMO P&L -->
+      <div class="section">
+        <div class="section-header"><div class="section-pip"></div><span class="section-title">Resumo P&L</span></div>
+        <div class="section-body" style="padding:14px 0;">
+          <div style="padding:0 20px 14px;display:flex;gap:10px;">
+            <button class="btn-calc" style="margin-top:0;" onclick="carregarLog()">▶ CARREGAR OPERAÇÕES</button>
+          </div>
+          <div id="pl_resumo" style="padding:0 20px 14px;display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;"></div>
+          <div style="overflow-x:auto;">
+            <table class="table-data">
+              <thead><tr><th>Data</th><th>Ativo</th><th>Score</th><th>Entrada</th><th>Fechamento</th><th>P&L Pts</th><th>P&L R$</th><th>Acum. R$</th></tr></thead>
+              <tbody id="log_tbody"><tr><td colspan="8" style="color:var(--gray);padding:20px;text-align:center;">Nenhuma operação registrada</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- IR/DARF -->
+      <div class="section">
+        <div class="section-header"><div class="section-pip"></div><span class="section-title">IR Day Trade — DARF</span></div>
+        <div class="section-body">
+          <div id="ir_resultado" style="color:var(--gray);font-size:13px;">Carregue as operações para calcular o IR automaticamente.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ ABA AGENDA ═══ -->
+    <div id="tab-agenda" class="tab-content">
+      <div class="page-eyebrow">Calendário Econômico</div>
+      <div class="page-title">Agenda de Eventos</div>
+
+      <!-- ADICIONAR EVENTO -->
+      <div class="section">
+        <div class="section-header"><div class="section-pip"></div><span class="section-title">Adicionar Evento</span></div>
+        <div class="section-body">
+          <div class="field-row">
+            <div class="field"><label>Data</label><input type="date" id="ag_data"></div>
+            <div class="field"><label>Impacto</label>
+              <select id="ag_impacto" style="background:#00e07a;border:1.5px solid var(--green);border-radius:8px;padding:11px 14px;color:#000;font-family:var(--mono);font-size:14px;font-weight:700;width:100%;outline:none;">
+                <option value="Alto">🔴 Alto</option>
+                <option value="Médio" selected>🟡 Médio</option>
+                <option value="Baixo">🟢 Baixo</option>
+              </select>
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>Evento</label><input type="text" id="ag_evento" placeholder="FOMC — Decisão de Juros" style="background:#00e07a;border:1.5px solid var(--green);border-radius:8px;padding:11px 14px;color:#000;font-family:var(--mono);font-size:14px;font-weight:700;width:100%;outline:none;"></div>
+            <div class="field"><label>Tipo</label><input type="text" id="ag_tipo" placeholder="Banco Central / Dados / Outros" style="background:#00e07a;border:1.5px solid var(--green);border-radius:8px;padding:11px 14px;color:#000;font-family:var(--mono);font-size:14px;font-weight:700;width:100%;outline:none;"></div>
+          </div>
+          <div class="field-row single">
+            <div class="field"><label>Observações</label><input type="text" id="ag_obs" placeholder="Expectativa mercado..." style="background:#00e07a;border:1.5px solid var(--green);border-radius:8px;padding:11px 14px;color:#000;font-family:var(--mono);font-size:14px;font-weight:700;width:100%;outline:none;"></div>
+          </div>
+          <button class="btn-calc" onclick="salvarEvento()">▶ SALVAR EVENTO</button>
+          <div id="ag_status" style="margin-top:10px;font-size:13px;display:none;"></div>
+        </div>
+      </div>
+
+      <!-- LISTA DE EVENTOS -->
+      <div class="section">
+        <div class="section-header"><div class="section-pip"></div><span class="section-title">Próximos Eventos</span></div>
+        <div class="section-body" style="padding:14px 0;">
+          <div style="padding:0 20px 14px;">
+            <button class="btn-calc" style="margin-top:0;" onclick="carregarAgenda()">▶ CARREGAR AGENDA</button>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="table-data">
+              <thead><tr><th>Data</th><th>Evento</th><th>Tipo</th><th>Impacto</th><th>Observações</th><th></th></tr></thead>
+              <tbody id="agenda_tbody"><tr><td colspan="6" style="color:var(--gray);padding:20px;text-align:center;">Nenhum evento cadastrado</td></tr></tbody>
             </table>
           </div>
         </div>
@@ -528,6 +788,302 @@ function calcularCME(){
     }
   });
 }
+
+// ══ CONFIGURAÇÃO SUPABASE ══
+const SUPA_URL='https://jgjszczoakntswjhmzse.supabase.co';
+const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpnanN6Y3pvYWtudHN3amhtenNlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4MDY0ODMsImV4cCI6MjA5ODM4MjQ4M30.EynPilNZXamRAy1DvYAEfLKUBnDLnGelTnSKzvgzwQw';
+
+async function supa(method,table,body,query=''){
+  const r=await fetch(`${SUPA_URL}/rest/v1/${table}${query}`,{
+    method,headers:{'apikey':SUPA_KEY,'Authorization':`Bearer ${SUPA_KEY}`,'Content-Type':'application/json','Prefer':'return=representation'},
+    body:body?JSON.stringify(body):undefined
+  });
+  return r.json();
+}
+
+// ══ PIVÔS ══
+function calcularPivos(){
+  const H=parseFloat(document.getElementById('a_high').value);
+  const L=parseFloat(document.getElementById('a_low').value);
+  const C=parseFloat(document.getElementById('a_close').value);
+  if([H,L,C].some(isNaN)){alert('Preencha Máxima, Mínima e Fechamento.');return;}
+
+  // Padrão
+  const P=(H+L+C)/3;
+  const R1=2*P-L; const S1=2*P-H;
+  const R2=P+(H-L); const S2=P-(H-L);
+  const R3=H+2*(P-L); const S3=L-2*(H-P);
+
+  // Camarilla
+  const CR3=C+((H-L)*1.1/4); const CS3=C-((H-L)*1.1/4);
+  const CR4=C+((H-L)*1.1/2); const CS4=C-((H-L)*1.1/2);
+
+  const f0=v=>v.toLocaleString('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:0});
+
+  document.getElementById('pivos_resultado').innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+      <div>
+        <p style="font-family:var(--mono);font-size:9px;letter-spacing:3px;color:var(--gold);text-transform:uppercase;margin-bottom:10px;">PADRÃO</p>
+        <div class="pivot-grid">
+          <div class="pivot-card"><div class="plbl">R3</div><div class="pval r">${f0(R3)}</div></div>
+          <div class="pivot-card"><div class="plbl">R2</div><div class="pval r">${f0(R2)}</div></div>
+          <div class="pivot-card"><div class="plbl">R1</div><div class="pval r">${f0(R1)}</div></div>
+          <div class="pivot-card" style="border-color:var(--gold3);"><div class="plbl">Pivô</div><div class="pval p">${f0(P)}</div></div>
+          <div class="pivot-card"><div class="plbl">S1</div><div class="pval s">${f0(S1)}</div></div>
+          <div class="pivot-card"><div class="plbl">S2</div><div class="pval s">${f0(S2)}</div></div>
+          <div class="pivot-card"><div class="plbl">S3</div><div class="pval s">${f0(S3)}</div></div>
+        </div>
+      </div>
+      <div>
+        <p style="font-family:var(--mono);font-size:9px;letter-spacing:3px;color:var(--gold);text-transform:uppercase;margin-bottom:10px;">CAMARILLA</p>
+        <div class="pivot-grid">
+          <div class="pivot-card"><div class="plbl">R4</div><div class="pval r">${f0(CR4)}</div></div>
+          <div class="pivot-card"><div class="plbl">R3</div><div class="pval r">${f0(CR3)}</div></div>
+          <div class="pivot-card" style="border-color:var(--gold3);"><div class="plbl">Fechamento</div><div class="pval p">${f0(C)}</div></div>
+          <div class="pivot-card"><div class="plbl">S3</div><div class="pval s">${f0(CS3)}</div></div>
+          <div class="pivot-card"><div class="plbl">S4</div><div class="pval s">${f0(CS4)}</div></div>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ══ CONFLUÊNCIA ══
+function calcularConfluencia(){
+  const checks=['c_tendencia','c_pivo','c_vol','c_ewz','c_sp','c_dolar'];
+  const score=checks.filter(id=>document.getElementById(id).checked).length;
+  const direcao=document.getElementById('c_direcao').value;
+  const cls=score>=5?'bull':score>=3?'neut':'bear';
+  const texto=score>=5?'FORTE — Operar':score>=4?'BOM — Considerar':score>=3?'NEUTRO — Aguardar':'FRACO — Não Operar';
+  const cor=score>=5?'var(--green)':score>=4?'var(--gold)':score>=3?'var(--orange)':'var(--red)';
+  document.getElementById('confluencia_resultado').innerHTML=`
+    <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:20px;text-align:center;">
+      <div style="font-size:11px;letter-spacing:3px;color:var(--gray);text-transform:uppercase;margin-bottom:8px;">SCORE — ${direcao.toUpperCase()}</div>
+      <div class="score-val ${cls}" style="font-size:48px;">${score}/6</div>
+      <div style="margin-top:10px;font-size:14px;font-weight:600;color:${cor};">${texto}</div>
+    </div>`;
+}
+
+// ══ ZONA DE TRAVA ══
+function calcularZonaTrava(){
+  const preco=parseFloat(document.getElementById('zt_preco').value);
+  const score=parseFloat(document.getElementById('zt_score').value);
+  const vix=parseFloat(document.getElementById('zt_vix').value);
+  if([preco,score,vix].some(isNaN)){alert('Preencha todos os campos.');return;}
+  const volDia=vix/Math.sqrt(252)/100;
+  const fator=score>=5?0.5:score>=4?0.75:1.0;
+  const zonaUp=preco*(1+volDia*fator);
+  const zonaDn=preco*(1-volDia*fator);
+  const f0=v=>v.toLocaleString('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:0});
+  document.getElementById('zona_trava_resultado').innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
+      <div class="result-card green"><div class="result-label">Trava Superior</div><div class="result-value green">${f0(zonaUp)}</div></div>
+      <div class="result-card gold"><div class="result-label">Preço Atual</div><div class="result-value gold">${f0(preco)}</div></div>
+      <div class="result-card red"><div class="result-label">Trava Inferior</div><div class="result-value red">${f0(zonaDn)}</div></div>
+    </div>`;
+}
+
+// ══ EWMA ══
+let ewmaData=[];
+
+function importarCSV(input){
+  const file=input.files[0]; if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const lines=e.target.result.split('\n').filter(l=>l.trim());
+    const dados=[];
+    for(let i=1;i<lines.length;i++){
+      const cols=lines[i].split(/[;,]/);
+      if(cols.length<2)continue;
+      const data=cols[0].trim();
+      const fech=parseFloat(cols[cols.length-1].trim().replace(',','.'));
+      if(!isNaN(fech)&&data)dados.push({data,fechamento:fech});
+    }
+    ewmaData=dados.sort((a,b)=>new Date(a.data)-new Date(b.data));
+    const st=document.getElementById('csv_status');
+    st.style.display='block';
+    st.style.background='rgba(0,217,126,.08)';
+    st.style.border='1px solid rgba(0,217,126,.2)';
+    st.style.color='var(--green)';
+    st.textContent=`✅ ${ewmaData.length} registros importados com sucesso!`;
+    calcularEWMA();
+  };
+  reader.readAsText(file,'latin1');
+}
+
+function calcularEWMA(){
+  if(ewmaData.length<2){alert('Importe o histórico CSV primeiro.');return;}
+  const lambda=parseFloat(document.getElementById('ewma_lambda').value)||0.94;
+  const dados=[...ewmaData];
+  let variancia=null;
+  const resultado=[];
+  for(let i=1;i<dados.length;i++){
+    const ret=Math.log(dados[i].fechamento/dados[i-1].fechamento);
+    if(variancia===null)variancia=ret*ret;
+    else variancia=lambda*variancia+(1-lambda)*ret*ret;
+    const volDia=Math.sqrt(variancia)*100;
+    const volAnual=volDia*Math.sqrt(252);
+    resultado.push({data:dados[i].data,fechamento:dados[i].fechamento,retorno:ret*100,volDia,volAnual,variancia});
+  }
+  // Resumo
+  const ultimo=resultado[resultado.length-1];
+  const f2=v=>v.toFixed(2);
+  document.getElementById('ewma_resumo').innerHTML=`
+    <div class="result-card gold"><div class="result-label">Vol Diária Atual</div><div class="result-value gold">${f2(ultimo.volDia)}%</div></div>
+    <div class="result-card purple"><div class="result-label">Vol Anualizada</div><div class="result-value purple">${f2(ultimo.volAnual)}%</div></div>
+    <div class="result-card blue"><div class="result-label">Último Fechamento</div><div class="result-value blue">${ultimo.fechamento.toLocaleString('pt-BR')}</div></div>
+    <div class="result-card green"><div class="result-label">Registros</div><div class="result-value green">${resultado.length}</div></div>`;
+  // Tabela (últimos 30)
+  const tbody=document.getElementById('ewma_tbody');
+  tbody.innerHTML='';
+  resultado.slice(-30).reverse().forEach(r=>{
+    const cls=r.retorno>0?'up':'dn';
+    tbody.innerHTML+=`<tr>
+      <td>${r.data}</td>
+      <td class="mid">${r.fechamento.toLocaleString('pt-BR')}</td>
+      <td class="${cls}">${r.retorno>=0?'+':''}${r.retorno.toFixed(3)}%</td>
+      <td>${r.volDia.toFixed(3)}%</td>
+      <td>${r.volAnual.toFixed(2)}%</td>
+    </tr>`;
+  });
+}
+
+// ══ KELLY + POSITION SIZING ══
+function calcularKelly(){
+  const capital=parseFloat(document.getElementById('g_capital').value);
+  const riscoPct=parseFloat(document.getElementById('g_risco_pct').value)/100;
+  const acerto=parseFloat(document.getElementById('g_acerto').value)/100;
+  const payoff=parseFloat(document.getElementById('g_payoff').value);
+  const stop=parseFloat(document.getElementById('g_stop').value);
+  const valPonto=parseFloat(document.getElementById('g_val_ponto').value);
+  if([capital,riscoPct,acerto,payoff,stop,valPonto].some(isNaN)){alert('Preencha todos os campos.');return;}
+  const kelly=(acerto-(1-acerto)/payoff)*100;
+  const kellyHalf=kelly/2;
+  const riscoReais=capital*riscoPct;
+  const contratos=Math.floor(riscoReais/(stop*valPonto));
+  const f2=v=>v.toFixed(2);
+  document.getElementById('kelly_resultado').innerHTML=`
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;">
+      <div class="kelly-result"><div class="kelly-pct">${f2(kelly)}%</div><div class="kelly-label">Kelly Completo</div></div>
+      <div class="kelly-result"><div class="kelly-pct">${f2(kellyHalf)}%</div><div class="kelly-label">Half-Kelly</div></div>
+      <div class="result-card gold"><div class="result-label">Risco R$</div><div class="result-value gold">R$ ${riscoReais.toLocaleString('pt-BR',{minimumFractionDigits:2})}</div></div>
+      <div class="result-card green"><div class="result-label">Contratos</div><div class="result-value green">${contratos}</div></div>
+      <div class="result-card blue"><div class="result-label">Stop R$</div><div class="result-value blue">R$ ${(stop*valPonto*contratos).toLocaleString('pt-BR',{minimumFractionDigits:2})}</div></div>
+    </div>`;
+}
+
+// ══ LOG DE OPERAÇÕES ══
+async function salvarLog(){
+  if(!currentUser){alert('Faça login primeiro.');return;}
+  const data=document.getElementById('log_data').value;
+  const ativo=document.getElementById('log_ativo').value;
+  const entrada=parseFloat(document.getElementById('log_entrada').value);
+  const fechamento=parseFloat(document.getElementById('log_fechamento').value);
+  const score=parseInt(document.getElementById('log_score').value)||0;
+  const contratos=parseInt(document.getElementById('log_contratos').value)||1;
+  const leitura=document.getElementById('log_leitura').value;
+  const valPonto=parseFloat(document.getElementById('g_val_ponto').value)||0.20;
+  if(!data||isNaN(entrada)||isNaN(fechamento)){alert('Preencha data, entrada e fechamento.');return;}
+  const pl_pontos=fechamento-entrada;
+  const pl_reais=pl_pontos*valPonto*contratos;
+  const resultado=pl_pontos>0?'WIN':pl_pontos<0?'LOSS':'ZERO';
+  const body={usuario_email:currentUser.email,data,ativo,preco_sinal:entrada,score,leitura,preco_fechamento:fechamento,resultado,pl_pontos,pl_reais};
+  try{
+    await supa('POST','log_sinais',body);
+    const st=document.getElementById('log_status');
+    st.style.display='block';st.style.color='var(--green)';
+    st.textContent='✅ Operação salva com sucesso!';
+    setTimeout(()=>{st.style.display='none';},3000);
+    carregarLog();
+  }catch(e){alert('Erro ao salvar: '+e.message);}
+}
+
+async function carregarLog(){
+  if(!currentUser)return;
+  const rows=await supa('GET','log_sinais',null,`?usuario_email=eq.${encodeURIComponent(currentUser.email)}&order=data.desc&limit=50`);
+  if(!Array.isArray(rows)||rows.length===0){
+    document.getElementById('log_tbody').innerHTML='<tr><td colspan="8" style="color:var(--gray);padding:20px;text-align:center;">Nenhuma operação registrada</td></tr>';
+    return;
+  }
+  let acum=0;
+  const f2=v=>v?.toFixed(2)||'—';
+  const tbody=document.getElementById('log_tbody');
+  tbody.innerHTML='';
+  rows.forEach(r=>{
+    acum+=(r.pl_reais||0);
+    const cls=r.pl_pontos>0?'up':r.pl_pontos<0?'dn':'';
+    tbody.innerHTML+=`<tr>
+      <td>${r.data}</td><td class="mid">${r.ativo}</td><td>${r.score||'—'}</td>
+      <td>${r.preco_sinal?.toLocaleString('pt-BR')||'—'}</td>
+      <td>${r.preco_fechamento?.toLocaleString('pt-BR')||'—'}</td>
+      <td class="${cls}">${r.pl_pontos>=0?'+':''}${f2(r.pl_pontos)}</td>
+      <td class="${cls}">R$ ${f2(r.pl_reais)}</td>
+      <td class="${acum>=0?'up':'dn'}">R$ ${acum.toFixed(2)}</td>
+    </tr>`;
+  });
+  // Resumo P&L
+  const wins=rows.filter(r=>r.pl_pontos>0).length;
+  const total=rows.length;
+  const plTotal=rows.reduce((s,r)=>s+(r.pl_reais||0),0);
+  const taxaAcerto=(wins/total*100).toFixed(1);
+  document.getElementById('pl_resumo').innerHTML=`
+    <div class="result-card gold"><div class="result-label">Operações</div><div class="result-value gold">${total}</div></div>
+    <div class="result-card green"><div class="result-label">Taxa Acerto</div><div class="result-value green">${taxaAcerto}%</div></div>
+    <div class="result-card ${plTotal>=0?'green':'red'}"><div class="result-label">P&L Total</div><div class="result-value ${plTotal>=0?'green':'red'}">R$ ${plTotal.toFixed(2)}</div></div>`;
+  // IR
+  const lucroMes=rows.filter(r=>r.pl_reais>0).reduce((s,r)=>s+(r.pl_reais||0),0);
+  const ir=lucroMes*0.20;
+  document.getElementById('ir_resultado').innerHTML=`
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;">
+      <div class="result-card gold"><div class="result-label">Lucro Bruto</div><div class="result-value gold">R$ ${lucroMes.toFixed(2)}</div></div>
+      <div class="result-card red"><div class="result-label">IR 20% Day Trade</div><div class="result-value red">R$ ${ir.toFixed(2)}</div></div>
+      <div class="result-card green"><div class="result-label">Lucro Líquido</div><div class="result-value green">R$ ${(lucroMes-ir).toFixed(2)}</div></div>
+    </div>
+    <p style="font-size:11px;color:var(--gray);margin-top:10px;">⚠ IR de 20% sobre lucros em Day Trade. Gere o DARF no site da Receita Federal até o último dia útil do mês seguinte.</p>`;
+}
+
+// ══ AGENDA ══
+async function salvarEvento(){
+  if(!currentUser){alert('Faça login primeiro.');return;}
+  const data=document.getElementById('ag_data').value;
+  const evento=document.getElementById('ag_evento').value;
+  const tipo=document.getElementById('ag_tipo').value;
+  const impacto=document.getElementById('ag_impacto').value;
+  const obs=document.getElementById('ag_obs').value;
+  if(!data||!evento){alert('Preencha data e evento.');return;}
+  try{
+    await supa('POST','agenda_eventos',{usuario_email:currentUser.email,data,evento,tipo,impacto,observacoes:obs});
+    const st=document.getElementById('ag_status');
+    st.style.display='block';st.style.color='var(--green)';
+    st.textContent='✅ Evento salvo!';
+    setTimeout(()=>{st.style.display='none';},2000);
+    carregarAgenda();
+  }catch(e){alert('Erro: '+e.message);}
+}
+
+async function carregarAgenda(){
+  if(!currentUser)return;
+  const rows=await supa('GET','agenda_eventos',null,`?usuario_email=eq.${encodeURIComponent(currentUser.email)}&order=data.asc&limit=50`);
+  const tbody=document.getElementById('agenda_tbody');
+  if(!Array.isArray(rows)||rows.length===0){tbody.innerHTML='<tr><td colspan="6" style="color:var(--gray);padding:20px;text-align:center;">Nenhum evento cadastrado</td></tr>';return;}
+  tbody.innerHTML='';
+  rows.forEach(r=>{
+    const badgeCls=r.impacto==='Alto'?'alto':r.impacto==='Baixo'?'baixo':'medio';
+    tbody.innerHTML+=`<tr>
+      <td class="mid">${r.data}</td>
+      <td style="color:var(--white)">${r.evento}</td>
+      <td>${r.tipo||'—'}</td>
+      <td><span class="badge ${badgeCls}">${r.impacto}</span></td>
+      <td style="color:var(--gray);font-size:11px;">${r.observacoes||'—'}</td>
+      <td><button onclick="deletarEvento(${r.id})" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:14px;">✕</button></td>
+    </tr>`;
+  });
+}
+
+async function deletarEvento(id){
+  await supa('DELETE','agenda_eventos',null,`?id=eq.${id}`);
+  carregarAgenda();
+}
+
 </script>
 
 <script>
@@ -693,6 +1249,302 @@ function calcularCME(){
     }
   });
 }
+
+// ══ CONFIGURAÇÃO SUPABASE ══
+const SUPA_URL='https://jgjszczoakntswjhmzse.supabase.co';
+const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpnanN6Y3pvYWtudHN3amhtenNlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4MDY0ODMsImV4cCI6MjA5ODM4MjQ4M30.EynPilNZXamRAy1DvYAEfLKUBnDLnGelTnSKzvgzwQw';
+
+async function supa(method,table,body,query=''){
+  const r=await fetch(`${SUPA_URL}/rest/v1/${table}${query}`,{
+    method,headers:{'apikey':SUPA_KEY,'Authorization':`Bearer ${SUPA_KEY}`,'Content-Type':'application/json','Prefer':'return=representation'},
+    body:body?JSON.stringify(body):undefined
+  });
+  return r.json();
+}
+
+// ══ PIVÔS ══
+function calcularPivos(){
+  const H=parseFloat(document.getElementById('a_high').value);
+  const L=parseFloat(document.getElementById('a_low').value);
+  const C=parseFloat(document.getElementById('a_close').value);
+  if([H,L,C].some(isNaN)){alert('Preencha Máxima, Mínima e Fechamento.');return;}
+
+  // Padrão
+  const P=(H+L+C)/3;
+  const R1=2*P-L; const S1=2*P-H;
+  const R2=P+(H-L); const S2=P-(H-L);
+  const R3=H+2*(P-L); const S3=L-2*(H-P);
+
+  // Camarilla
+  const CR3=C+((H-L)*1.1/4); const CS3=C-((H-L)*1.1/4);
+  const CR4=C+((H-L)*1.1/2); const CS4=C-((H-L)*1.1/2);
+
+  const f0=v=>v.toLocaleString('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:0});
+
+  document.getElementById('pivos_resultado').innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+      <div>
+        <p style="font-family:var(--mono);font-size:9px;letter-spacing:3px;color:var(--gold);text-transform:uppercase;margin-bottom:10px;">PADRÃO</p>
+        <div class="pivot-grid">
+          <div class="pivot-card"><div class="plbl">R3</div><div class="pval r">${f0(R3)}</div></div>
+          <div class="pivot-card"><div class="plbl">R2</div><div class="pval r">${f0(R2)}</div></div>
+          <div class="pivot-card"><div class="plbl">R1</div><div class="pval r">${f0(R1)}</div></div>
+          <div class="pivot-card" style="border-color:var(--gold3);"><div class="plbl">Pivô</div><div class="pval p">${f0(P)}</div></div>
+          <div class="pivot-card"><div class="plbl">S1</div><div class="pval s">${f0(S1)}</div></div>
+          <div class="pivot-card"><div class="plbl">S2</div><div class="pval s">${f0(S2)}</div></div>
+          <div class="pivot-card"><div class="plbl">S3</div><div class="pval s">${f0(S3)}</div></div>
+        </div>
+      </div>
+      <div>
+        <p style="font-family:var(--mono);font-size:9px;letter-spacing:3px;color:var(--gold);text-transform:uppercase;margin-bottom:10px;">CAMARILLA</p>
+        <div class="pivot-grid">
+          <div class="pivot-card"><div class="plbl">R4</div><div class="pval r">${f0(CR4)}</div></div>
+          <div class="pivot-card"><div class="plbl">R3</div><div class="pval r">${f0(CR3)}</div></div>
+          <div class="pivot-card" style="border-color:var(--gold3);"><div class="plbl">Fechamento</div><div class="pval p">${f0(C)}</div></div>
+          <div class="pivot-card"><div class="plbl">S3</div><div class="pval s">${f0(CS3)}</div></div>
+          <div class="pivot-card"><div class="plbl">S4</div><div class="pval s">${f0(CS4)}</div></div>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ══ CONFLUÊNCIA ══
+function calcularConfluencia(){
+  const checks=['c_tendencia','c_pivo','c_vol','c_ewz','c_sp','c_dolar'];
+  const score=checks.filter(id=>document.getElementById(id).checked).length;
+  const direcao=document.getElementById('c_direcao').value;
+  const cls=score>=5?'bull':score>=3?'neut':'bear';
+  const texto=score>=5?'FORTE — Operar':score>=4?'BOM — Considerar':score>=3?'NEUTRO — Aguardar':'FRACO — Não Operar';
+  const cor=score>=5?'var(--green)':score>=4?'var(--gold)':score>=3?'var(--orange)':'var(--red)';
+  document.getElementById('confluencia_resultado').innerHTML=`
+    <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:20px;text-align:center;">
+      <div style="font-size:11px;letter-spacing:3px;color:var(--gray);text-transform:uppercase;margin-bottom:8px;">SCORE — ${direcao.toUpperCase()}</div>
+      <div class="score-val ${cls}" style="font-size:48px;">${score}/6</div>
+      <div style="margin-top:10px;font-size:14px;font-weight:600;color:${cor};">${texto}</div>
+    </div>`;
+}
+
+// ══ ZONA DE TRAVA ══
+function calcularZonaTrava(){
+  const preco=parseFloat(document.getElementById('zt_preco').value);
+  const score=parseFloat(document.getElementById('zt_score').value);
+  const vix=parseFloat(document.getElementById('zt_vix').value);
+  if([preco,score,vix].some(isNaN)){alert('Preencha todos os campos.');return;}
+  const volDia=vix/Math.sqrt(252)/100;
+  const fator=score>=5?0.5:score>=4?0.75:1.0;
+  const zonaUp=preco*(1+volDia*fator);
+  const zonaDn=preco*(1-volDia*fator);
+  const f0=v=>v.toLocaleString('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:0});
+  document.getElementById('zona_trava_resultado').innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
+      <div class="result-card green"><div class="result-label">Trava Superior</div><div class="result-value green">${f0(zonaUp)}</div></div>
+      <div class="result-card gold"><div class="result-label">Preço Atual</div><div class="result-value gold">${f0(preco)}</div></div>
+      <div class="result-card red"><div class="result-label">Trava Inferior</div><div class="result-value red">${f0(zonaDn)}</div></div>
+    </div>`;
+}
+
+// ══ EWMA ══
+let ewmaData=[];
+
+function importarCSV(input){
+  const file=input.files[0]; if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const lines=e.target.result.split('\n').filter(l=>l.trim());
+    const dados=[];
+    for(let i=1;i<lines.length;i++){
+      const cols=lines[i].split(/[;,]/);
+      if(cols.length<2)continue;
+      const data=cols[0].trim();
+      const fech=parseFloat(cols[cols.length-1].trim().replace(',','.'));
+      if(!isNaN(fech)&&data)dados.push({data,fechamento:fech});
+    }
+    ewmaData=dados.sort((a,b)=>new Date(a.data)-new Date(b.data));
+    const st=document.getElementById('csv_status');
+    st.style.display='block';
+    st.style.background='rgba(0,217,126,.08)';
+    st.style.border='1px solid rgba(0,217,126,.2)';
+    st.style.color='var(--green)';
+    st.textContent=`✅ ${ewmaData.length} registros importados com sucesso!`;
+    calcularEWMA();
+  };
+  reader.readAsText(file,'latin1');
+}
+
+function calcularEWMA(){
+  if(ewmaData.length<2){alert('Importe o histórico CSV primeiro.');return;}
+  const lambda=parseFloat(document.getElementById('ewma_lambda').value)||0.94;
+  const dados=[...ewmaData];
+  let variancia=null;
+  const resultado=[];
+  for(let i=1;i<dados.length;i++){
+    const ret=Math.log(dados[i].fechamento/dados[i-1].fechamento);
+    if(variancia===null)variancia=ret*ret;
+    else variancia=lambda*variancia+(1-lambda)*ret*ret;
+    const volDia=Math.sqrt(variancia)*100;
+    const volAnual=volDia*Math.sqrt(252);
+    resultado.push({data:dados[i].data,fechamento:dados[i].fechamento,retorno:ret*100,volDia,volAnual,variancia});
+  }
+  // Resumo
+  const ultimo=resultado[resultado.length-1];
+  const f2=v=>v.toFixed(2);
+  document.getElementById('ewma_resumo').innerHTML=`
+    <div class="result-card gold"><div class="result-label">Vol Diária Atual</div><div class="result-value gold">${f2(ultimo.volDia)}%</div></div>
+    <div class="result-card purple"><div class="result-label">Vol Anualizada</div><div class="result-value purple">${f2(ultimo.volAnual)}%</div></div>
+    <div class="result-card blue"><div class="result-label">Último Fechamento</div><div class="result-value blue">${ultimo.fechamento.toLocaleString('pt-BR')}</div></div>
+    <div class="result-card green"><div class="result-label">Registros</div><div class="result-value green">${resultado.length}</div></div>`;
+  // Tabela (últimos 30)
+  const tbody=document.getElementById('ewma_tbody');
+  tbody.innerHTML='';
+  resultado.slice(-30).reverse().forEach(r=>{
+    const cls=r.retorno>0?'up':'dn';
+    tbody.innerHTML+=`<tr>
+      <td>${r.data}</td>
+      <td class="mid">${r.fechamento.toLocaleString('pt-BR')}</td>
+      <td class="${cls}">${r.retorno>=0?'+':''}${r.retorno.toFixed(3)}%</td>
+      <td>${r.volDia.toFixed(3)}%</td>
+      <td>${r.volAnual.toFixed(2)}%</td>
+    </tr>`;
+  });
+}
+
+// ══ KELLY + POSITION SIZING ══
+function calcularKelly(){
+  const capital=parseFloat(document.getElementById('g_capital').value);
+  const riscoPct=parseFloat(document.getElementById('g_risco_pct').value)/100;
+  const acerto=parseFloat(document.getElementById('g_acerto').value)/100;
+  const payoff=parseFloat(document.getElementById('g_payoff').value);
+  const stop=parseFloat(document.getElementById('g_stop').value);
+  const valPonto=parseFloat(document.getElementById('g_val_ponto').value);
+  if([capital,riscoPct,acerto,payoff,stop,valPonto].some(isNaN)){alert('Preencha todos os campos.');return;}
+  const kelly=(acerto-(1-acerto)/payoff)*100;
+  const kellyHalf=kelly/2;
+  const riscoReais=capital*riscoPct;
+  const contratos=Math.floor(riscoReais/(stop*valPonto));
+  const f2=v=>v.toFixed(2);
+  document.getElementById('kelly_resultado').innerHTML=`
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;">
+      <div class="kelly-result"><div class="kelly-pct">${f2(kelly)}%</div><div class="kelly-label">Kelly Completo</div></div>
+      <div class="kelly-result"><div class="kelly-pct">${f2(kellyHalf)}%</div><div class="kelly-label">Half-Kelly</div></div>
+      <div class="result-card gold"><div class="result-label">Risco R$</div><div class="result-value gold">R$ ${riscoReais.toLocaleString('pt-BR',{minimumFractionDigits:2})}</div></div>
+      <div class="result-card green"><div class="result-label">Contratos</div><div class="result-value green">${contratos}</div></div>
+      <div class="result-card blue"><div class="result-label">Stop R$</div><div class="result-value blue">R$ ${(stop*valPonto*contratos).toLocaleString('pt-BR',{minimumFractionDigits:2})}</div></div>
+    </div>`;
+}
+
+// ══ LOG DE OPERAÇÕES ══
+async function salvarLog(){
+  if(!currentUser){alert('Faça login primeiro.');return;}
+  const data=document.getElementById('log_data').value;
+  const ativo=document.getElementById('log_ativo').value;
+  const entrada=parseFloat(document.getElementById('log_entrada').value);
+  const fechamento=parseFloat(document.getElementById('log_fechamento').value);
+  const score=parseInt(document.getElementById('log_score').value)||0;
+  const contratos=parseInt(document.getElementById('log_contratos').value)||1;
+  const leitura=document.getElementById('log_leitura').value;
+  const valPonto=parseFloat(document.getElementById('g_val_ponto').value)||0.20;
+  if(!data||isNaN(entrada)||isNaN(fechamento)){alert('Preencha data, entrada e fechamento.');return;}
+  const pl_pontos=fechamento-entrada;
+  const pl_reais=pl_pontos*valPonto*contratos;
+  const resultado=pl_pontos>0?'WIN':pl_pontos<0?'LOSS':'ZERO';
+  const body={usuario_email:currentUser.email,data,ativo,preco_sinal:entrada,score,leitura,preco_fechamento:fechamento,resultado,pl_pontos,pl_reais};
+  try{
+    await supa('POST','log_sinais',body);
+    const st=document.getElementById('log_status');
+    st.style.display='block';st.style.color='var(--green)';
+    st.textContent='✅ Operação salva com sucesso!';
+    setTimeout(()=>{st.style.display='none';},3000);
+    carregarLog();
+  }catch(e){alert('Erro ao salvar: '+e.message);}
+}
+
+async function carregarLog(){
+  if(!currentUser)return;
+  const rows=await supa('GET','log_sinais',null,`?usuario_email=eq.${encodeURIComponent(currentUser.email)}&order=data.desc&limit=50`);
+  if(!Array.isArray(rows)||rows.length===0){
+    document.getElementById('log_tbody').innerHTML='<tr><td colspan="8" style="color:var(--gray);padding:20px;text-align:center;">Nenhuma operação registrada</td></tr>';
+    return;
+  }
+  let acum=0;
+  const f2=v=>v?.toFixed(2)||'—';
+  const tbody=document.getElementById('log_tbody');
+  tbody.innerHTML='';
+  rows.forEach(r=>{
+    acum+=(r.pl_reais||0);
+    const cls=r.pl_pontos>0?'up':r.pl_pontos<0?'dn':'';
+    tbody.innerHTML+=`<tr>
+      <td>${r.data}</td><td class="mid">${r.ativo}</td><td>${r.score||'—'}</td>
+      <td>${r.preco_sinal?.toLocaleString('pt-BR')||'—'}</td>
+      <td>${r.preco_fechamento?.toLocaleString('pt-BR')||'—'}</td>
+      <td class="${cls}">${r.pl_pontos>=0?'+':''}${f2(r.pl_pontos)}</td>
+      <td class="${cls}">R$ ${f2(r.pl_reais)}</td>
+      <td class="${acum>=0?'up':'dn'}">R$ ${acum.toFixed(2)}</td>
+    </tr>`;
+  });
+  // Resumo P&L
+  const wins=rows.filter(r=>r.pl_pontos>0).length;
+  const total=rows.length;
+  const plTotal=rows.reduce((s,r)=>s+(r.pl_reais||0),0);
+  const taxaAcerto=(wins/total*100).toFixed(1);
+  document.getElementById('pl_resumo').innerHTML=`
+    <div class="result-card gold"><div class="result-label">Operações</div><div class="result-value gold">${total}</div></div>
+    <div class="result-card green"><div class="result-label">Taxa Acerto</div><div class="result-value green">${taxaAcerto}%</div></div>
+    <div class="result-card ${plTotal>=0?'green':'red'}"><div class="result-label">P&L Total</div><div class="result-value ${plTotal>=0?'green':'red'}">R$ ${plTotal.toFixed(2)}</div></div>`;
+  // IR
+  const lucroMes=rows.filter(r=>r.pl_reais>0).reduce((s,r)=>s+(r.pl_reais||0),0);
+  const ir=lucroMes*0.20;
+  document.getElementById('ir_resultado').innerHTML=`
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;">
+      <div class="result-card gold"><div class="result-label">Lucro Bruto</div><div class="result-value gold">R$ ${lucroMes.toFixed(2)}</div></div>
+      <div class="result-card red"><div class="result-label">IR 20% Day Trade</div><div class="result-value red">R$ ${ir.toFixed(2)}</div></div>
+      <div class="result-card green"><div class="result-label">Lucro Líquido</div><div class="result-value green">R$ ${(lucroMes-ir).toFixed(2)}</div></div>
+    </div>
+    <p style="font-size:11px;color:var(--gray);margin-top:10px;">⚠ IR de 20% sobre lucros em Day Trade. Gere o DARF no site da Receita Federal até o último dia útil do mês seguinte.</p>`;
+}
+
+// ══ AGENDA ══
+async function salvarEvento(){
+  if(!currentUser){alert('Faça login primeiro.');return;}
+  const data=document.getElementById('ag_data').value;
+  const evento=document.getElementById('ag_evento').value;
+  const tipo=document.getElementById('ag_tipo').value;
+  const impacto=document.getElementById('ag_impacto').value;
+  const obs=document.getElementById('ag_obs').value;
+  if(!data||!evento){alert('Preencha data e evento.');return;}
+  try{
+    await supa('POST','agenda_eventos',{usuario_email:currentUser.email,data,evento,tipo,impacto,observacoes:obs});
+    const st=document.getElementById('ag_status');
+    st.style.display='block';st.style.color='var(--green)';
+    st.textContent='✅ Evento salvo!';
+    setTimeout(()=>{st.style.display='none';},2000);
+    carregarAgenda();
+  }catch(e){alert('Erro: '+e.message);}
+}
+
+async function carregarAgenda(){
+  if(!currentUser)return;
+  const rows=await supa('GET','agenda_eventos',null,`?usuario_email=eq.${encodeURIComponent(currentUser.email)}&order=data.asc&limit=50`);
+  const tbody=document.getElementById('agenda_tbody');
+  if(!Array.isArray(rows)||rows.length===0){tbody.innerHTML='<tr><td colspan="6" style="color:var(--gray);padding:20px;text-align:center;">Nenhum evento cadastrado</td></tr>';return;}
+  tbody.innerHTML='';
+  rows.forEach(r=>{
+    const badgeCls=r.impacto==='Alto'?'alto':r.impacto==='Baixo'?'baixo':'medio';
+    tbody.innerHTML+=`<tr>
+      <td class="mid">${r.data}</td>
+      <td style="color:var(--white)">${r.evento}</td>
+      <td>${r.tipo||'—'}</td>
+      <td><span class="badge ${badgeCls}">${r.impacto}</span></td>
+      <td style="color:var(--gray);font-size:11px;">${r.observacoes||'—'}</td>
+      <td><button onclick="deletarEvento(${r.id})" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:14px;">✕</button></td>
+    </tr>`;
+  });
+}
+
+async function deletarEvento(id){
+  await supa('DELETE','agenda_eventos',null,`?id=eq.${id}`);
+  carregarAgenda();
+}
+
 </script>
 </body>
 </html>
