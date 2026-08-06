@@ -12,7 +12,7 @@ app.use((req, res, next) => {
 });
 
 const SUPABASE_URL = 'https://jgjszczoakntswjhmzse.supabase.co';
-const SUPABASE_KEY = 'sb_secret_cjW_klDf3qBPKE3i-1sXJQ_Hj6iV70P';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpnanN6Y3pvYWtudHN3amhtenNlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4MDY0ODMsImV4cCI6MjA5ODM4MjQ4M30.EynPilNZXamRAy1DvYAEfLKUBnDLnGelTnSKzvgzwQw';
 const ADMIN_KEY = process.env.ADMIN_KEY || 'SasakiAdmin2025';
 const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET || 'SasakiWebhook2025';
 
