@@ -73,14 +73,22 @@ async function auth(req, res, next) {
 }
 
 app.post('/calcular', auth, (req, res) => {
-  const { fechamento, var_sp500, var_micro, vix } = req.body;
-  if ([fechamento, var_sp500, var_micro, vix].some(v => typeof v !== 'number' || isNaN(v)))
+  const { fechamento, var_sp500, var_micro, vix, vxbrl } = req.body;
+  if ([fechamento, var_sp500, var_micro, vix, vxbrl].some(v => typeof v !== 'number' || isNaN(v)))
     return res.json({ error: 'Dados inválidos.' });
   const R = Math.sqrt(252);
   const justo = fechamento * (1 + var_sp500 / 100);
   const justissimo = fechamento * (1 + var_micro / 100);
   const vol = vix / R;
-  res.json({ justo, justissimo, maxima: justo * (1 + vol / 100), minima: justo * (1 - vol / 100) });
+  const vol_brl = vxbrl / R;
+  res.json({ 
+    justo, 
+    justissimo, 
+    maxima: justo * (1 + vol / 100), 
+    minima: justo * (1 - vol / 100),
+    vxbrl_maxima: justo * (1 + vol_brl / 100),
+    vxbrl_minima: justo * (1 - vol_brl / 100)
+  });
 });
 
 app.post('/webhook/kiwify', async (req, res) => {

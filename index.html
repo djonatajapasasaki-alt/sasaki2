@@ -174,14 +174,21 @@ input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.1);}
         </div>
       </div>
       <div class="section">
-        <div class="section-header"><div class="section-pip"></div><span class="section-title">Bandas VIX</span></div>
+        <div class="section-header"><div class="section-pip"></div><span class="section-title">Bandas VIX & VXBRL</span></div>
         <div class="section-body">
-          <div class="field-row single">
+          <div class="field-row">
             <div class="field"><label>VIX Futuro (cotação)</label><input type="number" id="i_vix" placeholder="19.28" step="0.01"></div>
+            <div class="field"><label>VXBRL (cotação)</label><input type="number" id="i_vxbrl" placeholder="19.28" step="0.01"></div>
           </div>
+          <div style="font-size:11px;color:var(--gold);margin-top:10px;font-weight:600;">VIX Futuro (Bandas)</div>
           <div class="results-grid">
             <div class="result-card green"><div class="result-label">Máxima</div><div class="result-value green empty" id="i_res_maxima">—</div></div>
             <div class="result-card red"><div class="result-label">Mínima</div><div class="result-value red empty" id="i_res_minima">—</div></div>
+          </div>
+          <div style="font-size:11px;color:var(--gold);margin-top:14px;font-weight:600;">VXBRL (Bandas)</div>
+          <div class="results-grid">
+            <div class="result-card green"><div class="result-label">Máxima VXBRL</div><div class="result-value green empty" id="i_res_vxbrl_maxima">—</div></div>
+            <div class="result-card red"><div class="result-label">Mínima VXBRL</div><div class="result-value red empty" id="i_res_vxbrl_minima">—</div></div>
           </div>
         </div>
       </div>
@@ -391,13 +398,14 @@ function calcularIndice(){
   const var_sp500=parseFloat(document.getElementById('i_var_sp500').value);
   const var_micro=parseFloat(document.getElementById('i_var_micro').value);
   const vix=parseFloat(document.getElementById('i_vix').value);
-  if([fechamento,var_sp500,var_micro,vix].some(isNaN)){alert('Preencha todos os campos.');return;}
+  const vxbrl=parseFloat(document.getElementById('i_vxbrl').value);
+  if([fechamento,var_sp500,var_micro,vix,vxbrl].some(isNaN)){alert('Preencha todos os campos (incluindo VXBRL).');return;}
   const btn=document.getElementById('btn-calc-indice');
   btn.disabled=true;btn.innerHTML='<span class="spinner"></span> CALCULANDO...';
-  fetch(`${API}/calcular`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${currentUser?.token}`},body:JSON.stringify({fechamento,var_sp500,var_micro,vix})})
+  fetch(`${API}/calcular`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${currentUser?.token}`},body:JSON.stringify({fechamento,var_sp500,var_micro,vix,vxbrl})})
   .then(r=>r.json()).then(res=>{
     if(res.error){alert(res.error);return;}
-    ['justo','justissimo','maxima','minima'].forEach(k=>{const el=document.getElementById('i_res_'+k);el.textContent=fmt3(res[k]);el.classList.remove('empty');});
+    ['justo','justissimo','maxima','minima','vxbrl_maxima','vxbrl_minima'].forEach(k=>{const el=document.getElementById('i_res_'+k);el.textContent=fmt3(res[k]);el.classList.remove('empty');});
   }).catch(()=>alert('Erro ao calcular.')).finally(()=>{btn.disabled=false;btn.innerHTML='▶ CALCULAR ÍNDICE';});
 }
 
