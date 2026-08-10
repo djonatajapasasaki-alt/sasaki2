@@ -211,6 +211,46 @@ input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.1);}
       </div>
     </div>
 
+    
+    <!-- ABA MACROECONOMIA -->
+    <div id="tab-macro" class="tab-content">
+      <div class="page-eyebrow">Impacto de Indicadores</div>
+      <div class="page-title">Calculadora de Impacto Macro (EUA & Brasil)</div>
+      
+      <!-- PAYROLL EUA -->
+      <div class="section">
+        <div class="section-header"><div class="section-pip"></div><span class="section-title">Payroll EUA (Nonfarm Payroll)</span></div>
+        <div class="section-body">
+          <div class="field-row">
+            <div class="field"><label>Consenso (Expectativa vgs)</label><input type="number" id="macro_payroll_cons" placeholder="80000" step="1000"></div>
+            <div class="field"><label>Dado Divulgado (vgs)</label><input type="number" id="macro_payroll_real" placeholder="-23000" step="1000"></div>
+          </div>
+          <button class="btn-calc" id="btn-calc-payroll" onclick="calcularPayroll()" style="margin-top:10px;">▶ CALCULAR IMPACTO PAYROLL</button>
+          <div style="font-size:11px;color:var(--gold);margin-top:14px;font-weight:600;">Projeção de Impacto WIN & WDO</div>
+          <div class="results-grid">
+            <div class="result-card green"><div class="result-label">WIN Alvo</div><div class="result-value green empty" id="macro_res_win_payroll">—</div></div>
+            <div class="result-card gold"><div class="result-label">WDO Alvo</div><div class="result-value gold empty" id="macro_res_wdo_payroll">—</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BRASIL COPOM / IPCA -->
+      <div class="section">
+        <div class="section-header"><div class="section-pip"></div><span class="section-title">Brasil — Copom (Selic) / IPCA</span></div>
+        <div class="section-body">
+          <div class="field-row">
+            <div class="field"><label>Consenso Mercado (%)</label><input type="number" id="macro_br_cons" placeholder="10.50" step="0.05"></div>
+            <div class="field"><label>Dado Real / Decisão (%)</label><input type="number" id="macro_br_real" placeholder="10.75" step="0.05"></div>
+          </div>
+          <button class="btn-calc" id="btn-calc-br" onclick="calcularBrasil()" style="margin-top:10px;">▶ CALCULAR IMPACTO BRASIL</button>
+          <div style="font-size:11px;color:var(--gold);margin-top:14px;font-weight:600;">Projeção de Impacto WIN & WDO (Brasil)</div>
+          <div class="results-grid">
+            <div class="result-card green"><div class="result-label">WIN Alvo Brasil</div><div class="result-value green empty" id="macro_res_win_br">—</div></div>
+            <div class="result-card gold"><div class="result-label">WDO Alvo Brasil</div><div class="result-value gold empty" id="macro_res_wdo_br">—</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
     <!-- ABA DÓLAR -->
     <div id="tab-dolar" class="tab-content">
       <div class="page-eyebrow">Metodologia Proprietária</div>
