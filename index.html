@@ -148,6 +148,7 @@ input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.1);}
     <div class="tabs-inner">
       <button class="tab active" onclick="mudarTab('indice',this)">⚡ ÍNDICE WIN</button>
       <button class="tab" onclick="mudarTab('dolar',this)">💵 DÓLAR WDO</button>
+      <button class="tab" onclick="mudarTab('macro',this)">🌍 MACRO (PAYROLL & BRASIL)</button>
     </div>
   </div>
   <div class="main">
@@ -520,6 +521,39 @@ function calcularCME(){
     }
   });
 }
+
+function calcularPayroll(){
+  const cons = parseFloat(document.getElementById('macro_payroll_cons').value);
+  const real = parseFloat(document.getElementById('macro_payroll_real').value);
+  if(isNaN(cons) || isNaN(real)){alert('Preencha consenso e dado real do Payroll.');return;}
+  const desvio = real - cons; // em vagas
+  // Sensibilidade base: a cada 10k vagas de desvio, WIN move ~150 pts e WDO move ~3.5 pts
+  const winImpacto = (desvio / 10000) * 150;
+  const wdoImpacto = (desvio / 10000) * 3.5;
+  
+  document.getElementById('macro_res_win_payroll').textContent = (winImpacto >= 0 ? '+' : '') + fmt2(winImpacto) + ' pts';
+  document.getElementById('macro_res_win_payroll').classList.remove('empty');
+  
+  document.getElementById('macro_res_wdo_payroll').textContent = (wdoImpacto >= 0 ? '+' : '') + fmt2(wdoImpacto) + ' pts';
+  document.getElementById('macro_res_wdo_payroll').classList.remove('empty');
+}
+
+function calcularBrasil(){
+  const cons = parseFloat(document.getElementById('macro_br_cons').value);
+  const real = parseFloat(document.getElementById('macro_br_real').value);
+  if(isNaN(cons) || isNaN(real)){alert('Preencha consenso e dado real do Brasil.');return;}
+  const desvioBp = (real - cons) * 100; // em pontos base (ex: 0.25% = 25 bps)
+  // Sensibilidade Brasil: surpresa de 25 bps na Selic / IPCA move WDO ~15 pts e WIN ~800 pts inversos
+  const winImpacto = - (desvioBp / 25) * 800;
+  const wdoImpacto = (desvioBp / 25) * 15;
+  
+  document.getElementById('macro_res_win_br').textContent = (winImpacto >= 0 ? '+' : '') + fmt2(winImpacto) + ' pts';
+  document.getElementById('macro_res_win_br').classList.remove('empty');
+  
+  document.getElementById('macro_res_wdo_br').textContent = (wdoImpacto >= 0 ? '+' : '') + fmt2(wdoImpacto) + ' pts';
+  document.getElementById('macro_res_wdo_br').classList.remove('empty');
+}
+
 </script>
 
 <script>
@@ -685,7 +719,41 @@ function calcularCME(){
     }
   });
 }
+
+function calcularPayroll(){
+  const cons = parseFloat(document.getElementById('macro_payroll_cons').value);
+  const real = parseFloat(document.getElementById('macro_payroll_real').value);
+  if(isNaN(cons) || isNaN(real)){alert('Preencha consenso e dado real do Payroll.');return;}
+  const desvio = real - cons; // em vagas
+  // Sensibilidade base: a cada 10k vagas de desvio, WIN move ~150 pts e WDO move ~3.5 pts
+  const winImpacto = (desvio / 10000) * 150;
+  const wdoImpacto = (desvio / 10000) * 3.5;
+  
+  document.getElementById('macro_res_win_payroll').textContent = (winImpacto >= 0 ? '+' : '') + fmt2(winImpacto) + ' pts';
+  document.getElementById('macro_res_win_payroll').classList.remove('empty');
+  
+  document.getElementById('macro_res_wdo_payroll').textContent = (wdoImpacto >= 0 ? '+' : '') + fmt2(wdoImpacto) + ' pts';
+  document.getElementById('macro_res_wdo_payroll').classList.remove('empty');
+}
+
+function calcularBrasil(){
+  const cons = parseFloat(document.getElementById('macro_br_cons').value);
+  const real = parseFloat(document.getElementById('macro_br_real').value);
+  if(isNaN(cons) || isNaN(real)){alert('Preencha consenso e dado real do Brasil.');return;}
+  const desvioBp = (real - cons) * 100; // em pontos base (ex: 0.25% = 25 bps)
+  // Sensibilidade Brasil: surpresa de 25 bps na Selic / IPCA move WDO ~15 pts e WIN ~800 pts inversos
+  const winImpacto = - (desvioBp / 25) * 800;
+  const wdoImpacto = (desvioBp / 25) * 15;
+  
+  document.getElementById('macro_res_win_br').textContent = (winImpacto >= 0 ? '+' : '') + fmt2(winImpacto) + ' pts';
+  document.getElementById('macro_res_win_br').classList.remove('empty');
+  
+  document.getElementById('macro_res_wdo_br').textContent = (wdoImpacto >= 0 ? '+' : '') + fmt2(wdoImpacto) + ' pts';
+  document.getElementById('macro_res_wdo_br').classList.remove('empty');
+}
+
 </script>
 </body>
 </html>
 
+    
