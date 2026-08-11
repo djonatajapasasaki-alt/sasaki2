@@ -126,4 +126,75 @@ app.post('/admin/criar-usuario', async (req, res) => {
 });
 
 app.get('/health', (req, res) => res.json({ status: 'ok', versao: '4.0' }));
+
+// Rotas de Histórico Macro e Calibração Automática de Fatores
+app.get('/macro/historico', auth, async (req, res) => {
+  try {
+    const data = await db('macro_historico').select('*').order('data', { ascending: false });
+    res.json(data || []);
+  } catch (e) {
+    // Se a tabela ainda nao existir, retorna array vazio
+    res.json([]);
+  }
+});
+
+app.post('/macro/historico', auth, async (req, res) => {
+  try {
+    const { data, evento, consenso, real, wdo_pontos, win_pontos } = req.body;
+    if (!data || !evento || isNaN(consenso) || isNaN(real)) {
+      return res.status(400).json({ error: 'Dados incompletos.' });
+    }
+    const desvio = real - consenso;
+    // Fator calculado: pontos reais / (desvio / 10000)
+    const lotes = desvio / 10000;
+    const fator_wdo = lotes !== 0 ? (wdo_pontos / lotes) : 3.5;
+    const fator_win = lotes !== 0 ? (win_pontos / lotes) : 150;
+
+    const record = {
+      data,
+      evento,
+      consenso,
+      real,
+      desvio,
+      wdo_pontos: wdo_pontos || 0,
+      win_pontos: win_pontos || 0,
+      fator_wdo: Math.abs(fator_wdo),
+      fator_win: Math.abs(fator_win),
+      criado_em: new Date().toISOString()
+    };
+
+    await db('macro_historico').insert(record);
+    res.json({ success: true, record });
+  } catch (e) {
+    res.status(500).json({ error: 'Erro ao salvar histórico: ' + e.message });
+  }
+});
+
+app.get('/macro/fatores', auth, async (req, res) => {
+  try {
+    // Filtrar ultimos 365 dias (janela movel de 1 ano)
+    const umAnoAtras = new Date();
+    umAnoAtras.setFullYear(umAnoAtras.getFullYear() - 1);
+    
+    const registros = await db('macro_historico')
+      .select('*')
+      .gte('data', umAnoAtras.toISOString().split('T')[0]);
+
+    if (!registros || registros.length === 0) {
+      return res.json({ fator_wdo: 3.5, fator_win: 150, amostras: 0 });
+    }
+
+    const somaWdo = registros.reduce((acc, r) => acc + (r.fator_wdo || 3.5), 0);
+    const somaWin = registros.reduce((acc, r) => acc + (r.fator_win || 150), 0);
+
+    res.json({
+      fator_wdo: Number((somaWdo / registros.length).toFixed(2)),
+      fator_win: Number((somaWin / registros.length).toFixed(1)),
+      amostras: registros.length
+    });
+  } catch (e) {
+    res.json({ fator_wdo: 3.5, fator_win: 150, amostras: 0 });
+  }
+});
+
 module.exports = app;
