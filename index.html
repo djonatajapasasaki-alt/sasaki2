@@ -148,7 +148,8 @@ input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.1);}
     <div class="tabs-inner">
       <button class="tab active" onclick="mudarTab('indice',this)">⚡ ÍNDICE WIN</button>
       <button class="tab" onclick="mudarTab('dolar',this)">💵 DÓLAR WDO</button>
-      <button class="tab" onclick="mudarTab('macro',this)">🌍 MACRO (PAYROLL & BRASIL)</button>
+      <button class="tab" onclick="mudarTab('payroll',this)">🇺🇸 PAYROLL EUA</button>
+      <button class="tab" onclick="mudarTab('brasil',this)">🇧🇷 BRASIL MACRO</button>
     </div>
   </div>
   <div class="main">
@@ -212,45 +213,48 @@ input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.1);}
     </div>
 
     
-    <!-- ABA MACROECONOMIA -->
-    <div id="tab-macro" class="tab-content">
-      <div class="page-eyebrow">Impacto de Indicadores</div>
-      <div class="page-title">Calculadora de Impacto Macro (EUA & Brasil)</div>
-      
-      <!-- PAYROLL EUA -->
+        <!-- ABA PAYROLL EUA -->
+    <div id="tab-payroll" class="tab-content">
+      <div class="page-eyebrow">Inteligência Macro EUA</div>
+      <div class="page-title">Calculadora Impacto — Payroll & Dados USA</div>
       <div class="section">
-        <div class="section-header"><div class="section-pip"></div><span class="section-title">Payroll EUA (Nonfarm Payroll)</span></div>
+        <div class="section-header"><div class="section-pip"></div><span class="section-title">Projeção Payroll / NFP</span></div>
         <div class="section-body">
           <div class="field-row">
-            <div class="field"><label>Consenso (Expectativa vgs)</label><input type="number" id="macro_payroll_cons" placeholder="80000" step="1000"></div>
-            <div class="field"><label>Dado Divulgado (vgs)</label><input type="number" id="macro_payroll_real" placeholder="-23000" step="1000"></div>
+            <div class="field"><label>Consenso / Expectativa (Vagas)</label><input type="number" id="macro_payroll_cons" placeholder="80000" step="1"></div>
+            <div class="field"><label>Dado Real Divulgado (Vagas)</label><input type="number" id="macro_payroll_real" placeholder="-23000" step="1"></div>
           </div>
-          <button class="btn-calc" id="btn-calc-payroll" onclick="calcularPayroll()" style="margin-top:10px;">▶ CALCULAR IMPACTO PAYROLL</button>
-          <div style="font-size:11px;color:var(--gold);margin-top:14px;font-weight:600;">Projeção de Impacto WIN & WDO</div>
+          <button class="btn-calc" onclick="calcularPayroll()">▶ CALCULAR IMPACTO PAYROLL</button>
+          <div style="font-size:11px;color:var(--gold);margin-top:14px;font-weight:600;">Projeção de Amplitude Esperada</div>
           <div class="results-grid">
-            <div class="result-card green"><div class="result-label">WIN Alvo</div><div class="result-value green empty" id="macro_res_win_payroll">—</div></div>
-            <div class="result-card gold"><div class="result-label">WDO Alvo</div><div class="result-value gold empty" id="macro_res_wdo_payroll">—</div></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- BRASIL COPOM / IPCA -->
-      <div class="section">
-        <div class="section-header"><div class="section-pip"></div><span class="section-title">Brasil — Copom (Selic) / IPCA</span></div>
-        <div class="section-body">
-          <div class="field-row">
-            <div class="field"><label>Consenso Mercado (%)</label><input type="number" id="macro_br_cons" placeholder="10.50" step="0.05"></div>
-            <div class="field"><label>Dado Real / Decisão (%)</label><input type="number" id="macro_br_real" placeholder="10.75" step="0.05"></div>
-          </div>
-          <button class="btn-calc" id="btn-calc-br" onclick="calcularBrasil()" style="margin-top:10px;">▶ CALCULAR IMPACTO BRASIL</button>
-          <div style="font-size:11px;color:var(--gold);margin-top:14px;font-weight:600;">Projeção de Impacto WIN & WDO (Brasil)</div>
-          <div class="results-grid">
-            <div class="result-card green"><div class="result-label">WIN Alvo Brasil</div><div class="result-value green empty" id="macro_res_win_br">—</div></div>
-            <div class="result-card gold"><div class="result-label">WDO Alvo Brasil</div><div class="result-value gold empty" id="macro_res_wdo_br">—</div></div>
+            <div class="result-card green"><div class="result-label">WIN Alvo (Pontos)</div><div class="result-value green empty" id="macro_res_win_payroll">—</div></div>
+            <div class="result-card gold"><div class="result-label">WDO Alvo (Pontos)</div><div class="result-value gold empty" id="macro_res_wdo_payroll">—</div></div>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- ABA BRASIL MACRO -->
+    <div id="tab-brasil" class="tab-content">
+      <div class="page-eyebrow">Inteligência Macro Brasil</div>
+      <div class="page-title">Calculadora Impacto — Copom, IPCA & Caged</div>
+      <div class="section">
+        <div class="section-header"><div class="section-pip"></div><span class="section-title">Projeção Indicadores Brasil (Copom / IPCA / Caged)</span></div>
+        <div class="section-body">
+          <div class="field-row">
+            <div class="field"><label>Consenso Esperado</label><input type="number" id="macro_br_cons" placeholder="10.50" step="0.01"></div>
+            <div class="field"><label>Dado Real Divulgado</label><input type="number" id="macro_br_real" placeholder="10.75" step="0.01"></div>
+          </div>
+          <button class="btn-calc" onclick="calcularBrasil()">▶ CALCULAR IMPACTO BRASIL</button>
+          <div style="font-size:11px;color:var(--gold);margin-top:14px;font-weight:600;">Projeção de Amplitude Esperada</div>
+          <div class="results-grid">
+            <div class="result-card green"><div class="result-label">WIN Alvo (Pontos)</div><div class="result-value green empty" id="macro_res_win_br">—</div></div>
+            <div class="result-card gold"><div class="result-label">WDO Alvo (Pontos)</div><div class="result-value gold empty" id="macro_res_wdo_br">—</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- ABA DÓLAR -->
     <div id="tab-dolar" class="tab-content">
       <div class="page-eyebrow">Metodologia Proprietária</div>
@@ -594,6 +598,92 @@ function calcularBrasil(){
   document.getElementById('macro_res_wdo_br').classList.remove('empty');
 }
 
+
+let fatoresAtuais = { fator_wdo: 3.5, fator_win: 150 };
+
+function carregarFatoresMacro(){
+  if(!currentUser) return;
+  fetch(`${API}/macro/fatores`, { headers: { 'Authorization': `Bearer ${currentUser.token}` } })
+  .then(r => r.json())
+  .then(res => {
+    fatoresAtuais = res;
+    document.getElementById('fator-atual-wdo').textContent = res.fator_wdo.toFixed(2);
+    document.getElementById('fator-atual-win').textContent = res.fator_win.toFixed(1);
+    document.getElementById('fator-amostras').textContent = res.amostras;
+  }).catch(e => console.error(e));
+
+  fetch(`${API}/macro/historico`, { headers: { 'Authorization': `Bearer ${currentUser.token}` } })
+  .then(r => r.json())
+  .then(lista => {
+    const tbody = document.getElementById('tabela-historico-macro');
+    if(!lista || lista.length === 0){
+      tbody.innerHTML = '<tr><td colspan="5" style="padding:20px; text-align:center; color:var(--gray);">Nenhum histórico cadastrado.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = lista.map(r => `
+      <tr style="border-bottom:1px solid var(--border);">
+        <td style="padding:10px 14px;">${r.data}</td>
+        <td style="padding:10px 14px; color:var(--gold);">${r.evento}</td>
+        <td style="padding:10px 14px;">${r.desvio.toLocaleString()}</td>
+        <td style="padding:10px 14px; color:${r.wdo_pontos >= 0 ? 'var(--green)' : 'var(--red)'};">${r.wdo_pontos}</td>
+        <td style="padding:10px 14px; color:${r.win_pontos >= 0 ? 'var(--green)' : 'var(--red)'};">${r.win_pontos}</td>
+      </tr>
+    `).join('');
+  }).catch(e => console.error(e));
+}
+
+function calcularImpactoMacro(){
+  const cons = parseFloat(document.getElementById('macro_cons').value);
+  const real = parseFloat(document.getElementById('macro_real').value);
+  if(isNaN(cons) || isNaN(real)){ alert('Preencha o consenso e o dado real.'); return; }
+  const desvio = real - cons;
+  const lotes = desvio / 10000;
+
+  const wdoAlvo = lotes * fatoresAtuais.fator_wdo;
+  const winAlvo = lotes * fatoresAtuais.fator_win;
+
+  const elWin = document.getElementById('macro_res_win');
+  elWin.textContent = (winAlvo >= 0 ? '+' : '') + fmt2(winAlvo) + ' pts';
+  elWin.classList.remove('empty');
+
+  const elWdo = document.getElementById('macro_res_wdo');
+  elWdo.textContent = (wdoAlvo >= 0 ? '+' : '') + fmt2(wdoAlvo) + ' pts';
+  elWdo.classList.remove('empty');
+}
+
+function salvarHistoricoMacro(){
+  const data = document.getElementById('hist_data').value;
+  const evento = document.getElementById('hist_evento').value;
+  const consenso = parseFloat(document.getElementById('hist_cons').value);
+  const real = parseFloat(document.getElementById('hist_real').value);
+  const wdo_pontos = parseFloat(document.getElementById('hist_wdo').value);
+  const win_pontos = parseFloat(document.getElementById('hist_win').value);
+
+  if(!data || !evento || isNaN(consenso) || isNaN(real) || isNaN(wdo_pontos) || isNaN(win_pontos)){
+    alert('Preencha todos os campos do formulário de histórico.');
+    return;
+  }
+
+  fetch(`${API}/macro/historico`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${currentUser.token}` },
+    body: JSON.stringify({ data, evento, consenso, real, wdo_pontos, win_pontos })
+  })
+  .then(r => r.json())
+  .then(res => {
+    if(res.error){ alert(res.error); return; }
+    alert('Histórico salvo com sucesso! Fatores recalibrados.');
+    carregarFatoresMacro();
+    // Limpar formulario
+    document.getElementById('hist_evento').value = '';
+    document.getElementById('hist_cons').value = '';
+    document.getElementById('hist_real').value = '';
+    document.getElementById('hist_wdo').value = '';
+    document.getElementById('hist_win').value = '';
+  }).catch(e => alert('Erro ao salvar.'));
+}
+
+carregarFatoresMacro();
 </script>
 
 <script>
@@ -792,6 +882,92 @@ function calcularBrasil(){
   document.getElementById('macro_res_wdo_br').classList.remove('empty');
 }
 
+
+let fatoresAtuais = { fator_wdo: 3.5, fator_win: 150 };
+
+function carregarFatoresMacro(){
+  if(!currentUser) return;
+  fetch(`${API}/macro/fatores`, { headers: { 'Authorization': `Bearer ${currentUser.token}` } })
+  .then(r => r.json())
+  .then(res => {
+    fatoresAtuais = res;
+    document.getElementById('fator-atual-wdo').textContent = res.fator_wdo.toFixed(2);
+    document.getElementById('fator-atual-win').textContent = res.fator_win.toFixed(1);
+    document.getElementById('fator-amostras').textContent = res.amostras;
+  }).catch(e => console.error(e));
+
+  fetch(`${API}/macro/historico`, { headers: { 'Authorization': `Bearer ${currentUser.token}` } })
+  .then(r => r.json())
+  .then(lista => {
+    const tbody = document.getElementById('tabela-historico-macro');
+    if(!lista || lista.length === 0){
+      tbody.innerHTML = '<tr><td colspan="5" style="padding:20px; text-align:center; color:var(--gray);">Nenhum histórico cadastrado.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = lista.map(r => `
+      <tr style="border-bottom:1px solid var(--border);">
+        <td style="padding:10px 14px;">${r.data}</td>
+        <td style="padding:10px 14px; color:var(--gold);">${r.evento}</td>
+        <td style="padding:10px 14px;">${r.desvio.toLocaleString()}</td>
+        <td style="padding:10px 14px; color:${r.wdo_pontos >= 0 ? 'var(--green)' : 'var(--red)'};">${r.wdo_pontos}</td>
+        <td style="padding:10px 14px; color:${r.win_pontos >= 0 ? 'var(--green)' : 'var(--red)'};">${r.win_pontos}</td>
+      </tr>
+    `).join('');
+  }).catch(e => console.error(e));
+}
+
+function calcularImpactoMacro(){
+  const cons = parseFloat(document.getElementById('macro_cons').value);
+  const real = parseFloat(document.getElementById('macro_real').value);
+  if(isNaN(cons) || isNaN(real)){ alert('Preencha o consenso e o dado real.'); return; }
+  const desvio = real - cons;
+  const lotes = desvio / 10000;
+
+  const wdoAlvo = lotes * fatoresAtuais.fator_wdo;
+  const winAlvo = lotes * fatoresAtuais.fator_win;
+
+  const elWin = document.getElementById('macro_res_win');
+  elWin.textContent = (winAlvo >= 0 ? '+' : '') + fmt2(winAlvo) + ' pts';
+  elWin.classList.remove('empty');
+
+  const elWdo = document.getElementById('macro_res_wdo');
+  elWdo.textContent = (wdoAlvo >= 0 ? '+' : '') + fmt2(wdoAlvo) + ' pts';
+  elWdo.classList.remove('empty');
+}
+
+function salvarHistoricoMacro(){
+  const data = document.getElementById('hist_data').value;
+  const evento = document.getElementById('hist_evento').value;
+  const consenso = parseFloat(document.getElementById('hist_cons').value);
+  const real = parseFloat(document.getElementById('hist_real').value);
+  const wdo_pontos = parseFloat(document.getElementById('hist_wdo').value);
+  const win_pontos = parseFloat(document.getElementById('hist_win').value);
+
+  if(!data || !evento || isNaN(consenso) || isNaN(real) || isNaN(wdo_pontos) || isNaN(win_pontos)){
+    alert('Preencha todos os campos do formulário de histórico.');
+    return;
+  }
+
+  fetch(`${API}/macro/historico`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${currentUser.token}` },
+    body: JSON.stringify({ data, evento, consenso, real, wdo_pontos, win_pontos })
+  })
+  .then(r => r.json())
+  .then(res => {
+    if(res.error){ alert(res.error); return; }
+    alert('Histórico salvo com sucesso! Fatores recalibrados.');
+    carregarFatoresMacro();
+    // Limpar formulario
+    document.getElementById('hist_evento').value = '';
+    document.getElementById('hist_cons').value = '';
+    document.getElementById('hist_real').value = '';
+    document.getElementById('hist_wdo').value = '';
+    document.getElementById('hist_win').value = '';
+  }).catch(e => alert('Erro ao salvar.'));
+}
+
+carregarFatoresMacro();
 </script>
 </body>
 </html>
