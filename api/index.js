@@ -30,17 +30,22 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   if (req.method === 'OPTIONS') return res.status(200).end();
 
-  const { url, method } = req;
+  const url = req.url || '';
+  const method = req.method;
 
-  if (url === '/health' || url.endsWith('/health')) {
+  if (url.includes('/health')) {
     return res.status(200).json({ status: 'ok', versao: '4.0' });
   }
 
   if (url.includes('/auth/login') && method === 'POST') {
     try {
-      const chunks = [];
-      for await (const chunk of req) chunks.push(chunk);
-      const body = JSON.parse(Buffer.concat(chunks).toString() || '{}');
+      let body = req.body;
+      if (typeof body === 'string') body = JSON.parse(body);
+      if (!body) {
+        const chunks = [];
+        for await (const chunk of req) chunks.push(chunk);
+        body = JSON.parse(Buffer.concat(chunks).toString() || '{}');
+      }
       const { email, senha } = body;
       if (!email || !senha) return res.status(200).json({ error: 'E-mail e senha obrigatórios.' });
       const rows = await db('GET', `usuarios?email=eq.${encodeURIComponent(email.toLowerCase())}&select=*`);
@@ -57,9 +62,13 @@ export default async function handler(req, res) {
 
   if (url.includes('/auth/check') && method === 'POST') {
     try {
-      const chunks = [];
-      for await (const chunk of req) chunks.push(chunk);
-      const body = JSON.parse(Buffer.concat(chunks).toString() || '{}');
+      let body = req.body;
+      if (typeof body === 'string') body = JSON.parse(body);
+      if (!body) {
+        const chunks = [];
+        for await (const chunk of req) chunks.push(chunk);
+        body = JSON.parse(Buffer.concat(chunks).toString() || '{}');
+      }
       const { token: tk } = body;
       if (!tk) return res.status(200).json({ valid: false });
       const rows = await db('GET', `usuarios?token=eq.${encodeURIComponent(tk)}&select=*`);
@@ -71,5 +80,5 @@ export default async function handler(req, res) {
     }
   }
 
-  return res.status(404).json({ error: 'Not Found' });
+  return res.status(200).json({ status: 'active', url });
 }
