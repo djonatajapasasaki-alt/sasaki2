@@ -1,11 +1,3 @@
 {
-  "version": 2,
-  "rewrites": [
-    { "source": "/auth/(.*)", "destination": "/index.js" },
-    { "source": "/health", "destination": "/index.js" },
-    { "source": "/calcular", "destination": "/index.js" },
-    { "source": "/webhook/(.*)", "destination": "/index.js" },
-    { "source": "/admin/(.*)", "destination": "/index.js" },
-    { "source": "/((?!index.js).*)", "destination": "/index.html" }
-  ]
+  "version": 2
 }
