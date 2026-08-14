@@ -1,16 +1,11 @@
 {
   "version": 2,
-  "builds": [
-    { "src": "index.js", "use": "@vercel/node" },
-    { "src": "index.html", "use": "@vercel/static" }
-  ],
-  "routes": [
-    { "src": "/auth/login", "dest": "/index.js" },
-    { "src": "/auth/check", "dest": "/index.js" },
-    { "src": "/calcular", "dest": "/index.js" },
-    { "src": "/webhook/kiwify", "dest": "/index.js" },
-    { "src": "/admin/criar-usuario", "dest": "/index.js" },
-    { "src": "/health", "dest": "/index.js" },
-    { "src": "/(.*)", "dest": "/index.html" }
+  "rewrites": [
+    { "source": "/auth/(.*)", "destination": "/index.js" },
+    { "source": "/health", "destination": "/index.js" },
+    { "source": "/calcular", "destination": "/index.js" },
+    { "source": "/webhook/(.*)", "destination": "/index.js" },
+    { "source": "/admin/(.*)", "destination": "/index.js" },
+    { "source": "/((?!index.js).*)", "destination": "/index.html" }
   ]
 }
