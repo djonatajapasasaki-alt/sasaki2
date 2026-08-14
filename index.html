@@ -148,8 +148,7 @@ input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.1);}
     <div class="tabs-inner">
       <button class="tab active" onclick="mudarTab('indice',this)">⚡ ÍNDICE WIN</button>
       <button class="tab" onclick="mudarTab('dolar',this)">💵 DÓLAR WDO</button>
-      <button class="tab" onclick="mudarTab('payroll',this)">🇺🇸 PAYROLL EUA</button>
-      <button class="tab" onclick="mudarTab('brasil',this)">🇧🇷 BRASIL MACRO</button>
+      <button class="tab" onclick="mudarTab('macro',this)">🌍 MACRO (PAYROLL & BRASIL)</button>
     </div>
   </div>
   <div class="main">
@@ -213,44 +212,86 @@ input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.1);}
     </div>
 
     
-        <!-- ABA PAYROLL EUA -->
-    <div id="tab-payroll" class="tab-content">
-      <div class="page-eyebrow">Inteligência Macro EUA</div>
-      <div class="page-title">Calculadora Impacto — Payroll & Dados USA</div>
-      <div class="section">
-        <div class="section-header"><div class="section-pip"></div><span class="section-title">Projeção Payroll / NFP</span></div>
-        <div class="section-body">
-          <div class="field-row">
-            <div class="field"><label>Consenso / Expectativa (Vagas)</label><input type="number" id="macro_payroll_cons" placeholder="80000" step="1"></div>
-            <div class="field"><label>Dado Real Divulgado (Vagas)</label><input type="number" id="macro_payroll_real" placeholder="-23000" step="1"></div>
+        <!-- ABA MACROECONOMIA -->
+    <div id="tab-macro" class="tab-content">
+      <div class="page-eyebrow">Inteligência Macro & Calibração</div>
+      <div class="page-title">Calculadora de Impacto & Histórico Automático</div>
+      
+      <!-- STATUS DOS FATORES CALIBRADOS -->
+      <div class="section" style="background:linear-gradient(135deg, rgba(212,168,67,0.1), rgba(15,15,15,0.9));">
+        <div class="section-header"><div class="section-pip"></div><span class="section-title">Fatores Atuais (Calibrados pela Janela de 1 Ano)</span></div>
+        <div class="section-body" style="padding:16px 20px; display:flex; justify-content:space-around; align-items:center;">
+          <div style="text-align:center;">
+            <div style="font-size:10px; color:var(--gray); text-transform:uppercase;">Fator WDO (Dólar)</div>
+            <div id="fator-atual-wdo" style="font-size:22px; font-weight:800; color:var(--gold); font-family:var(--mono);">3.50</div>
           </div>
-          <button class="btn-calc" onclick="calcularPayroll()">▶ CALCULAR IMPACTO PAYROLL</button>
-          <div style="font-size:11px;color:var(--gold);margin-top:14px;font-weight:600;">Projeção de Amplitude Esperada</div>
-          <div class="results-grid">
-            <div class="result-card green"><div class="result-label">WIN Alvo (Pontos)</div><div class="result-value green empty" id="macro_res_win_payroll">—</div></div>
-            <div class="result-card gold"><div class="result-label">WDO Alvo (Pontos)</div><div class="result-value gold empty" id="macro_res_wdo_payroll">—</div></div>
+          <div style="text-align:center;">
+            <div style="font-size:10px; color:var(--gray); text-transform:uppercase;">Fator WIN (Índice)</div>
+            <div id="fator-atual-win" style="font-size:22px; font-weight:800; color:var(--green); font-family:var(--mono);">150.0</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-size:10px; color:var(--gray); text-transform:uppercase;">Amostras (Último Ano)</div>
+            <div id="fator-amostras" style="font-size:22px; font-weight:800; color:var(--white); font-family:var(--mono);">0</div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- ABA BRASIL MACRO -->
-    <div id="tab-brasil" class="tab-content">
-      <div class="page-eyebrow">Inteligência Macro Brasil</div>
-      <div class="page-title">Calculadora Impacto — Copom, IPCA & Caged</div>
+      <!-- CALCULADORA DE IMPACTO -->
       <div class="section">
-        <div class="section-header"><div class="section-pip"></div><span class="section-title">Projeção Indicadores Brasil (Copom / IPCA / Caged)</span></div>
+        <div class="section-header"><div class="section-pip"></div><span class="section-title">Calculadora de Impacto (Payroll / Copom)</span></div>
         <div class="section-body">
           <div class="field-row">
-            <div class="field"><label>Consenso Esperado</label><input type="number" id="macro_br_cons" placeholder="10.50" step="0.01"></div>
-            <div class="field"><label>Dado Real Divulgado</label><input type="number" id="macro_br_real" placeholder="10.75" step="0.01"></div>
+            <div class="field"><label>Consenso / Expectativa</label><input type="number" id="macro_cons" placeholder="80000" step="1"></div>
+            <div class="field"><label>Dado Real Divulgado</label><input type="number" id="macro_real" placeholder="-23000" step="1"></div>
           </div>
-          <button class="btn-calc" onclick="calcularBrasil()">▶ CALCULAR IMPACTO BRASIL</button>
+          <button class="btn-calc" id="btn-calc-macro" onclick="calcularImpactoMacro()" style="margin-top:10px;">▶ CALCULAR COM FATOR AUTOMÁTICO</button>
           <div style="font-size:11px;color:var(--gold);margin-top:14px;font-weight:600;">Projeção de Amplitude Esperada</div>
           <div class="results-grid">
-            <div class="result-card green"><div class="result-label">WIN Alvo (Pontos)</div><div class="result-value green empty" id="macro_res_win_br">—</div></div>
-            <div class="result-card gold"><div class="result-label">WDO Alvo (Pontos)</div><div class="result-value gold empty" id="macro_res_wdo_br">—</div></div>
+            <div class="result-card green"><div class="result-label">WIN Alvo (Pontos)</div><div class="result-value green empty" id="macro_res_win">—</div></div>
+            <div class="result-card gold"><div class="result-label">WDO Alvo (Pontos)</div><div class="result-value gold empty" id="macro_res_wdo">—</div></div>
           </div>
+        </div>
+      </div>
+
+      <!-- ALIMENTAR HISTÓRICO -->
+      <div class="section">
+        <div class="section-header"><div class="section-pip"></div><span class="section-title">Alimentar Histórico (Para Calibração Automática)</span></div>
+        <div class="section-body">
+          <div style="font-size:11px; color:var(--gray); margin-bottom:12px;">Preencha os campos abaixo após a divulgação do indicador para o app recalibrar os fatores automaticamente:</div>
+          <div class="field-row">
+            <div class="field"><label>Data do Evento</label><input type="date" id="hist_data"></div>
+            <div class="field"><label>Nome do Evento</label><input type="text" id="hist_evento" placeholder="Ex: Payroll Julho / Copom"></div>
+          </div>
+          <div class="field-row" style="margin-top:10px;">
+            <div class="field"><label>Consenso Esperado</label><input type="number" id="hist_cons" placeholder="80000"></div>
+            <div class="field"><label>Dado Divulgado (Real)</label><input type="number" id="hist_real" placeholder="-23000"></div>
+          </div>
+          <div class="field-row" style="margin-top:10px;">
+            <div class="field"><label>WDO Andou (Pontos Reais)</label><input type="number" id="hist_wdo" placeholder="-36" step="0.5"></div>
+            <div class="field"><label>WIN Andou (Pontos Reais)</label><input type="number" id="hist_win" placeholder="1545" step="1"></div>
+          </div>
+          <button class="btn-calc" onclick="salvarHistoricoMacro()" style="margin-top:14px; background:var(--gold); color:#000;">💾 SALVAR E RECALIBRAR FATORES</button>
+        </div>
+      </div>
+
+      <!-- TABELA DE HISTÓRICO RECENTE -->
+      <div class="section">
+        <div class="section-header"><div class="section-pip"></div><span class="section-title">Histórico Salvo (Janela de 1 Ano)</span></div>
+        <div class="section-body" style="padding:0; overflow-x:auto;">
+          <table style="width:100%; border-collapse:collapse; font-size:11px; font-family:var(--mono);">
+            <thead>
+              <tr style="border-bottom:1px solid var(--border); background:rgba(255,255,255,0.02); text-align:left;">
+                <th style="padding:10px 14px;">Data</th>
+                <th style="padding:10px 14px;">Evento</th>
+                <th style="padding:10px 14px;">Desvio</th>
+                <th style="padding:10px 14px;">WDO (Pts)</th>
+                <th style="padding:10px 14px;">WIN (Pts)</th>
+              </tr>
+            </thead>
+            <tbody id="tabela-historico-macro">
+              <tr><td colspan="5" style="padding:20px; text-align:center; color:var(--gray);">Carregando histórico...</td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
