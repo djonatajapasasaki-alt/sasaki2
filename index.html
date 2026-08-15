@@ -160,11 +160,11 @@ input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.1);}
         <div class="section-header"><div class="section-pip"></div><span class="section-title">Ajuste Arbitrado 1 &amp; 2</span></div>
         <div class="section-body">
           <div class="field-row">
-            <div class="field"><label>Fechamento Índice</label><input type="number" id="i_fechamento" placeholder="174080" step="1"></div>
-            <div class="field"><label>Var. S&amp;P 500 Fut. (%)</label><input type="number" id="i_var_sp500" placeholder="0.12" step="0.01"></div>
+            <div class="field"><label>Fechamento Índice</label><input type="text" inputmode="decimal" id="i_fechamento" placeholder="174080" step="1"></div>
+            <div class="field"><label>Var. S&amp;P 500 Fut. (%)</label><input type="text" inputmode="decimal" id="i_var_sp500" placeholder="0.12" step="0.01"></div>
           </div>
           <div class="field-row single">
-            <div class="field"><label>Var. Micro S&amp;P 500 (%)</label><input type="number" id="i_var_micro" placeholder="0.11" step="0.01"></div>
+            <div class="field"><label>Var. Micro S&amp;P 500 (%)</label><input type="text" inputmode="decimal" id="i_var_micro" placeholder="0.11" step="0.01"></div>
           </div>
           <div class="results-grid">
             <div class="result-card gold"><div class="result-label">Ajuste Arbitrado 1</div><div class="result-value gold empty" id="i_res_justo">—</div></div>
@@ -176,8 +176,8 @@ input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.1);}
         <div class="section-header"><div class="section-pip"></div><span class="section-title">Bandas VIX — S&amp;P 500 &amp; IBOV</span></div>
         <div class="section-body">
           <div class="field-row">
-            <div class="field"><label>VIX S&amp;P 500 Futuro</label><input type="number" id="i_vix" placeholder="19.28" step="0.01"></div>
-            <div class="field"><label>VIX S&amp;P B3 IBOV</label><input type="number" id="i_vix_ibov" placeholder="19.28" step="0.01"></div>
+            <div class="field"><label>VIX S&amp;P 500 Futuro</label><input type="text" inputmode="decimal" id="i_vix" placeholder="19.28" step="0.01"></div>
+            <div class="field"><label>VIX S&amp;P B3 IBOV</label><input type="text" inputmode="decimal" id="i_vix_ibov" placeholder="19.28" step="0.01"></div>
           </div>
           <div class="results-grid">
             <div class="result-card green"><div class="result-label">Máxima S&amp;P 500</div><div class="result-value green empty" id="i_res_maxima">—</div></div>
@@ -192,8 +192,9 @@ input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.1);}
         <div class="section-header"><div class="section-pip"></div><span class="section-title">Grade de Volatilidade — 29 Níveis (Fibonacci 0,382%)</span></div>
         <div class="section-body" style="padding:14px 0;">
           <div style="padding:0 20px 14px;display:flex;align-items:flex-end;gap:12px;">
-            <div class="field" style="flex:1;"><label>Abertura / Ajuste</label><input type="number" id="i_ajuste" placeholder="186129" step="1"></div>
+            <div class="field" style="flex:1;"><label>Abertura / Ajuste</label><input type="text" inputmode="decimal" id="i_ajuste" placeholder="186129" step="1"></div>
             <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="calcularGradeIndice()">ATUALIZAR</button>
+            <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="baixarNiveis('WIN','csv')">BAIXAR CSV</button>
           </div>
           <div style="overflow-x:auto;">
             <table class="grade-table">
@@ -215,13 +216,13 @@ input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.1);}
         <div class="section-header"><div class="section-pip"></div><span class="section-title">Ajuste Arbitrado 1 &amp; 2</span></div>
         <div class="section-body">
           <div class="field-row">
-            <div class="field"><label>Fechamento Dólar</label><input type="number" id="d_fechamento" placeholder="5302.00" step="0.01"></div>
-            <div class="field"><label>Var. DXY (%)</label><input type="number" id="d_var_dxy" placeholder="-0.50" step="0.01"></div>
+            <div class="field"><label>Fechamento Dólar</label><input type="text" inputmode="decimal" id="d_fechamento" placeholder="5302.00" step="0.01"></div>
+            <div class="field"><label>Var. DXY (%)</label><input type="text" inputmode="decimal" id="d_var_dxy" placeholder="-0.50" step="0.01"></div>
           </div>
           <div class="field-row three">
-            <div class="field"><label>EUR/BRL</label><input type="number" id="d_eurbrl" placeholder="5973.70" step="0.01"></div>
-            <div class="field"><label>EUR/USD</label><input type="number" id="d_eurusd" placeholder="1.1435" step="0.0001"></div>
-            <div class="field"><label>FRP0</label><input type="number" id="d_frp0" placeholder="18.10" step="0.01"></div>
+            <div class="field"><label>EUR/BRL</label><input type="text" inputmode="decimal" id="d_eurbrl" placeholder="5973.70" step="0.01"></div>
+            <div class="field"><label>EUR/USD</label><input type="text" inputmode="decimal" id="d_eurusd" placeholder="1.1435" step="0.0001"></div>
+            <div class="field"><label>FRP0</label><input type="text" inputmode="decimal" id="d_frp0" placeholder="18.10" step="0.01"></div>
           </div>
           <div class="results-grid">
             <div class="result-card gold"><div class="result-label">Ajuste Arbitrado 1</div><div class="result-value gold empty" id="d_res_justo">—</div></div>
@@ -237,13 +238,13 @@ input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.1);}
         <div class="section-header"><div class="section-pip"></div><span class="section-title">OC1 — Parâmetros B3</span></div>
         <div class="section-body">
           <div class="field-row single">
-            <div class="field"><label>DIF OPER CASADA — COMPRA (R$/US$)</label><input type="number" id="d_casado" placeholder="10.68" step="0.01"></div>
+            <div class="field"><label>DIF OPER CASADA — COMPRA (R$/US$)</label><input type="text" inputmode="decimal" id="d_casado" placeholder="10.68" step="0.01"></div>
           </div>
           <div class="field-row four">
-            <div class="field"><label>Fechamento</label><input type="number" id="d_oc1_fech" placeholder="5.0715" step="0.0001"></div>
-            <div class="field"><label>Acordo/Anterior</label><input type="number" id="d_oc1_acordo" placeholder="0.19605" step="0.0001"></div>
-            <div class="field"><label>Alto</label><input type="number" id="d_oc1_alto" placeholder="5.0968" step="0.0001"></div>
-            <div class="field"><label>Baixo</label><input type="number" id="d_oc1_baixo" placeholder="5.0515" step="0.0001"></div>
+            <div class="field"><label>Fechamento</label><input type="text" inputmode="decimal" id="d_oc1_fech" placeholder="5.0715" step="0.0001"></div>
+            <div class="field"><label>Acordo/Anterior</label><input type="text" inputmode="decimal" id="d_oc1_acordo" placeholder="0.19605" step="0.0001"></div>
+            <div class="field"><label>Alto</label><input type="text" inputmode="decimal" id="d_oc1_alto" placeholder="5.0968" step="0.0001"></div>
+            <div class="field"><label>Baixo</label><input type="text" inputmode="decimal" id="d_oc1_baixo" placeholder="5.0515" step="0.0001"></div>
           </div>
           <div class="results-grid">
             <div class="result-card gold"><div class="result-label">OC1 Fechamento</div><div class="result-value gold empty" id="r_oc1_fech">—</div></div>
@@ -259,7 +260,7 @@ input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.1);}
         <div class="section-header"><div class="section-pip"></div><span class="section-title">Base — Parâmetro de Abertura</span></div>
         <div class="section-body">
           <div class="field-row single">
-            <div class="field"><label>Parâmetro Abertura B3</label><input type="number" id="d_param_ab" placeholder="5.0693" step="0.0001"></div>
+            <div class="field"><label>Parâmetro Abertura B3</label><input type="text" inputmode="decimal" id="d_param_ab" placeholder="5.0693" step="0.0001"></div>
           </div>
           <div class="results-grid">
             <div class="result-card gold"><div class="result-label">Com Casado</div><div class="result-value gold empty" id="r_base_ouver">—</div></div>
@@ -274,8 +275,8 @@ input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.1);}
         <div class="section-header"><div class="section-pip"></div><span class="section-title">Sonho — D1 &amp; D2</span></div>
         <div class="section-body">
           <div class="field-row">
-            <div class="field"><label>Dólar BMF Spot 2 Dias (D2)</label><input type="number" id="d_spot_d2" placeholder="5.0890" step="0.0001"></div>
-            <div class="field"><label>Dólar Spot BMF 1 Dia (D1)</label><input type="number" id="d_spot_d1" placeholder="5.0868" step="0.0001"></div>
+            <div class="field"><label>Dólar BMF Spot 2 Dias (D2)</label><input type="text" inputmode="decimal" id="d_spot_d2" placeholder="5.0890" step="0.0001"></div>
+            <div class="field"><label>Dólar Spot BMF 1 Dia (D1)</label><input type="text" inputmode="decimal" id="d_spot_d1" placeholder="5.0868" step="0.0001"></div>
           </div>
           <div class="results-grid">
             <div class="result-card gold"><div class="result-label">Sonho D2</div><div class="result-value gold empty" id="r_sonho_d2">—</div></div>
@@ -289,13 +290,13 @@ input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.1);}
         <div class="section-header"><div class="section-pip"></div><span class="section-title">CME — Futuros Real Brasileiro</span></div>
         <div class="section-body">
           <div class="field-row four">
-            <div class="field"><label>Durar</label><input type="number" id="d_cme_durar" placeholder="0.1967" step="0.00001"></div>
-            <div class="field"><label>Acordo/Anterior</label><input type="number" id="d_cme_acordo" placeholder="0.19605" step="0.00001"></div>
-            <div class="field"><label>Alto</label><input type="number" id="d_cme_alto" placeholder="0.1968" step="0.00001"></div>
-            <div class="field"><label>Baixo</label><input type="number" id="d_cme_baixo" placeholder="0.1963" step="0.00001"></div>
+            <div class="field"><label>Durar</label><input type="text" inputmode="decimal" id="d_cme_durar" placeholder="0.1967" step="0.00001"></div>
+            <div class="field"><label>Acordo/Anterior</label><input type="text" inputmode="decimal" id="d_cme_acordo" placeholder="0.19605" step="0.00001"></div>
+            <div class="field"><label>Alto</label><input type="text" inputmode="decimal" id="d_cme_alto" placeholder="0.1968" step="0.00001"></div>
+            <div class="field"><label>Baixo</label><input type="text" inputmode="decimal" id="d_cme_baixo" placeholder="0.1963" step="0.00001"></div>
           </div>
           <div class="field-row single">
-            <div class="field"><label>Abrir</label><input type="number" id="d_cme_abrir" placeholder="0.1964" step="0.00001"></div>
+            <div class="field"><label>Abrir</label><input type="text" inputmode="decimal" id="d_cme_abrir" placeholder="0.1964" step="0.00001"></div>
           </div>
           <div class="results-grid">
             <div class="result-card gold"><div class="result-label">CME Durar</div><div class="result-value gold empty" id="r_cme_durar">—</div></div>
@@ -312,19 +313,34 @@ input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.1);}
         <div class="section-header"><div class="section-pip"></div><span class="section-title">PTAX — Fixings do Dia</span></div>
         <div class="section-body">
           <div class="field-row three">
-            <div class="field"><label>PTAX 01</label><input type="number" id="d_ptax1" placeholder="5283.00" step="0.01"></div>
-            <div class="field"><label>PTAX 02</label><input type="number" id="d_ptax2" placeholder="5137.10" step="0.01"></div>
-            <div class="field"><label>PTAX 03</label><input type="number" id="d_ptax3" placeholder="0" step="0.01"></div>
+            <div class="field"><label>PTAX 01</label><input type="text" inputmode="decimal" id="d_ptax1" placeholder="5283.00" step="0.01"></div>
+            <div class="field"><label>PTAX 02</label><input type="text" inputmode="decimal" id="d_ptax2" placeholder="5137.10" step="0.01"></div>
+            <div class="field"><label>PTAX 03</label><input type="text" inputmode="decimal" id="d_ptax3" placeholder="0" step="0.01"></div>
           </div>
           <div class="field-row three">
-            <div class="field"><label>FRP0 PTAX 01</label><input type="number" id="d_frp0_ptax1" placeholder="18.10" step="0.01"></div>
-            <div class="field"><label>FRP0 PTAX 02</label><input type="number" id="d_frp0_ptax2" placeholder="18.10" step="0.01"></div>
-            <div class="field"><label>FRP0 PTAX 03</label><input type="number" id="d_frp0_ptax3" placeholder="18.10" step="0.01"></div>
+            <div class="field"><label>FRP0 PTAX 01</label><input type="text" inputmode="decimal" id="d_frp0_ptax1" placeholder="18.10" step="0.01"></div>
+            <div class="field"><label>FRP0 PTAX 02</label><input type="text" inputmode="decimal" id="d_frp0_ptax2" placeholder="18.10" step="0.01"></div>
+            <div class="field"><label>FRP0 PTAX 03</label><input type="text" inputmode="decimal" id="d_frp0_ptax3" placeholder="18.10" step="0.01"></div>
           </div>
           <div id="d_ptax_results"></div>
         </div>
       </div>
 
+      <div class="section" style="margin-top:14px;">
+        <div class="section-header"><div class="section-pip"></div><span class="section-title">Legenda dos Níveis</span></div>
+        <div class="section-body" style="padding:14px 20px;">
+          <div style="display:flex;flex-wrap:wrap;gap:8px 16px;font-family:var(--mono);font-size:10px;">
+            <span style="color:#fff">J/JJ — justo e justíssimo</span>
+            <span style="color:#83C7FF">MAX — máxima</span>
+            <span style="color:#FF4D5A">MIN — mínima</span>
+            <span style="color:#FFD23F">CME</span>
+            <span style="color:#FF8A3D">OC1</span>
+            <span style="color:#9B59FF">BAS — base</span>
+            <span style="color:#35D07F">D1/D2</span>
+            <span style="color:#FF62C4">PX1/PX2/PX3 — PTAX</span>
+          </div>
+        </div>
+      </div>
       <button class="btn-calc" id="btn-calc-dolar" onclick="calcularDolar()">▶ CALCULAR DÓLAR</button>
 
       <!-- GRADE DÓLAR -->
@@ -332,8 +348,9 @@ input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.1);}
         <div class="section-header"><div class="section-pip"></div><span class="section-title">Grade de Volatilidade — 27 Níveis</span></div>
         <div class="section-body" style="padding:14px 0;">
           <div style="padding:0 20px 14px;display:flex;align-items:flex-end;gap:12px;">
-            <div class="field" style="flex:1;"><label>Abertura / Centro</label><input type="number" id="d_ajuste" placeholder="4530.00" step="0.01"></div>
+            <div class="field" style="flex:1;"><label>Abertura / Centro</label><input type="text" inputmode="decimal" id="d_ajuste" placeholder="4530.00" step="0.01"></div>
             <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="calcularGradeDolar()">ATUALIZAR</button>
+            <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="baixarNiveis('WDO','csv')">BAIXAR CSV</button>
           </div>
           <div style="overflow-x:auto;">
             <table class="grade-table">
@@ -347,9 +364,52 @@ input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.1);}
   </div>
 </div>
 
+<script src="/input-normalizer.js"></script>
+<script src="/calculation-core.js"></script>
+<script src="/levels-session.js"></script>
+<script src="/visual-levels.js"></script>
 <script>
 const API="https://sasaki-indol.vercel.app";
 let currentUser=null;
+const sessionDay=new Date().toISOString().slice(0,10);
+const frozenSessions={WIN:window.SasakiLevels.createSession(`${sessionDay}-WIN`),WDO:window.SasakiLevels.createSession(`${sessionDay}-WDO`)};
+function downloadText(filename,text,type){
+  const blob=new Blob([text],{type}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=filename; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),500);
+}
+function baixarNiveis(asset,format){
+  const session=frozenSessions[asset];
+  if(!session||!session.levels.length){alert('Calcule a grade antes de baixar os níveis.');return;}
+  const text=format==='csv'?window.SasakiLevels.exportCsv(session):window.SasakiLevels.exportJson(session);
+  downloadText(`${asset.toLowerCase()}-niveis-${sessionDay}.${format}`,text,format==='csv'?'text/csv':'application/json');
+}
+function readField(id, profile){
+  const el=document.getElementById(id);
+  if(!el) return NaN;
+  const result=window.SasakiInput ? window.SasakiInput.normalize(el.value, profile) : {ok:true,value:parseFloat(el.value)};
+  return result.ok ? result.value : NaN;
+}
+function readDynamicField(id, profile){ return readField(id, profile); }
+const FIELD_PROFILES={
+  i_fechamento:'win_points',i_var_sp500:'percent',i_var_micro:'percent',i_vix:'decimal',i_vix_ibov:'decimal',i_ajuste:'win_points',
+  d_fechamento:'dollar_points',d_var_dxy:'percent',d_eurbrl:'dollar_points',d_eurusd:'eur_usd',d_frp0:'frp0',d_casado:'frp0',d_param_ab:'dollar_quote',d_spot_d2:'dollar_quote',d_spot_d1:'dollar_quote',d_ajuste:'dollar_points',
+  d_ptax1:'ptax',d_ptax2:'ptax',d_ptax3:'ptax',d_frp0_ptax1:'frp0',d_frp0_ptax2:'frp0',d_frp0_ptax3:'frp0',
+  d_oc1_fech:'dollar_quote',d_oc1_acordo:'dollar_quote',d_oc1_alto:'dollar_quote',d_oc1_baixo:'dollar_quote',
+  d_cme_durar:'cme',d_cme_acordo:'cme',d_cme_alto:'cme',d_cme_baixo:'cme',d_cme_abrir:'cme'
+};
+function normalizeVisibleField(el){
+  const profile=FIELD_PROFILES[el.id];
+  if(!profile||!window.SasakiInput||!el.value.trim()) return;
+  const result=window.SasakiInput.normalize(el.value,profile);
+  if(result.ok){el.value=result.display;el.title=`Interpretado como ${result.display}`;el.dataset.normalized='true';}
+  else {el.dataset.normalized='false';el.title=result.error||'Valor inválido';}
+}
+window.addEventListener('DOMContentLoaded',()=>{
+  Object.keys(FIELD_PROFILES).forEach(id=>{
+    const el=document.getElementById(id); if(!el) return;
+    el.addEventListener('blur',()=>normalizeVisibleField(el));
+    el.addEventListener('paste',()=>setTimeout(()=>normalizeVisibleField(el),0));
+  });
+});
 
 function fazerLogin(){
   const email=document.getElementById("email").value.trim();
@@ -395,10 +455,10 @@ function arredondarMeio(v){return v>=0?Math.round(v*2+0.4999999)/2:-Math.round(M
 
 // ── ÍNDICE ──
 function calcularIndice(){
-  const fechamento=parseFloat(document.getElementById("i_fechamento").value);
-  const var_sp500=parseFloat(document.getElementById("i_var_sp500").value);
-  const var_micro=parseFloat(document.getElementById("i_var_micro").value);
-  const vix=parseFloat(document.getElementById("i_vix").value);
+  const fechamento=readField("i_fechamento","win_points");
+  const var_sp500=readField("i_var_sp500","percent");
+  const var_micro=readField("i_var_micro","percent");
+  const vix=readField("i_vix","decimal");
   if([fechamento,var_sp500,var_micro,vix].some(isNaN)){alert("Preencha todos os campos.");return;}
   const btn=document.getElementById("btn-calc-indice");
   btn.disabled=true;btn.innerHTML='<span class="spinner"></span> CALCULANDO...';
@@ -411,7 +471,7 @@ function calcularIndice(){
     set("i_res_maxima",res.maxima,"green");
     set("i_res_minima",res.minima,"red");
     // VIX IBOV
-    const vixIbov=parseFloat(document.getElementById("i_vix_ibov").value);
+    const vixIbov=readField("i_vix_ibov","decimal");
     if(!isNaN(vixIbov)){
       const volIbov=vixIbov/Math.sqrt(252)/100;
       set("i_res_maxima_ibov",res.justo*(1+volIbov),"green");
@@ -439,9 +499,11 @@ const I_NIVEIS=[
   {label:"Notícias",pct:-0.05338,tipo:"noticias"},
 ];
 function calcularGradeIndice(){
-  const ajuste=parseFloat(document.getElementById("i_ajuste").value);
+  const ajuste=readField("i_ajuste","win_points");
   if(isNaN(ajuste)){alert("Preencha o Ajuste.");return;}
   const tbody=document.getElementById("i_grade_tbody");tbody.innerHTML="";
+  const incoming=I_NIVEIS.map(n=>{const s=window.SasakiVisualLevels.styleFor(n.tipo==='abertura'?'J':'MAX');return {asset:'WIN',event:'GRADE',roundId:'R1',type:n.tipo,label:n.label,price:Math.round(ajuste*(1+n.pct)),percent:n.pct*100,color:s.color,width:s.width};});
+  window.SasakiLevels.addLevels(frozenSessions.WIN,incoming);
   I_NIVEIS.forEach(n=>{
     const idx=ajuste*(1+n.pct),pts=Math.abs(n.pct)*ajuste;
     const pctStr=n.pct===0?"AJUSTE":(n.pct>0?"+":"")+(n.pct*100).toFixed(3).replace(".",",")+"%";
@@ -455,13 +517,13 @@ function calcularGradeIndice(){
 
 // ── DÓLAR ──
 function calcularDolar(){
-  const fechamento=parseFloat(document.getElementById("d_fechamento").value);
-  const var_dxy=parseFloat(document.getElementById("d_var_dxy").value);
-  const eurbrl=parseFloat(document.getElementById("d_eurbrl").value);
-  const eurusd=parseFloat(document.getElementById("d_eurusd").value);
-  const frp0=parseFloat(document.getElementById("d_frp0").value);
-  const casado=parseFloat(document.getElementById("d_casado").value)||0;
-  const paramAb=parseFloat(document.getElementById("d_param_ab").value);
+  const fechamento=readField("d_fechamento","dollar_points");
+  const var_dxy=readField("d_var_dxy","percent");
+  const eurbrl=readField("d_eurbrl","dollar_points");
+  const eurusd=readField("d_eurusd","eur_usd");
+  const frp0=readField("d_frp0","frp0");
+  const casado=readField("d_casado","frp0")||0;
+  const paramAb=readField("d_param_ab","dollar_quote");
   if([fechamento,var_dxy,eurbrl,eurusd,frp0].some(isNaN)){alert("Preencha os campos obrigatórios.");return;}
 
   // Ajuste Arbitrado 1 e 2
@@ -480,7 +542,7 @@ function calcularDolar(){
   // OC1
   const oc1Map={fech:["d_oc1_fech","r_oc1_fech"],acordo:["d_oc1_acordo","r_oc1_acordo"],alto:["d_oc1_alto","r_oc1_alto"],baixo:["d_oc1_baixo","r_oc1_baixo"]};
   Object.values(oc1Map).forEach(([inp,out])=>{
-    const v=parseFloat(document.getElementById(inp).value);
+    const v=readDynamicField(inp,"dollar_quote");
     if(!isNaN(v)&&!isNaN(casado)){
       const vReal=v>100?v:v*1000;
       const el=document.getElementById(out);el.textContent=fmt2(arredondarMeio(vReal+casado));el.className="result-value gold";
@@ -496,21 +558,21 @@ function calcularDolar(){
   }
 
   // SONHO
-  const spotD2=parseFloat(document.getElementById("d_spot_d2").value);
-  const spotD1=parseFloat(document.getElementById("d_spot_d1").value);
+  const spotD2=readField("d_spot_d2","dollar_quote");
+  const spotD1=readField("d_spot_d1","dollar_quote");
   if(!isNaN(spotD2)&&!isNaN(casado)){const d2=spotD2>100?spotD2:spotD2*1000;const el=document.getElementById("r_sonho_d2");el.textContent=fmt2(arredondarMeio(d2+casado));el.className="result-value gold";}
   if(!isNaN(spotD1)&&!isNaN(casado)){const d1=spotD1>100?spotD1:spotD1*1000;const el=document.getElementById("r_sonho_d1");el.textContent=fmt2(arredondarMeio(d1+casado));el.className="result-value purple";}
 
   // CME
   const cmeMap={durar:["d_cme_durar","r_cme_durar"],acordo:["d_cme_acordo","r_cme_acordo"],alto:["d_cme_alto","r_cme_alto"],baixo:["d_cme_baixo","r_cme_baixo"],abrir:["d_cme_abrir","r_cme_abrir"]};
   Object.values(cmeMap).forEach(([inp,out])=>{
-    const v=parseFloat(document.getElementById(inp).value);
+    const v=readDynamicField(inp,"cme");
     if(!isNaN(v)&&v>0){const el=document.getElementById(out);el.textContent=fmt2(arredondarMeio(1/v*1000));el.className="result-value gold";}
   });
 
   // PTAX
-  const ptaxVals=[parseFloat(document.getElementById("d_ptax1").value)||0,parseFloat(document.getElementById("d_ptax2").value)||0,parseFloat(document.getElementById("d_ptax3").value)||0];
-  const frp0Ptax=[parseFloat(document.getElementById("d_frp0_ptax1").value)||frp0,parseFloat(document.getElementById("d_frp0_ptax2").value)||frp0,parseFloat(document.getElementById("d_frp0_ptax3").value)||frp0];
+  const ptaxVals=[readField("d_ptax1","ptax")||0,readField("d_ptax2","ptax")||0,readField("d_ptax3","ptax")||0];
+  const frp0Ptax=[readField("d_frp0_ptax1","frp0")||frp0,readField("d_frp0_ptax2","frp0")||frp0,readField("d_frp0_ptax3","frp0")||frp0];
   const ptaxLabels=["PTAX 01","PTAX 02","PTAX 03"];
   let html='<div class="ptax-grid">';
   ptaxVals.forEach((ptax,i)=>{
@@ -549,9 +611,11 @@ const D_NIVEIS=[
   {label:"Notícias",pct:-0.0165,tipo:"noticias"},
 ];
 function calcularGradeDolar(){
-  const ajuste=parseFloat(document.getElementById("d_ajuste").value);
+  const ajuste=readField("d_ajuste","dollar_points");
   if(isNaN(ajuste)){alert("Preencha o Centro.");return;}
   const tbody=document.getElementById("d_grade_tbody");tbody.innerHTML="";
+  const incoming=D_NIVEIS.map(n=>{const s=window.SasakiVisualLevels.styleFor(n.tipo==='abertura'?'J':'MAX');return {asset:'WDO',event:'GRADE',roundId:'R1',type:n.tipo,label:n.label,price:window.SasakiCalc.roundTick(ajuste*(1+n.pct),0.5),percent:n.pct*100,color:s.color,width:s.width};});
+  window.SasakiLevels.addLevels(frozenSessions.WDO,incoming);
   D_NIVEIS.forEach(n=>{
     const idx=ajuste*(1+n.pct),pts=Math.abs(n.pct)*ajuste;
     const pctStr=n.pct===0?"CENTRO":(n.pct>0?"+":"")+(n.pct*100).toFixed(2).replace(".",",")+"%";

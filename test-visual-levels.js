@@ -1,0 +1,14 @@
+const assert = require('node:assert/strict');
+const visual = require('./visual-levels.js');
+assert.equal(visual.styleFor('J').color, '#FFFFFF');
+assert.equal(visual.styleFor('J').width, 2);
+assert.equal(visual.styleFor('JJ').color, '#FFFFFF');
+assert.equal(visual.styleFor('MAX').color, '#83C7FF');
+assert.equal(visual.styleFor('MIN').color, '#FF4D5A');
+assert.equal(visual.styleFor('CME').color, '#FFD23F');
+assert.equal(visual.styleFor('OC1').color, '#FF8A3D');
+assert.equal(visual.styleFor('BAS').color, '#9B59FF');
+assert.equal(visual.styleFor('D1').color, '#35D07F');
+assert.equal(visual.styleFor('PX1').color, '#FF62C4');
+assert.equal(visual.labelFor('MAX', 5125.5, 0.5), 'MAX +0,50% 5.125,50');
+console.log('visual-levels: todos os testes passaram');
