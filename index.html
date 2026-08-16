@@ -398,7 +398,6 @@ input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.1);}
   </div>
 </div>
 
-<script src="/input-normalizer.js"></script>
 <script src="/calculation-core.js"></script>
 <script src="/levels-session.js"></script>
 <script src="/visual-levels.js"></script>
@@ -432,39 +431,11 @@ function baixarScriptPlataforma(asset,platform){
 }
 function readField(id, profile){
   const el=document.getElementById(id);
-  if(!el) return NaN;
-  const raw=String(el.value??'').trim();
-  if(!raw) return NaN;
-  const result=window.SasakiInput ? window.SasakiInput.normalize(raw, profile) : {ok:true,value:Number(raw.replace(',','.'))};
-  if(result.ok) return result.value;
-  const fallback=Number(raw.replace(/\./g,'').replace(',','.'));
-  return Number.isFinite(fallback) ? fallback : NaN;
-}
-function invalidFields(fields){
-  return fields.filter(item=>!Number.isFinite(item.value)).map(item=>item.label).join(', ');
+  return el ? parseFloat(el.value) : NaN;
 }
 function readDynamicField(id, profile){ return readField(id, profile); }
-const FIELD_PROFILES={
-  i_fechamento:'win_points',i_ajuste:'win_points',
-  d_fechamento:'dollar_points',d_eurbrl:'dollar_points',d_eurusd:'eur_usd',d_param_ab:'dollar_quote',d_spot_d2:'dollar_quote',d_spot_d1:'dollar_quote',d_ajuste:'dollar_points',
-  d_ptax1:'ptax',d_ptax2:'ptax',d_ptax3:'ptax',
-  d_oc1_fech:'dollar_quote',d_oc1_acordo:'dollar_quote',d_oc1_alto:'dollar_quote',d_oc1_baixo:'dollar_quote',
-  d_cme_durar:'cme',d_cme_acordo:'cme',d_cme_alto:'cme',d_cme_baixo:'cme',d_cme_abrir:'cme'
-};
-function normalizeVisibleField(el){
-  const profile=FIELD_PROFILES[el.id];
-  if(!profile||!window.SasakiInput||!el.value.trim()) return;
-  const result=window.SasakiInput.normalize(el.value,profile);
-  if(result.ok){el.value=result.display;el.title=`Interpretado como ${result.display}`;el.dataset.normalized='true';}
-  else {el.dataset.normalized='false';el.title=result.error||'Valor inválido';}
-}
 window.addEventListener('DOMContentLoaded',()=>{
   ['macro_consenso','macro_real','macro_tipo'].forEach(id=>{ const el=document.getElementById(id); if(el) el.addEventListener('input',projetarImpactoMacro); });
-  Object.keys(FIELD_PROFILES).forEach(id=>{
-    const el=document.getElementById(id); if(!el) return;
-    el.addEventListener('blur',()=>normalizeVisibleField(el));
-    el.addEventListener('paste',()=>setTimeout(()=>normalizeVisibleField(el),0));
-  });
 });
 
 function setMacroMsg(text, ok){
@@ -472,9 +443,8 @@ function setMacroMsg(text, ok){
   el.textContent=text; el.style.color=ok?'var(--green)':'var(--red)';
 }
 function macroNum(id){
-  const raw=document.getElementById(id)?.value || '';
-  const result=window.SasakiInput ? window.SasakiInput.normalize(raw,'decimal') : {ok:true,value:parseFloat(raw.replace(',','.'))};
-  return result.ok ? result.value : NaN;
+  const el=document.getElementById(id);
+  return el ? parseFloat(el.value) : NaN;
 }
 let macroImpact={};
 function fmtSigned(value, decimals=2){
@@ -574,12 +544,11 @@ function arredondarMeio(v){return v>=0?Math.round(v*2+0.4999999)/2:-Math.round(M
 
 // ── ÍNDICE ──
 function calcularIndice(){
-  const fechamento=readField("i_fechamento","win_points");
-  const var_sp500=readField("i_var_sp500","percent");
-  const var_micro=readField("i_var_micro","percent");
-  const vix=readField("i_vix","decimal");
-  const missing=invalidFields([{value:fechamento,label:'Fechamento Índice'},{value:var_sp500,label:'Var. S&P 500 Fut.'},{value:var_micro,label:'Var. Micro S&P 500'},{value:vix,label:'VIX S&P 500 Futuro'}]);
-  if(missing){alert(`Preencha ou corrija: ${missing}.`);return;}
+  const fechamento=parseFloat(document.getElementById("i_fechamento").value);
+  const var_sp500=parseFloat(document.getElementById("i_var_sp500").value);
+  const var_micro=parseFloat(document.getElementById("i_var_micro").value);
+  const vix=parseFloat(document.getElementById("i_vix").value);
+  if([fechamento,var_sp500,var_micro,vix].some(isNaN)){alert("Preencha todos os campos.");return;}
   const btn=document.getElementById("btn-calc-indice");
   btn.disabled=true;btn.innerHTML='<span class="spinner"></span> CALCULANDO...';
   fetch(`${API}/calcular`,{method:"POST",headers:{"Content-Type":"application/json","Authorization":`Bearer ${currentUser?.token}`},body:JSON.stringify({fechamento,var_sp500,var_micro,vix})})
@@ -626,7 +595,7 @@ const I_NIVEIS=[
   {label:"Notícias",pct:-0.05338,tipo:"noticias"},
 ];
 function calcularGradeIndice(){
-  const ajuste=readField("i_ajuste","win_points");
+  const ajuste=parseFloat(document.getElementById("i_ajuste").value);
   if(isNaN(ajuste)){alert("Preencha o Ajuste.");return;}
   const tbody=document.getElementById("i_grade_tbody");tbody.innerHTML="";
   const incoming=I_NIVEIS.map(n=>{const s=window.SasakiVisualLevels.styleFor(n.tipo==='abertura'?'J':'MAX');return {asset:'WIN',event:'GRADE',roundId:'R1',levelId:`${n.tipo}:${n.pct}`,type:n.tipo,label:n.label,price:Math.round(ajuste*(1+n.pct)),percent:n.pct*100,color:s.color,width:s.width};});
@@ -651,8 +620,7 @@ function calcularDolar(){
   const frp0=readField("d_frp0","frp0");
   const casado=readField("d_casado","frp0")||0;
   const paramAb=readField("d_param_ab","dollar_quote");
-  const missing=invalidFields([{value:fechamento,label:'Fechamento Dólar'},{value:var_dxy,label:'Var. DXY'},{value:eurbrl,label:'EUR/BRL'},{value:eurusd,label:'EUR/USD'},{value:frp0,label:'FRP0'}]);
-  if(missing){alert(`Preencha ou corrija: ${missing}.`);return;}
+  if([fechamento,var_dxy,eurbrl,eurusd,frp0].some(isNaN)){alert("Preencha os campos obrigatórios.");return;}
 
   // Ajuste Arbitrado 1 e 2
   const justo=arredondarMeio(fechamento*(1+var_dxy/100));
