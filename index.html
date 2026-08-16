@@ -187,10 +187,10 @@ input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.1);}
         <div class="section-body">
           <div class="field-row">
             <div class="field"><label>Fechamento Índice</label><input type="text" inputmode="decimal" id="i_fechamento" placeholder="174080" step="1"></div>
-            <div class="field"><label>Var. S&amp;P 500 Fut. (%)</label><input type="text" inputmode="decimal" id="i_var_sp500" placeholder="0.12" step="0.01"></div>
+            <div class="field"><label>Var. S&amp;P 500 Fut. (%)</label><input type="text" inputmode="decimal" id="i_var_sp500" placeholder="+0.12 ou -0.12" step="0.01"></div>
           </div>
           <div class="field-row single">
-            <div class="field"><label>Var. Micro S&amp;P 500 (%)</label><input type="text" inputmode="decimal" id="i_var_micro" placeholder="0.11" step="0.01"></div>
+            <div class="field"><label>Var. Micro S&amp;P 500 (%)</label><input type="text" inputmode="decimal" id="i_var_micro" placeholder="+0.11 ou -0.11" step="0.01"></div>
           </div>
           <div class="results-grid">
             <div class="result-card gold"><div class="result-label">Ajuste Arbitrado 1</div><div class="result-value gold empty" id="i_res_justo">—</div></div>
@@ -431,7 +431,9 @@ function baixarScriptPlataforma(asset,platform){
 }
 function readField(id, profile){
   const el=document.getElementById(id);
-  return el ? parseFloat(el.value) : NaN;
+  if(!el) return NaN;
+  const raw=String(el.value??'').trim().replace(',', '.');
+  return raw ? Number(raw) : NaN;
 }
 function readDynamicField(id, profile){ return readField(id, profile); }
 window.addEventListener('DOMContentLoaded',()=>{
@@ -444,7 +446,9 @@ function setMacroMsg(text, ok){
 }
 function macroNum(id){
   const el=document.getElementById(id);
-  return el ? parseFloat(el.value) : NaN;
+  if(!el) return NaN;
+  const raw=String(el.value??'').trim().replace(',', '.');
+  return raw ? Number(raw) : NaN;
 }
 let macroImpact={};
 function fmtSigned(value, decimals=2){
@@ -544,10 +548,10 @@ function arredondarMeio(v){return v>=0?Math.round(v*2+0.4999999)/2:-Math.round(M
 
 // ── ÍNDICE ──
 function calcularIndice(){
-  const fechamento=parseFloat(document.getElementById("i_fechamento").value);
-  const var_sp500=parseFloat(document.getElementById("i_var_sp500").value);
-  const var_micro=parseFloat(document.getElementById("i_var_micro").value);
-  const vix=parseFloat(document.getElementById("i_vix").value);
+  const fechamento=readField("i_fechamento","win_points");
+  const var_sp500=readField("i_var_sp500","percent");
+  const var_micro=readField("i_var_micro","percent");
+  const vix=readField("i_vix","decimal");
   if([fechamento,var_sp500,var_micro,vix].some(isNaN)){alert("Preencha todos os campos.");return;}
   const btn=document.getElementById("btn-calc-indice");
   btn.disabled=true;btn.innerHTML='<span class="spinner"></span> CALCULANDO...';
@@ -571,7 +575,7 @@ function calcularIndice(){
       {asset:'WIN',event:'CALCULO',roundId:'R1',levelId:'MIN',type:'MIN',label:'MIN',price:minima,percent:0}
     ].map(level=>Object.assign(level,window.SasakiVisualLevels.styleFor(level.type)));
     window.SasakiLevels.addLevels(frozenSessions.WIN,winLevels);
-    const vixIbov=parseFloat(document.getElementById("i_vix_ibov").value);
+    const vixIbov=readField("i_vix_ibov","decimal");
     if(!isNaN(vixIbov)){
       const volIbov=vixIbov/Math.sqrt(252)/100;
       set("i_res_maxima_ibov",arredondarMeio(justo*(1+volIbov)),"green");
