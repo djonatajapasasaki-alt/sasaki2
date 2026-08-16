@@ -571,6 +571,13 @@ function calcularIndice(){
     set("i_res_justissimo",res.justissimo,"purple");
     set("i_res_maxima",res.maxima,"green");
     set("i_res_minima",res.minima,"red");
+    const winLevels=[
+      {asset:'WIN',event:'CALCULO',roundId:'R1',levelId:'J',type:'J',label:'J JUSTO',price:res.justo,percent:0},
+      {asset:'WIN',event:'CALCULO',roundId:'R1',levelId:'JJ',type:'JJ',label:'JJ JUSTÍSSIMO',price:res.justissimo,percent:0},
+      {asset:'WIN',event:'CALCULO',roundId:'R1',levelId:'MAX',type:'MAX',label:'MAX',price:res.maxima,percent:0},
+      {asset:'WIN',event:'CALCULO',roundId:'R1',levelId:'MIN',type:'MIN',label:'MIN',price:res.minima,percent:0}
+    ].map(level=>Object.assign(level,window.SasakiVisualLevels.styleFor(level.type)));
+    window.SasakiLevels.addLevels(frozenSessions.WIN,winLevels);
     // VIX IBOV
     const vixIbov=readField("i_vix_ibov","decimal");
     if(!isNaN(vixIbov)){
@@ -639,6 +646,13 @@ function calcularDolar(){
   set("d_res_max_justo",maxJusto,"green");
   set("d_res_min_justo",minJusto,"red");
   set("d_res_justissimo",justissimo,"purple");
+  const wdoLevels=[
+    {asset:'WDO',event:'CALCULO',roundId:'R1',levelId:'J',type:'J',label:'J JUSTO',price:justo,percent:0},
+    {asset:'WDO',event:'CALCULO',roundId:'R1',levelId:'JJ',type:'JJ',label:'JJ JUSTÍSSIMO',price:justissimo,percent:0},
+    {asset:'WDO',event:'CALCULO',roundId:'R1',levelId:'MAX',type:'MAX',label:'MAX',price:maxJusto,percent:0},
+    {asset:'WDO',event:'CALCULO',roundId:'R1',levelId:'MIN',type:'MIN',label:'MIN',price:minJusto,percent:0}
+  ].map(level=>Object.assign(level,window.SasakiVisualLevels.styleFor(level.type)));
+  window.SasakiLevels.addLevels(frozenSessions.WDO,wdoLevels);
 
   // OC1
   const oc1Map={fech:["d_oc1_fech","r_oc1_fech"],acordo:["d_oc1_acordo","r_oc1_acordo"],alto:["d_oc1_alto","r_oc1_alto"],baixo:["d_oc1_baixo","r_oc1_baixo"]};
