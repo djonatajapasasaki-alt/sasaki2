@@ -433,8 +433,15 @@ function baixarScriptPlataforma(asset,platform){
 function readField(id, profile){
   const el=document.getElementById(id);
   if(!el) return NaN;
-  const result=window.SasakiInput ? window.SasakiInput.normalize(el.value, profile) : {ok:true,value:parseFloat(el.value)};
-  return result.ok ? result.value : NaN;
+  const raw=String(el.value??'').trim();
+  if(!raw) return NaN;
+  const result=window.SasakiInput ? window.SasakiInput.normalize(raw, profile) : {ok:true,value:Number(raw.replace(',','.'))};
+  if(result.ok) return result.value;
+  const fallback=Number(raw.replace(/\./g,'').replace(',','.'));
+  return Number.isFinite(fallback) ? fallback : NaN;
+}
+function invalidFields(fields){
+  return fields.filter(item=>!Number.isFinite(item.value)).map(item=>item.label).join(', ');
 }
 function readDynamicField(id, profile){ return readField(id, profile); }
 const FIELD_PROFILES={
@@ -571,7 +578,8 @@ function calcularIndice(){
   const var_sp500=readField("i_var_sp500","percent");
   const var_micro=readField("i_var_micro","percent");
   const vix=readField("i_vix","decimal");
-  if([fechamento,var_sp500,var_micro,vix].some(isNaN)){alert("Preencha todos os campos.");return;}
+  const missing=invalidFields([{value:fechamento,label:'Fechamento Índice'},{value:var_sp500,label:'Var. S&P 500 Fut.'},{value:var_micro,label:'Var. Micro S&P 500'},{value:vix,label:'VIX S&P 500 Futuro'}]);
+  if(missing){alert(`Preencha ou corrija: ${missing}.`);return;}
   const btn=document.getElementById("btn-calc-indice");
   btn.disabled=true;btn.innerHTML='<span class="spinner"></span> CALCULANDO...';
   fetch(`${API}/calcular`,{method:"POST",headers:{"Content-Type":"application/json","Authorization":`Bearer ${currentUser?.token}`},body:JSON.stringify({fechamento,var_sp500,var_micro,vix})})
@@ -643,7 +651,8 @@ function calcularDolar(){
   const frp0=readField("d_frp0","frp0");
   const casado=readField("d_casado","frp0")||0;
   const paramAb=readField("d_param_ab","dollar_quote");
-  if([fechamento,var_dxy,eurbrl,eurusd,frp0].some(isNaN)){alert("Preencha os campos obrigatórios.");return;}
+  const missing=invalidFields([{value:fechamento,label:'Fechamento Dólar'},{value:var_dxy,label:'Var. DXY'},{value:eurbrl,label:'EUR/BRL'},{value:eurusd,label:'EUR/USD'},{value:frp0,label:'FRP0'}]);
+  if(missing){alert(`Preencha ou corrija: ${missing}.`);return;}
 
   // Ajuste Arbitrado 1 e 2
   const justo=arredondarMeio(fechamento*(1+var_dxy/100));
