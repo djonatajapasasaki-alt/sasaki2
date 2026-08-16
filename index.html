@@ -221,8 +221,10 @@ input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.1);}
             <div class="field" style="flex:1;"><label>Abertura / Ajuste</label><input type="text" inputmode="decimal" id="i_ajuste" placeholder="186129" step="1"></div>
             <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="calcularGradeIndice()">ATUALIZAR</button>
             <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="baixarNiveis('WIN','csv')">BAIXAR CSV</button>
-            <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="baixarPonte('WIN','tryd')">TRYD</button>
-            <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="baixarPonte('WIN','profit')">PROFIT</button>
+            <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="baixarPonte('WIN','tryd')">TRYD CSV</button>
+            <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="baixarScriptPlataforma('WIN','tryd')">GROOVY</button>
+            <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="baixarPonte('WIN','profit')">PROFIT CSV</button>
+            <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="baixarScriptPlataforma('WIN','profit')">NTSL</button>
           </div>
           <div style="overflow-x:auto;">
             <table class="grade-table">
@@ -379,8 +381,10 @@ input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.1);}
             <div class="field" style="flex:1;"><label>Abertura / Centro</label><input type="text" inputmode="decimal" id="d_ajuste" placeholder="4530.00" step="0.01"></div>
             <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="calcularGradeDolar()">ATUALIZAR</button>
             <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="baixarNiveis('WDO','csv')">BAIXAR CSV</button>
-            <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="baixarPonte('WDO','tryd')">TRYD</button>
-            <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="baixarPonte('WDO','profit')">PROFIT</button>
+            <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="baixarPonte('WDO','tryd')">TRYD CSV</button>
+            <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="baixarScriptPlataforma('WDO','tryd')">GROOVY</button>
+            <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="baixarPonte('WDO','profit')">PROFIT CSV</button>
+            <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="baixarScriptPlataforma('WDO','profit')">NTSL</button>
           </div>
           <div style="overflow-x:auto;">
             <table class="grade-table">
@@ -418,6 +422,13 @@ function baixarPonte(asset,platform){
   const isTryd=platform==='tryd';
   const text=isTryd?window.SasakiLevels.exportTrydCsv(session):window.SasakiLevels.exportProfitCsv(session);
   downloadText(`${asset.toLowerCase()}-${platform}-niveis-${sessionDay}.csv`,text,'text/csv');
+}
+function baixarScriptPlataforma(asset,platform){
+  const session=frozenSessions[asset];
+  if(!session||!session.levels.length){alert('Calcule os níveis antes de exportar o script.');return;}
+  const isTryd=platform==='tryd';
+  const text=isTryd?window.SasakiLevels.exportTrydGroovy(session):window.SasakiLevels.exportProfitNtsl(session);
+  downloadText(`${asset.toLowerCase()}-${platform}-${sessionDay}.${isTryd?'groovy':'ntsl'}`,text,'text/plain');
 }
 function readField(id, profile){
   const el=document.getElementById(id);
