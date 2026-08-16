@@ -151,6 +151,25 @@ input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.1);}
   </div>
   <div class="main">
     <div class="blocked-banner" id="blocked-banner">⚠ Sua assinatura está inativa. Renove para continuar.</div>
+    <div class="section" id="macro-history-section" style="margin-bottom:18px;">
+      <div class="section-header"><div class="section-pip"></div><span class="section-title">Histórico Macro — Projeção e Realizado</span></div>
+      <div class="section-body">
+        <div class="field-row four">
+          <div class="field"><label>Indicador</label><select id="macro_tipo"><option value="payroll">Payroll</option><option value="caged">CAGED</option><option value="pmi">PMI</option><option value="ptax">PTAX</option><option value="brasil">Brasil</option></select></div>
+          <div class="field"><label>Data</label><input type="text" inputmode="numeric" id="macro_data" placeholder="2026-08-15"></div>
+          <div class="field"><label>Evento</label><input type="text" id="macro_evento" placeholder="Payroll Agosto"></div>
+          <div class="field"><label>Consenso</label><input type="text" inputmode="decimal" id="macro_consenso" placeholder="85000"></div>
+        </div>
+        <div class="field-row four">
+          <div class="field"><label>Realizado</label><input type="text" inputmode="decimal" id="macro_real" placeholder=""></div>
+          <div class="field"><label>Pontos WDO</label><input type="text" inputmode="decimal" id="macro_wdo_pontos" placeholder="0"></div>
+          <div class="field"><label>Pontos WIN</label><input type="text" inputmode="decimal" id="macro_win_pontos" placeholder="0"></div>
+          <div class="field" style="display:flex;justify-content:flex-end;"><button class="btn-calc" style="margin-top:auto;" onclick="salvarMacroHistorico()">SALVAR DADO</button></div>
+        </div>
+        <div id="macro-history-msg" style="font-size:11px;color:var(--light);margin:8px 0;"></div>
+        <div style="overflow-x:auto;"><table class="grade-table"><thead><tr><th>Data</th><th>Indicador</th><th>Evento</th><th>Consenso</th><th>Real</th><th>Surpresa</th><th>WDO</th><th>WIN</th></tr></thead><tbody id="macro-history-tbody"><tr><td colspan="8" style="color:var(--gray);">Faça login para carregar o histórico.</td></tr></tbody></table></div>
+      </div>
+    </div>
 
     <!-- ABA ÍNDICE -->
     <div id="tab-indice" class="tab-content active">
@@ -411,6 +430,37 @@ window.addEventListener('DOMContentLoaded',()=>{
   });
 });
 
+function setMacroMsg(text, ok){
+  const el=document.getElementById('macro-history-msg'); if(!el) return;
+  el.textContent=text; el.style.color=ok?'var(--green)':'var(--red)';
+}
+function macroNum(id){
+  const raw=document.getElementById(id)?.value || '';
+  const result=window.SasakiInput ? window.SasakiInput.normalize(raw,'decimal') : {ok:true,value:parseFloat(raw.replace(',','.'))};
+  return result.ok ? result.value : NaN;
+}
+function renderMacroHistory(items){
+  const tbody=document.getElementById('macro-history-tbody'); if(!tbody) return;
+  if(!items.length){tbody.innerHTML='<tr><td colspan="8" style="color:var(--gray);">Nenhum registro salvo.</td></tr>';return;}
+  tbody.innerHTML=items.map(row=>`<tr><td>${row.data||''}</td><td>${row.tipo||''}</td><td>${row.evento||''}</td><td>${row.consenso??''}</td><td>${row.real??''}</td><td>${row.desvio??''}</td><td>${row.wdo_pontos??0}</td><td>${row.win_pontos??0}</td></tr>`).join('');
+}
+async function carregarMacroHistorico(){
+  if(!currentUser?.token) return;
+  try { const r=await fetch(`${API}/macro/history`,{headers:{Authorization:`Bearer ${currentUser.token}`}}); const data=await r.json(); if(!r.ok) throw new Error(data.error||'Falha ao carregar histórico'); renderMacroHistory(data.items||[]); }
+  catch(e){ setMacroMsg(e.message,false); }
+}
+async function salvarMacroHistorico(){
+  if(!currentUser?.token){setMacroMsg('Faça login para salvar o histórico.',false);return;}
+  const consenso=macroNum('macro_consenso'), real=macroNum('macro_real'), wdo=macroNum('macro_wdo_pontos')||0, win=macroNum('macro_win_pontos')||0;
+  const data=document.getElementById('macro_data').value.trim(), evento=document.getElementById('macro_evento').value.trim(), tipo=document.getElementById('macro_tipo').value;
+  if(!data||!evento||!Number.isFinite(consenso)||!Number.isFinite(real)){setMacroMsg('Preencha data, evento, consenso e realizado.',false);return;}
+  try {
+    const r=await fetch(`${API}/macro/history`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${currentUser.token}`},body:JSON.stringify({tipo,data,evento,consenso,real,wdo_pontos:wdo,win_pontos:win})});
+    const result=await r.json(); if(!r.ok) throw new Error(result.error||'Falha ao salvar');
+    setMacroMsg('Dado salvo e incorporado ao histórico.',true); await carregarMacroHistorico();
+  } catch(e){ setMacroMsg(e.message,false); }
+}
+
 function fazerLogin(){
   const email=document.getElementById("email").value.trim();
   const senha=document.getElementById("senha").value;
@@ -431,6 +481,7 @@ function mostrarApp(user){
   document.getElementById("app-screen").style.display="block";
   document.getElementById("user-email-label").textContent=user.email;
   if(!user.ativo){document.getElementById("blocked-banner").style.display="block";document.getElementById("btn-calc-indice").disabled=true;document.getElementById("btn-calc-dolar").disabled=true;}
+  carregarMacroHistorico();
 }
 function fazerLogout(){
   localStorage.removeItem("sasaki_user");currentUser=null;

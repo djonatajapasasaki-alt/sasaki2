@@ -4,6 +4,7 @@
     { "source": "/auth/:path*", "destination": "/api/index.js" },
     { "source": "/health", "destination": "/api/index.js" },
     { "source": "/calcular", "destination": "/api/index.js" },
+    { "source": "/macro/:path*", "destination": "/api/index.js" },
     { "source": "/webhook/:path*", "destination": "/api/index.js" },
     { "source": "/admin/:path*", "destination": "/api/index.js" }
   ]

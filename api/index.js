@@ -60,6 +60,59 @@ export default async function handler(req, res) {
     }
   }
 
+  async function readBody() {
+    let body = req.body;
+    if (typeof body === 'string') body = JSON.parse(body);
+    if (!body) {
+      const chunks = [];
+      for await (const chunk of req) chunks.push(chunk);
+      body = JSON.parse(Buffer.concat(chunks).toString() || '{}');
+    }
+    return body || {};
+  }
+
+  async function authenticatedUser() {
+    const auth = req.headers.authorization || '';
+    const tk = auth.startsWith('Bearer ') ? auth.slice(7) : '';
+    if (!tk) return null;
+    const rows = await db('GET', `usuarios?token=eq.${encodeURIComponent(tk)}&ativo=eq.true&select=email,ativo,token`);
+    return rows[0] || null;
+  }
+
+  if (url.includes('/macro/history') && method === 'GET') {
+    try {
+      const user = await authenticatedUser();
+      if (!user) return res.status(401).json({ error: 'Sessão inválida.' });
+      const rows = await db('GET', `macro_historico?usuario_email=eq.${encodeURIComponent(user.email)}&select=*&order=data.desc,id.desc&limit=120`);
+      return res.status(200).json({ items: Array.isArray(rows) ? rows : [] });
+    } catch (e) { return res.status(500).json({ error: 'Erro ao consultar histórico.' }); }
+  }
+
+  if (url.includes('/macro/history') && method === 'POST') {
+    try {
+      const user = await authenticatedUser();
+      if (!user) return res.status(401).json({ error: 'Sessão inválida.' });
+      const body = await readBody();
+      const required = ['tipo', 'data', 'evento', 'consenso', 'real'];
+      if (required.some((key) => body[key] === undefined || body[key] === null || body[key] === '')) {
+        return res.status(400).json({ error: 'Preencha tipo, data, evento, consenso e realizado.' });
+      }
+      const row = {
+        usuario_email: user.email,
+        tipo: String(body.tipo), data: String(body.data), evento: String(body.evento),
+        consenso: Number(body.consenso), real: Number(body.real),
+        desvio: Number(body.desvio ?? (Number(body.real) - Number(body.consenso))),
+        wdo_pontos: Number(body.wdo_pontos || 0), win_pontos: Number(body.win_pontos || 0),
+        fator_wdo: Number(body.fator_wdo || 3.5), fator_win: Number(body.fator_win || 150),
+      };
+      if (![row.consenso, row.real, row.desvio, row.wdo_pontos, row.win_pontos, row.fator_wdo, row.fator_win].every(Number.isFinite)) {
+        return res.status(400).json({ error: 'Valores numéricos inválidos.' });
+      }
+      const rows = await db('POST', 'macro_historico', row);
+      return res.status(201).json({ item: Array.isArray(rows) ? rows[0] : rows });
+    } catch (e) { return res.status(500).json({ error: 'Erro ao salvar histórico.' }); }
+  }
+
   if (url.includes('/auth/check') && method === 'POST') {
     try {
       let body = req.body;

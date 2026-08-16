@@ -1,0 +1,5 @@
+{
+  "project_id": "jgjszczoakntswjhmzse",
+  "name": "backfill_macro_historico_usuario",
+  "query": "UPDATE public.macro_historico SET usuario_email = (SELECT email FROM public.usuarios WHERE ativo = true ORDER BY id LIMIT 1) WHERE usuario_email IS NULL AND (SELECT count(*) FROM public.usuarios WHERE ativo = true) = 1;"
+}
