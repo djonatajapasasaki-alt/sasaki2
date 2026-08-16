@@ -551,30 +551,34 @@ function calcularIndice(){
   if([fechamento,var_sp500,var_micro,vix].some(isNaN)){alert("Preencha todos os campos.");return;}
   const btn=document.getElementById("btn-calc-indice");
   btn.disabled=true;btn.innerHTML='<span class="spinner"></span> CALCULANDO...';
-  fetch(`${API}/calcular`,{method:"POST",headers:{"Content-Type":"application/json","Authorization":`Bearer ${currentUser?.token}`},body:JSON.stringify({fechamento,var_sp500,var_micro,vix})})
-  .then(r=>r.json()).then(res=>{
-    if(res.error){alert(res.error);return;}
+  try {
+    // Sequência equivalente à HP-12C, sem chamada externa:
+    // fechamento ENTER variação 100 ÷ % + = ajuste justo.
+    const justo=arredondarMeio(fechamento*(1+var_sp500/100));
+    const justissimo=arredondarMeio(justo*(1+var_micro/100));
+    const vol=vix/Math.sqrt(252)/100;
+    const maxima=arredondarMeio(justo*(1+vol));
+    const minima=arredondarMeio(justo*(1-vol));
     const set=(id,v,cls)=>{const el=document.getElementById(id);el.textContent=fmt3(v);el.className="result-value "+cls;};
-    set("i_res_justo",res.justo,"gold");
-    set("i_res_justissimo",res.justissimo,"purple");
-    set("i_res_maxima",res.maxima,"green");
-    set("i_res_minima",res.minima,"red");
+    set("i_res_justo",justo,"gold");
+    set("i_res_justissimo",justissimo,"purple");
+    set("i_res_maxima",maxima,"green");
+    set("i_res_minima",minima,"red");
     const winLevels=[
-      {asset:'WIN',event:'CALCULO',roundId:'R1',levelId:'J',type:'J',label:'J JUSTO',price:res.justo,percent:0},
-      {asset:'WIN',event:'CALCULO',roundId:'R1',levelId:'JJ',type:'JJ',label:'JJ JUSTÍSSIMO',price:res.justissimo,percent:0},
-      {asset:'WIN',event:'CALCULO',roundId:'R1',levelId:'MAX',type:'MAX',label:'MAX',price:res.maxima,percent:0},
-      {asset:'WIN',event:'CALCULO',roundId:'R1',levelId:'MIN',type:'MIN',label:'MIN',price:res.minima,percent:0}
+      {asset:'WIN',event:'CALCULO',roundId:'R1',levelId:'J',type:'J',label:'J JUSTO',price:justo,percent:0},
+      {asset:'WIN',event:'CALCULO',roundId:'R1',levelId:'JJ',type:'JJ',label:'JJ JUSTÍSSIMO',price:justissimo,percent:0},
+      {asset:'WIN',event:'CALCULO',roundId:'R1',levelId:'MAX',type:'MAX',label:'MAX',price:maxima,percent:0},
+      {asset:'WIN',event:'CALCULO',roundId:'R1',levelId:'MIN',type:'MIN',label:'MIN',price:minima,percent:0}
     ].map(level=>Object.assign(level,window.SasakiVisualLevels.styleFor(level.type)));
     window.SasakiLevels.addLevels(frozenSessions.WIN,winLevels);
-    // VIX IBOV
-    const vixIbov=readField("i_vix_ibov","decimal");
+    const vixIbov=parseFloat(document.getElementById("i_vix_ibov").value);
     if(!isNaN(vixIbov)){
       const volIbov=vixIbov/Math.sqrt(252)/100;
-      set("i_res_maxima_ibov",res.justo*(1+volIbov),"green");
-      set("i_res_minima_ibov",res.justo*(1-volIbov),"red");
+      set("i_res_maxima_ibov",arredondarMeio(justo*(1+volIbov)),"green");
+      set("i_res_minima_ibov",arredondarMeio(justo*(1-volIbov)),"red");
     }
-  }).catch(()=>alert("Erro ao calcular."))
-  .finally(()=>{btn.disabled=false;btn.innerHTML="▶ CALCULAR ÍNDICE";});
+  } catch(e) { alert("Erro ao calcular: "+e.message); }
+  finally { btn.disabled=false;btn.innerHTML="▶ CALCULAR ÍNDICE"; }
 }
 
 const I_NIVEIS=[
