@@ -167,6 +167,13 @@ input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.1);}
           <div class="field" style="display:flex;justify-content:flex-end;"><button class="btn-calc" style="margin-top:auto;" onclick="salvarMacroHistorico()">SALVAR DADO</button></div>
         </div>
         <div id="macro-history-msg" style="font-size:11px;color:var(--light);margin:8px 0;"></div>
+        <div class="results-grid" style="margin:10px 0;">
+          <div class="result-card gold"><div class="result-label">Beta WDO / surpresa</div><div class="result-value gold empty" id="macro_beta_wdo">—</div></div>
+          <div class="result-card purple"><div class="result-label">Beta WIN / surpresa</div><div class="result-value purple empty" id="macro_beta_win">—</div></div>
+          <div class="result-card green"><div class="result-label">Projeção WDO</div><div class="result-value green empty" id="macro_proj_wdo">—</div></div>
+          <div class="result-card blue"><div class="result-label">Projeção WIN</div><div class="result-value blue empty" id="macro_proj_win">—</div></div>
+        </div>
+        <div id="macro-impact-meta" style="font-size:10px;color:var(--gray);margin:5px 0 10px;">Salve eventos com pontos observados para calibrar o Beta.</div>
         <div style="overflow-x:auto;"><table class="grade-table"><thead><tr><th>Data</th><th>Indicador</th><th>Evento</th><th>Consenso</th><th>Real</th><th>Surpresa</th><th>WDO</th><th>WIN</th></tr></thead><tbody id="macro-history-tbody"><tr><td colspan="8" style="color:var(--gray);">Faça login para carregar o histórico.</td></tr></tbody></table></div>
       </div>
     </div>
@@ -214,6 +221,8 @@ input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.1);}
             <div class="field" style="flex:1;"><label>Abertura / Ajuste</label><input type="text" inputmode="decimal" id="i_ajuste" placeholder="186129" step="1"></div>
             <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="calcularGradeIndice()">ATUALIZAR</button>
             <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="baixarNiveis('WIN','csv')">BAIXAR CSV</button>
+            <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="baixarPonte('WIN','tryd')">TRYD</button>
+            <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="baixarPonte('WIN','profit')">PROFIT</button>
           </div>
           <div style="overflow-x:auto;">
             <table class="grade-table">
@@ -370,6 +379,8 @@ input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.1);}
             <div class="field" style="flex:1;"><label>Abertura / Centro</label><input type="text" inputmode="decimal" id="d_ajuste" placeholder="4530.00" step="0.01"></div>
             <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="calcularGradeDolar()">ATUALIZAR</button>
             <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="baixarNiveis('WDO','csv')">BAIXAR CSV</button>
+            <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="baixarPonte('WDO','tryd')">TRYD</button>
+            <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="baixarPonte('WDO','profit')">PROFIT</button>
           </div>
           <div style="overflow-x:auto;">
             <table class="grade-table">
@@ -401,6 +412,13 @@ function baixarNiveis(asset,format){
   const text=format==='csv'?window.SasakiLevels.exportCsv(session):window.SasakiLevels.exportJson(session);
   downloadText(`${asset.toLowerCase()}-niveis-${sessionDay}.${format}`,text,format==='csv'?'text/csv':'application/json');
 }
+function baixarPonte(asset,platform){
+  const session=frozenSessions[asset];
+  if(!session||!session.levels.length){alert('Calcule os níveis antes de exportar para a plataforma.');return;}
+  const isTryd=platform==='tryd';
+  const text=isTryd?window.SasakiLevels.exportTrydCsv(session):window.SasakiLevels.exportProfitCsv(session);
+  downloadText(`${asset.toLowerCase()}-${platform}-niveis-${sessionDay}.csv`,text,'text/csv');
+}
 function readField(id, profile){
   const el=document.getElementById(id);
   if(!el) return NaN;
@@ -423,6 +441,7 @@ function normalizeVisibleField(el){
   else {el.dataset.normalized='false';el.title=result.error||'Valor inválido';}
 }
 window.addEventListener('DOMContentLoaded',()=>{
+  ['macro_consenso','macro_real','macro_tipo'].forEach(id=>{ const el=document.getElementById(id); if(el) el.addEventListener('input',projetarImpactoMacro); });
   Object.keys(FIELD_PROFILES).forEach(id=>{
     const el=document.getElementById(id); if(!el) return;
     el.addEventListener('blur',()=>normalizeVisibleField(el));
@@ -439,6 +458,37 @@ function macroNum(id){
   const result=window.SasakiInput ? window.SasakiInput.normalize(raw,'decimal') : {ok:true,value:parseFloat(raw.replace(',','.'))};
   return result.ok ? result.value : NaN;
 }
+let macroImpact={};
+function fmtSigned(value, decimals=2){
+  const n=Number(value||0); const sign=n>0?'+':n<0?'−':'';
+  return sign+Math.abs(n).toLocaleString('pt-BR',{minimumFractionDigits:decimals,maximumFractionDigits:decimals});
+}
+function renderMacroImpact(items){
+  macroImpact={}; (items||[]).forEach(item=>{macroImpact[String(item.tipo).toLowerCase()]=item;});
+  const tipo=(document.getElementById('macro_tipo')?.value||'').toLowerCase();
+  const item=macroImpact[tipo]||{}; const wdo=item.wdo||{}; const win=item.win||{};
+  const betaWdo=document.getElementById('macro_beta_wdo'), betaWin=document.getElementById('macro_beta_win');
+  if(betaWdo) betaWdo.textContent=wdo.n?fmtSigned(wdo.beta)+' pt/unid.':'—';
+  if(betaWin) betaWin.textContent=win.n?fmtSigned(win.beta)+' pt/unid.':'—';
+  const meta=document.getElementById('macro-impact-meta');
+  if(meta) meta.textContent=wdo.n||win.n?`${tipo.toUpperCase()}: amostra WDO ${wdo.n||0}, WIN ${win.n||0} | R² WDO ${(Number(wdo.r2||0)*100).toFixed(1)}% | R² WIN ${(Number(win.r2||0)*100).toFixed(1)}%`:'Salve eventos com pontos observados para calibrar o Beta.';
+  projetarImpactoMacro();
+}
+function projetarImpactoMacro(){
+  const tipo=(document.getElementById('macro_tipo')?.value||'').toLowerCase(); const item=macroImpact[tipo]||{};
+  const consenso=macroNum('macro_consenso'), real=macroNum('macro_real');
+  const surpresa=Number.isFinite(consenso)&&Number.isFinite(real)?real-consenso:NaN;
+  const wdo=Number.isFinite(surpresa)&&item.wdo?Number(item.wdo.alpha||0)+Number(item.wdo.beta||0)*surpresa:NaN;
+  const win=Number.isFinite(surpresa)&&item.win?Number(item.win.alpha||0)+Number(item.win.beta||0)*surpresa:NaN;
+  const a=document.getElementById('macro_proj_wdo'), b=document.getElementById('macro_proj_win');
+  if(a) a.textContent=Number.isFinite(wdo)?fmtSigned(wdo)+' pt':'—';
+  if(b) b.textContent=Number.isFinite(win)?fmtSigned(win)+' pt':'—';
+}
+async function carregarMacroImpact(){
+  if(!currentUser?.token) return;
+  try { const r=await fetch(`${API}/macro/impact`,{headers:{Authorization:`Bearer ${currentUser.token}`}}); const data=await r.json(); if(!r.ok) throw new Error(data.error||'Falha ao calcular impacto'); renderMacroImpact(data.items||[]); }
+  catch(e){ setMacroMsg(e.message,false); }
+}
 function renderMacroHistory(items){
   const tbody=document.getElementById('macro-history-tbody'); if(!tbody) return;
   if(!items.length){tbody.innerHTML='<tr><td colspan="8" style="color:var(--gray);">Nenhum registro salvo.</td></tr>';return;}
@@ -446,7 +496,7 @@ function renderMacroHistory(items){
 }
 async function carregarMacroHistorico(){
   if(!currentUser?.token) return;
-  try { const r=await fetch(`${API}/macro/history`,{headers:{Authorization:`Bearer ${currentUser.token}`}}); const data=await r.json(); if(!r.ok) throw new Error(data.error||'Falha ao carregar histórico'); renderMacroHistory(data.items||[]); }
+  try { const r=await fetch(`${API}/macro/history`,{headers:{Authorization:`Bearer ${currentUser.token}`}}); const data=await r.json(); if(!r.ok) throw new Error(data.error||'Falha ao carregar histórico'); renderMacroHistory(data.items||[]); await carregarMacroImpact(); }
   catch(e){ setMacroMsg(e.message,false); }
 }
 async function salvarMacroHistorico(){
@@ -553,7 +603,7 @@ function calcularGradeIndice(){
   const ajuste=readField("i_ajuste","win_points");
   if(isNaN(ajuste)){alert("Preencha o Ajuste.");return;}
   const tbody=document.getElementById("i_grade_tbody");tbody.innerHTML="";
-  const incoming=I_NIVEIS.map(n=>{const s=window.SasakiVisualLevels.styleFor(n.tipo==='abertura'?'J':'MAX');return {asset:'WIN',event:'GRADE',roundId:'R1',type:n.tipo,label:n.label,price:Math.round(ajuste*(1+n.pct)),percent:n.pct*100,color:s.color,width:s.width};});
+  const incoming=I_NIVEIS.map(n=>{const s=window.SasakiVisualLevels.styleFor(n.tipo==='abertura'?'J':'MAX');return {asset:'WIN',event:'GRADE',roundId:'R1',levelId:`${n.tipo}:${n.pct}`,type:n.tipo,label:n.label,price:Math.round(ajuste*(1+n.pct)),percent:n.pct*100,color:s.color,width:s.width};});
   window.SasakiLevels.addLevels(frozenSessions.WIN,incoming);
   I_NIVEIS.forEach(n=>{
     const idx=ajuste*(1+n.pct),pts=Math.abs(n.pct)*ajuste;
@@ -632,6 +682,15 @@ function calcularDolar(){
     const centro=arredondarMeio(ptax+frp0Ptax[i]);
     const maxPtax=arredondarMeio(centro*(1+varPct/100));
     const minPtax=arredondarMeio(centro*(1-varPct/100));
+    const roundId=`PX${i+1}`;
+    const ptaxStyle=window.SasakiVisualLevels.styleFor(roundId);
+    window.SasakiLevels.addLevels(frozenSessions.WDO,[
+      {asset:'WDO',event:'PTAX',roundId,levelId:'CENTER',type:roundId,label:`${ptaxStyle.label} CENTRO`,price:centro,percent:0,color:ptaxStyle.color,width:ptaxStyle.width},
+      {asset:'WDO',event:'PTAX',roundId,levelId:'MAX',type:'MAX',label:`${ptaxStyle.label} MAX +${varPct.toFixed(2).replace('.',',')}%`,price:maxPtax,percent:varPct,color:window.SasakiVisualLevels.styleFor('MAX').color,width:window.SasakiVisualLevels.styleFor('MAX').width},
+      {asset:'WDO',event:'PTAX',roundId,levelId:'MIN',type:'MIN',label:`${ptaxStyle.label} MIN -${varPct.toFixed(2).replace('.',',')}%`,price:minPtax,percent:-varPct,color:window.SasakiVisualLevels.styleFor('MIN').color,width:window.SasakiVisualLevels.styleFor('MIN').width},
+      {asset:'WDO',event:'PTAX',roundId,levelId:'STRESS_MAX',type:'MAX',label:`${ptaxStyle.label} ST+`,price:maxPtax+10,percent:varPct,color:ptaxStyle.color,width:ptaxStyle.width},
+      {asset:'WDO',event:'PTAX',roundId,levelId:'STRESS_MIN',type:'MIN',label:`${ptaxStyle.label} ST-`,price:minPtax-10,percent:-varPct,color:ptaxStyle.color,width:ptaxStyle.width}
+    ]);
     html+=`<div class="ptax-col">
       <div class="ptax-col-title">${ptaxLabels[i]} ${i>=2?"(0,38%)":"(0,50%)"}</div>
       <div class="ptax-val"><div class="lbl2">Centro</div><div class="val mid">${fmt2(centro)}</div></div>
@@ -665,7 +724,7 @@ function calcularGradeDolar(){
   const ajuste=readField("d_ajuste","dollar_points");
   if(isNaN(ajuste)){alert("Preencha o Centro.");return;}
   const tbody=document.getElementById("d_grade_tbody");tbody.innerHTML="";
-  const incoming=D_NIVEIS.map(n=>{const s=window.SasakiVisualLevels.styleFor(n.tipo==='abertura'?'J':'MAX');return {asset:'WDO',event:'GRADE',roundId:'R1',type:n.tipo,label:n.label,price:window.SasakiCalc.roundTick(ajuste*(1+n.pct),0.5),percent:n.pct*100,color:s.color,width:s.width};});
+  const incoming=D_NIVEIS.map(n=>{const s=window.SasakiVisualLevels.styleFor(n.tipo==='abertura'?'J':'MAX');return {asset:'WDO',event:'GRADE',roundId:'R1',levelId:`${n.tipo}:${n.pct}`,type:n.tipo,label:n.label,price:window.SasakiCalc.roundTick(ajuste*(1+n.pct),0.5),percent:n.pct*100,color:s.color,width:s.width};});
   window.SasakiLevels.addLevels(frozenSessions.WDO,incoming);
   D_NIVEIS.forEach(n=>{
     const idx=ajuste*(1+n.pct),pts=Math.abs(n.pct)*ajuste;

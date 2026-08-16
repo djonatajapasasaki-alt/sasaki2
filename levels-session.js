@@ -5,7 +5,7 @@
   'use strict';
 
   function key(level) {
-    return [level.sessionId, level.asset, level.event || 'MANUAL', level.roundId || 'R0', level.type, level.price].join('|');
+    return [level.sessionId, level.asset, level.event || 'MANUAL', level.roundId || 'R0', level.levelId || '', level.type, level.label || ''].join('|');
   }
 
   function createSession(sessionId) {
@@ -38,5 +38,25 @@
     return lines.join('\n');
   }
 
-  return { key, createSession, addLevels, freeze, exportJson, exportCsv };
+  function exportTrydCsv(session) {
+    const header = ['Ativo','Preco','Rotulo','Cor','Espessura','Evento','Rodada','Sessao'];
+    const lines = [header.join(';')];
+    session.levels.forEach((level) => lines.push([
+      level.asset, level.price, level.label || level.type, level.color || '#FFFFFF', level.width || 1,
+      level.event || '', level.roundId || '', level.sessionId || '',
+    ].map((value) => String(value).replace(/;/g, ',')).join(';')));
+    return lines.join('\n');
+  }
+
+  function exportProfitCsv(session) {
+    const header = ['Ativo','Preco','Nome','CorHex','Largura','Evento','Rodada','Sessao'];
+    const lines = [header.join(';')];
+    session.levels.forEach((level) => lines.push([
+      level.asset, level.price, level.label || level.type, level.color || '#FFFFFF', level.width || 1,
+      level.event || '', level.roundId || '', level.sessionId || '',
+    ].map((value) => String(value).replace(/;/g, ',')).join(';')));
+    return lines.join('\n');
+  }
+
+  return { key, createSession, addLevels, freeze, exportJson, exportCsv, exportTrydCsv, exportProfitCsv };
 });

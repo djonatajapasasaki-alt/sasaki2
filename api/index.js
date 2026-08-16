@@ -88,6 +88,35 @@ export default async function handler(req, res) {
     } catch (e) { return res.status(500).json({ error: 'Erro ao consultar histórico.' }); }
   }
 
+  if (url.includes('/macro/impact') && method === 'GET') {
+    try {
+      const user = await authenticatedUser();
+      if (!user) return res.status(401).json({ error: 'Sessão inválida.' });
+      const rows = await db('GET', `macro_historico?usuario_email=eq.${encodeURIComponent(user.email)}&select=tipo,consenso,real,desvio,wdo_pontos,win_pontos,data&order=data.desc,id.desc&limit=240`);
+      const items = Array.isArray(rows) ? rows : [];
+      const byTipo = {};
+      items.forEach((row) => {
+        const tipo = String(row.tipo || 'outros').toLowerCase();
+        if (!byTipo[tipo]) byTipo[tipo] = [];
+        byTipo[tipo].push(row);
+      });
+      const regress = (records, key) => {
+        const pairs = records.map((row) => ({ x: Number(row.desvio ?? (Number(row.real) - Number(row.consenso))), y: Number(row[key]) })).filter((pair) => Number.isFinite(pair.x) && Number.isFinite(pair.y));
+        const n = pairs.length;
+        if (!n) return { n: 0, beta: 0, alpha: 0, r2: 0, surpriseMean: 0, pointsMean: 0 };
+        const xMean = pairs.reduce((sum, pair) => sum + pair.x, 0) / n;
+        const yMean = pairs.reduce((sum, pair) => sum + pair.y, 0) / n;
+        const sxx = pairs.reduce((sum, pair) => sum + ((pair.x - xMean) ** 2), 0);
+        const syy = pairs.reduce((sum, pair) => sum + ((pair.y - yMean) ** 2), 0);
+        const sxy = pairs.reduce((sum, pair) => sum + ((pair.x - xMean) * (pair.y - yMean)), 0);
+        const beta = sxx ? sxy / sxx : 0;
+        return { n, beta, alpha: yMean - beta * xMean, r2: sxx && syy ? (sxy * sxy) / (sxx * syy) : 0, surpriseMean: xMean, pointsMean: yMean };
+      };
+      const impact = Object.entries(byTipo).map(([tipo, records]) => ({ tipo, wdo: regress(records, 'wdo_pontos'), win: regress(records, 'win_pontos') }));
+      return res.status(200).json({ items: impact, total: items.length });
+    } catch (e) { return res.status(500).json({ error: 'Erro ao calcular impacto histórico.' }); }
+  }
+
   if (url.includes('/macro/history') && method === 'POST') {
     try {
       const user = await authenticatedUser();

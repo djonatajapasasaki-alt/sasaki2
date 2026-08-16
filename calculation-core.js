@@ -47,5 +47,48 @@
     }));
   }
 
-  return { roundHalf, roundTick, wdoJusto, wdoJustissimo, wdoBands, ptaxRound, winBands, grade };
+  function mean(values) {
+    return values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : 0;
+  }
+
+  function sampleStd(values, average) {
+    if (values.length < 2) return 0;
+    const variance = values.reduce((sum, value) => sum + ((value - average) ** 2), 0) / (values.length - 1);
+    return Math.sqrt(variance);
+  }
+
+  function impactRegression(rows, surpriseKey, pointsKey) {
+    const pairs = (rows || []).map((row) => ({
+      x: Number(row[surpriseKey]),
+      y: Number(row[pointsKey]),
+    })).filter((pair) => Number.isFinite(pair.x) && Number.isFinite(pair.y));
+    const n = pairs.length;
+    if (!n) return { n: 0, beta: 0, alpha: 0, r2: 0, surpriseMean: 0, pointsMean: 0, surpriseStd: 0, pointsStd: 0 };
+    const xMean = mean(pairs.map((pair) => pair.x));
+    const yMean = mean(pairs.map((pair) => pair.y));
+    const sxx = pairs.reduce((sum, pair) => sum + ((pair.x - xMean) ** 2), 0);
+    const syy = pairs.reduce((sum, pair) => sum + ((pair.y - yMean) ** 2), 0);
+    const sxy = pairs.reduce((sum, pair) => sum + ((pair.x - xMean) * (pair.y - yMean)), 0);
+    const beta = sxx ? sxy / sxx : 0;
+    const alpha = yMean - beta * xMean;
+    const r2 = sxx && syy ? (sxy * sxy) / (sxx * syy) : 0;
+    return {
+      n,
+      beta,
+      alpha,
+      r2,
+      surpriseMean: xMean,
+      pointsMean: yMean,
+      surpriseStd: sampleStd(pairs.map((pair) => pair.x), xMean),
+      pointsStd: sampleStd(pairs.map((pair) => pair.y), yMean),
+    };
+  }
+
+  function projectImpact(stats, surprise) {
+    const x = Number(surprise);
+    if (!stats || !Number.isFinite(x)) return 0;
+    return Number(stats.alpha || 0) + Number(stats.beta || 0) * x;
+  }
+
+  return { roundHalf, roundTick, wdoJusto, wdoJustissimo, wdoBands, ptaxRound, winBands, grade, impactRegression, projectImpact };
 });
