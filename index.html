@@ -161,17 +161,18 @@ input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.1);}
       <div class="section-header"><div class="section-pip"></div><span class="section-title">Histórico Macro — Projeção e Realizado</span></div>
       <div class="section-body">
         <div class="field-row four">
-          <div class="field"><label>Indicador</label><select id="macro_tipo"><option value="payroll">Payroll</option><option value="caged">CAGED</option><option value="pmi">PMI</option><option value="ptax">PTAX</option><option value="brasil">Brasil</option></select></div>
+          <div class="field"><label>Indicador do calendário</label><select id="macro_tipo"><option value="payroll_nfp">Non Farm Payrolls</option><option value="payroll_unemployment">Unemployment Rate</option><option value="payroll_ahe_mom">Average Hourly Earnings MoM</option><option value="payroll_ahe_yoy">Average Hourly Earnings YoY</option><option value="payroll_private">Nonfarm Payrolls Private</option><option value="payroll_adp">ADP Employment Change</option><option value="payroll_jolts">JOLTs Job Openings</option><option value="payroll_participation">Participation Rate</option><option value="caged">CAGED</option><option value="pmi">PMI</option><option value="ptax">PTAX</option><option value="brasil">Brasil</option></select></div>
           <div class="field"><label>Data</label><input type="text" inputmode="numeric" id="macro_data" placeholder="2026-08-15"></div>
-          <div class="field"><label>Evento</label><input type="text" id="macro_evento" placeholder="Payroll Agosto"></div>
-          <div class="field"><label>Consenso</label><input type="text" inputmode="decimal" id="macro_consenso" placeholder="85000"></div>
+          <div class="field"><label>Reference / Release</label><input type="text" id="macro_evento" placeholder="Jul 2026"></div>
+          <div class="field"><label>Consensus / Forecast</label><input type="text" inputmode="decimal" id="macro_consenso" placeholder="80K ou 4,2%"></div>
         </div>
         <div class="field-row four">
-          <div class="field"><label>Realizado</label><input type="text" inputmode="decimal" id="macro_real" placeholder=""></div>
+          <div class="field"><label>Actual</label><input type="text" inputmode="decimal" id="macro_real" placeholder="-23K ou 4,1%"></div>
           <div class="field"><label>Pontos WDO</label><input type="text" inputmode="decimal" id="macro_wdo_pontos" placeholder="0"></div>
           <div class="field"><label>Pontos WIN</label><input type="text" inputmode="decimal" id="macro_win_pontos" placeholder="0"></div>
           <div class="field" style="display:flex;justify-content:flex-end;"><button class="btn-calc" style="margin-top:auto;" onclick="salvarMacroHistorico()">SALVAR DADO</button></div>
         </div>
+        <div style="font-size:10px;color:var(--gray);margin:2px 0 8px;">Use os nomes do calendário: Non Farm Payrolls é informado em milhares (K); taxas como Unemployment Rate e Average Hourly Earnings são informadas em porcentagem. Previous, TEForecast e revisões ficam como referência; o cálculo usa Consensus/Forecast e Actual.</div>
         <div id="macro-history-msg" style="font-size:11px;color:var(--light);margin:8px 0;"></div>
         <div class="results-grid" style="margin:10px 0;">
           <div class="result-card gold"><div class="result-label">Beta WDO / surpresa</div><div class="result-value gold empty" id="macro_beta_wdo">—</div></div>
