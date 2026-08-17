@@ -169,10 +169,10 @@ input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.1);}
         <div class="field-row four">
           <div class="field"><label>Realizado</label><input type="text" inputmode="decimal" id="macro_real" placeholder="Ex.: 172000"></div>
           <div class="field"><label>Pontos WDO</label><input type="text" inputmode="decimal" id="macro_wdo_pontos" placeholder="0"></div>
-          <div class="field"><label>Pontos WIN</label><input type="text" inputmode="decimal" id="macro_win_pontos" placeholder="0"></div>
-          <div class="field" style="display:flex;justify-content:flex-end;"><button class="btn-calc" style="margin-top:auto;" onclick="salvarMacroHistorico()">SALVAR DADO</button></div>
+          <div class="field"><label>Pontos WIN</label><input type="text" inputmode="decimal" id="macro_win_pontos" placeholder="Preencha após a notícia"></div>
+          <div class="field" style="display:flex;justify-content:flex-end;gap:8px;align-items:flex-end;"><button class="btn-calc" style="margin-top:auto;" onclick="calcularProjecaoMacro()">CALCULAR PROJEÇÃO</button><button class="btn-calc" style="margin-top:auto;" onclick="salvarMacroHistorico()">SALVAR NO HISTÓRICO</button></div>
         </div>
-        <div style="font-size:10px;color:var(--gray);margin:2px 0 8px;">Alimente somente estes três dados: Payroll, CAGED e PMI. Em cada um, informe o consenso esperado e o realizado divulgado. A surpresa é calculada por realizado menos consenso. PTAX pertence à aba do Dólar/WDO.</div>
+        <div style="font-size:10px;color:var(--gray);margin:2px 0 8px;">Antes da notícia: informe indicador, data, referência e consenso e clique em CALCULAR PROJEÇÃO. Depois da divulgação: informe o realizado e os pontos que WDO/WIN realmente andaram e clique em SALVAR NO HISTÓRICO. O histórico salvo é usado para calibrar o próximo cálculo. PTAX pertence à aba do Dólar/WDO.</div>
         <div id="macro-history-msg" style="font-size:11px;color:var(--light);margin:8px 0;"></div>
         <div class="results-grid" style="margin:10px 0;">
           <div class="result-card gold"><div class="result-label">Beta WDO / surpresa</div><div class="result-value gold empty" id="macro_beta_wdo">—</div></div>
@@ -498,16 +498,19 @@ function renderMacroImpact(items){
   if(meta) meta.textContent=wdo.n||win.n?`${tipo.toUpperCase()}: amostra WDO ${wdo.n||0}, WIN ${win.n||0} | R² WDO ${(Number(wdo.r2||0)*100).toFixed(1)}% | R² WIN ${(Number(win.r2||0)*100).toFixed(1)}%`:'Salve eventos com pontos observados para calibrar o Beta.';
   projetarImpactoMacro();
 }
-function projetarImpactoMacro(){
+function calcularProjecaoMacro(){
   const tipo=(document.getElementById('macro_tipo')?.value||'').toLowerCase(); const item=macroImpact[tipo]||{};
   const consenso=macroNum('macro_consenso'), real=macroNum('macro_real');
-  const surpresa=Number.isFinite(consenso)&&Number.isFinite(real)?real-consenso:NaN;
-  const wdo=Number.isFinite(surpresa)&&item.wdo?Number(item.wdo.alpha||0)+Number(item.wdo.beta||0)*surpresa:NaN;
-  const win=Number.isFinite(surpresa)&&item.win?Number(item.win.alpha||0)+Number(item.win.beta||0)*surpresa:NaN;
+  if(!Number.isFinite(consenso)){setMacroMsg('Informe o consenso do próximo dado antes de calcular a projeção.',false);return;}
+  const hasReal=Number.isFinite(real); const surpresa=hasReal?real-consenso:NaN;
+  const estimate=(side)=>{const s=item[side]||{}; if(!s.n) return NaN; return hasReal?Number(s.alpha||0)+Number(s.beta||0)*surpresa:Number(s.pointsMean||s.alpha||0);};
+  const wdo=estimate('wdo'), win=estimate('win');
   const a=document.getElementById('macro_proj_wdo'), b=document.getElementById('macro_proj_win');
   if(a) a.textContent=Number.isFinite(wdo)?fmtSigned(wdo)+' pt':'—';
   if(b) b.textContent=Number.isFinite(win)?fmtSigned(win)+' pt':'—';
+  setMacroMsg(hasReal?'Projeção recalculada com a surpresa Realizado − Consenso.':'Projeção base calculada com a média histórica de pontos. O realizado ainda não foi divulgado.',true);
 }
+function projetarImpactoMacro(){ calcularProjecaoMacro(); }
 async function carregarMacroImpact(){
   if(!currentUser?.token) return;
   try { const r=await fetch(`${API}/macro/impact`,{headers:{Authorization:`Bearer ${currentUser.token}`}}); const data=await r.json(); if(!r.ok) throw new Error(data.error||'Falha ao calcular impacto'); renderMacroImpact(data.items||[]); }
@@ -531,7 +534,7 @@ async function salvarMacroHistorico(){
   try {
     const r=await fetch(`${API}/macro/history`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${currentUser.token}`},body:JSON.stringify({tipo,data,evento,consenso,real,wdo_pontos:wdo,win_pontos:win})});
     const result=await r.json(); if(!r.ok) throw new Error(result.error||'Falha ao salvar');
-    setMacroMsg('Dado salvo e incorporado ao histórico.',true); await carregarMacroHistorico();
+    setMacroMsg('Dado realizado salvo e incorporado ao histórico para calibrar a próxima projeção.',true); await carregarMacroHistorico();
   } catch(e){ setMacroMsg(e.message,false); }
 }
 
