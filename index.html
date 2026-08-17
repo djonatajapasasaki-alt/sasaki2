@@ -229,7 +229,8 @@ input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.1);}
             <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="calcularGradeIndice()">ATUALIZAR</button>
             <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="baixarNiveis('WIN','csv')">BAIXAR CSV</button>
             <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="baixarPonte('WIN','tryd')">TRYD CSV</button>
-            <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="baixarScriptPlataforma('WIN','tryd')">GROOVY</button>
+            <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="baixarScriptPlataforma('WIN','tryd')">GROOVY PRINCIPAL</button>
+            <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="baixarScriptTrydGrupo('WIN','grade')">GROOVY GRADE</button>
             <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="baixarPonte('WIN','profit')">PROFIT CSV</button>
             <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="baixarScriptPlataforma('WIN','profit')">NTSL</button>
           </div>
@@ -389,7 +390,10 @@ input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.1);}
             <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="calcularGradeDolar()">ATUALIZAR</button>
             <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="baixarNiveis('WDO','csv')">BAIXAR CSV</button>
             <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="baixarPonte('WDO','tryd')">TRYD CSV</button>
-            <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="baixarScriptPlataforma('WDO','tryd')">GROOVY</button>
+            <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="baixarScriptPlataforma('WDO','tryd')">GROOVY PRINCIPAL</button>
+            <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="baixarScriptTrydGrupo('WDO','grade')">GROOVY GRADE</button>
+            <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="baixarScriptTrydGrupo('WDO','ptax')">GROOVY PTAX</button>
+            <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="baixarScriptTrydGrupo('WDO','extras')">GROOVY EXTRAS</button>
             <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="baixarPonte('WDO','profit')">PROFIT CSV</button>
             <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="baixarScriptPlataforma('WDO','profit')">NTSL</button>
           </div>
@@ -435,6 +439,14 @@ function baixarScriptPlataforma(asset,platform){
   const isTryd=platform==='tryd';
   const text=isTryd?window.SasakiLevels.exportTrydGroovy(session):window.SasakiLevels.exportProfitNtsl(session);
   downloadText(`${asset.toLowerCase()}-${platform}-${sessionDay}.${isTryd?'groovy':'ntsl'}`,text,'text/plain');
+}
+function baixarScriptTrydGrupo(asset, group){
+  const session=frozenSessions[asset];
+  if(!session||!session.levels.length){alert('Calcule os níveis antes de exportar o script.');return;}
+  const grouped=session.levels.filter(level=>({principal:['CALCULO','VIX_IBOV','WID_EWZ_VAR','WID_EWZ_QUOTE'],grade:['GRADE'],ptax:['PTAX'],extras:['OC1','BASE','SONHO','CME']}[group]||[]).includes(level.event||''));
+  if(!grouped.length){alert('Nenhum nível deste grupo foi calculado ainda.');return;}
+  const text=window.SasakiLevels.exportTrydGroup(Object.assign({},session,{levels:grouped}),group);
+  downloadText(`${asset.toLowerCase()}-tryd-${group}-${sessionDay}.groovy`,text,'text/plain');
 }
 function readField(id, profile){
   const el=document.getElementById(id);
