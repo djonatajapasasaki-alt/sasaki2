@@ -82,6 +82,12 @@ input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.1);}
 .btn-calc{width:100%;margin-top:16px;padding:13px;background:transparent;color:var(--gold);border:1px solid var(--gold3);border-radius:8px;font-family:var(--mono);font-size:12px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;transition:all .2s;}
 .btn-calc:hover{background:rgba(212,168,67,.08);border-color:var(--gold);}
 .btn-calc:disabled{opacity:.3;cursor:not-allowed;}
+.grade-controls{padding:0 20px 14px;display:flex;flex-direction:column;gap:8px;}
+.grade-input-row{display:flex;align-items:flex-end;gap:12px;}
+.grade-input-row .field{flex:0 1 230px;min-width:170px;}
+.grade-input-row .btn-calc,.grade-export-row .btn-calc{width:auto;margin-top:0;padding:10px 14px;font-size:10px;letter-spacing:1.5px;}
+.grade-export-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+.grade-export-row .btn-calc{flex:0 0 auto;}
 .grade-table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px;}
 .grade-table th{padding:8px 12px;text-align:left;font-size:8px;letter-spacing:2px;color:var(--gray);text-transform:uppercase;border-bottom:1px solid var(--border);background:var(--bg2);}
 .grade-table th:nth-child(3),.grade-table th:nth-child(4){text-align:right;}
@@ -106,7 +112,7 @@ input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.1);}
 .blocked-banner{background:rgba(255,58,58,.07);border:1px solid rgba(255,58,58,.2);border-radius:10px;padding:16px 22px;margin-bottom:24px;font-size:14px;color:var(--red);display:none;}
 .spinner{display:inline-block;width:13px;height:13px;border:2px solid rgba(212,168,67,.2);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px;}
 @keyframes spin{to{transform:rotate(360deg);}}
-@media(max-width:640px){.field-row,.field-row.three,.field-row.four{grid-template-columns:1fr;}.ptax-grid{grid-template-columns:1fr;}.topbar{padding:12px 16px;}}
+@media(max-width:640px){.field-row,.field-row.three,.field-row.four{grid-template-columns:1fr;}.ptax-grid{grid-template-columns:1fr;}.topbar{padding:12px 16px;}.grade-input-row{flex-wrap:wrap;}.grade-input-row .field{flex:1 1 100%;min-width:0;}.grade-export-row .btn-calc{font-size:9px;padding:8px 10px;}}
 </style>
 </head>
 <body>
@@ -224,15 +230,19 @@ input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.1);}
       <div class="section" style="margin-top:14px;">
         <div class="section-header"><div class="section-pip"></div><span class="section-title">Grade de Volatilidade — 29 Níveis (Fibonacci 0,382%)</span></div>
         <div class="section-body" style="padding:14px 0;">
-          <div style="padding:0 20px 14px;display:flex;align-items:flex-end;gap:12px;">
-            <div class="field" style="flex:1;"><label>Abertura / Ajuste</label><input type="text" inputmode="decimal" id="i_ajuste" placeholder="186129" step="1"></div>
-            <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="calcularGradeIndice()">ATUALIZAR</button>
-            <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="baixarNiveis('WIN','csv')">BAIXAR CSV</button>
-            <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="baixarPonte('WIN','tryd')">TRYD CSV</button>
-            <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="baixarScriptPlataforma('WIN','tryd')">GROOVY PRINCIPAL</button>
-            <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="baixarScriptTrydGrupo('WIN','grade')">GROOVY GRADE</button>
-            <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="baixarPonte('WIN','profit')">PROFIT CSV</button>
-            <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="baixarScriptPlataforma('WIN','profit')">NTSL</button>
+          <div class="grade-controls">
+            <div class="grade-input-row">
+              <div class="field"><label>Abertura / Ajuste</label><input type="text" inputmode="decimal" id="i_ajuste" placeholder="186129" step="1"></div>
+              <button class="btn-calc" onclick="calcularGradeIndice()">ATUALIZAR</button>
+            </div>
+            <div class="grade-export-row">
+              <button class="btn-calc" onclick="baixarNiveis('WIN','csv')">BAIXAR CSV</button>
+              <button class="btn-calc" onclick="baixarPonte('WIN','tryd')">TRYD CSV</button>
+              <button class="btn-calc" onclick="baixarScriptPlataforma('WIN','tryd')">GROOVY PRINCIPAL</button>
+              <button class="btn-calc" onclick="baixarScriptTrydGrupo('WIN','grade')">GROOVY GRADE</button>
+              <button class="btn-calc" onclick="baixarPonte('WIN','profit')">PROFIT CSV</button>
+              <button class="btn-calc" onclick="baixarScriptPlataforma('WIN','profit')">NTSL</button>
+            </div>
           </div>
           <div style="overflow-x:auto;">
             <table class="grade-table">
@@ -385,17 +395,21 @@ input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.1);}
       <div class="section" style="margin-top:14px;">
         <div class="section-header"><div class="section-pip"></div><span class="section-title">Grade de Volatilidade — 27 Níveis</span></div>
         <div class="section-body" style="padding:14px 0;">
-          <div style="padding:0 20px 14px;display:flex;align-items:flex-end;gap:12px;">
-            <div class="field" style="flex:1;"><label>Abertura / Centro</label><input type="text" inputmode="decimal" id="d_ajuste" placeholder="4530.00" step="0.01"></div>
-            <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="calcularGradeDolar()">ATUALIZAR</button>
-            <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="baixarNiveis('WDO','csv')">BAIXAR CSV</button>
-            <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="baixarPonte('WDO','tryd')">TRYD CSV</button>
-            <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="baixarScriptPlataforma('WDO','tryd')">GROOVY PRINCIPAL</button>
-            <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="baixarScriptTrydGrupo('WDO','grade')">GROOVY GRADE</button>
-            <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="baixarScriptTrydGrupo('WDO','ptax')">GROOVY PTAX</button>
-            <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="baixarScriptTrydGrupo('WDO','extras')">GROOVY EXTRAS</button>
-            <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="baixarPonte('WDO','profit')">PROFIT CSV</button>
-            <button class="btn-calc" style="margin-top:0;width:auto;padding:10px 20px;font-size:10px;" onclick="baixarScriptPlataforma('WDO','profit')">NTSL</button>
+          <div class="grade-controls">
+            <div class="grade-input-row">
+              <div class="field"><label>Abertura / Centro</label><input type="text" inputmode="decimal" id="d_ajuste" placeholder="4530.00" step="0.01"></div>
+              <button class="btn-calc" onclick="calcularGradeDolar()">ATUALIZAR</button>
+            </div>
+            <div class="grade-export-row">
+              <button class="btn-calc" onclick="baixarNiveis('WDO','csv')">BAIXAR CSV</button>
+              <button class="btn-calc" onclick="baixarPonte('WDO','tryd')">TRYD CSV</button>
+              <button class="btn-calc" onclick="baixarScriptPlataforma('WDO','tryd')">GROOVY PRINCIPAL</button>
+              <button class="btn-calc" onclick="baixarScriptTrydGrupo('WDO','grade')">GROOVY GRADE</button>
+              <button class="btn-calc" onclick="baixarScriptTrydGrupo('WDO','ptax')">GROOVY PTAX</button>
+              <button class="btn-calc" onclick="baixarScriptTrydGrupo('WDO','extras')">GROOVY EXTRAS</button>
+              <button class="btn-calc" onclick="baixarPonte('WDO','profit')">PROFIT CSV</button>
+              <button class="btn-calc" onclick="baixarScriptPlataforma('WDO','profit')">NTSL</button>
+            </div>
           </div>
           <div style="overflow-x:auto;">
             <table class="grade-table">
