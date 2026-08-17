@@ -24,6 +24,7 @@ const STYLES = {
   GRADE_CENTER: { color: '#FFFFFF', width: 2 },
   GRADE_UP: { color: '#83C7FF', width: 2 },
   GRADE_DOWN: { color: '#FF4D5A', width: 2 },
+  EWZ: { color: '#35D07F', width: 2 },
 };
 
 function style(type) { return STYLES[type] || { color: '#FFFFFF', width: 2 }; }
@@ -58,11 +59,11 @@ function calculateWin(input) {
   const ewzVar = number(input.ewzVar);
   const ewzQuote = number(input.ewzQuote);
   const widJusto = finite(ewzVar) ? roundHalf(fechamento * (1 + ewzVar / 100)) : NaN;
-  if (finite(widJusto)) levels.push(level('WIN', 'WID_EWZ_VAR', 'R1', 'WID_J', 'J', 'WID JUSTO EWZ VAR', widJusto));
+  if (finite(widJusto)) levels.push(level('WIN', 'WID_EWZ_VAR', 'R1', 'WID_J', 'EWZ', 'WID JUSTO EWZ VAR', widJusto));
   if (finite(ewzQuote) && finite(widJusto)) {
     const widVol = ewzQuote / Math.sqrt(252) / 100;
-    levels.push(level('WIN', 'WID_EWZ_QUOTE', 'R1', 'WID_MAX', 'MAX', 'WID MAX EWZ COTACAO', roundHalf(widJusto * (1 + widVol))));
-    levels.push(level('WIN', 'WID_EWZ_QUOTE', 'R1', 'WID_MIN', 'MIN', 'WID MIN EWZ COTACAO', roundHalf(widJusto * (1 - widVol))));
+    levels.push(level('WIN', 'WID_EWZ_QUOTE', 'R1', 'WID_MAX', 'EWZ', 'WID MAX EWZ COTACAO', roundHalf(widJusto * (1 + widVol))));
+    levels.push(level('WIN', 'WID_EWZ_QUOTE', 'R1', 'WID_MIN', 'EWZ', 'WID MIN EWZ COTACAO', roundHalf(widJusto * (1 - widVol))));
   }
   const vixIbov = number(input.vixIbov);
   if (finite(vixIbov)) {
