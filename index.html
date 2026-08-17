@@ -221,9 +221,24 @@ input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.1);}
             <div class="result-card red"><div class="result-label">Mínima S&amp;P 500</div><div class="result-value red empty" id="i_res_minima">—</div></div>
             <div class="result-card green"><div class="result-label">Máxima IBOV</div><div class="result-value green empty" id="i_res_maxima_ibov">—</div></div>
             <div class="result-card red"><div class="result-label">Mínima IBOV</div><div class="result-value red empty" id="i_res_minima_ibov">—</div></div>
-            <div class="result-card gold"><div class="result-label">WID Justo — EWZ Var.</div><div class="result-value gold empty" id="i_res_wid_justo">—</div></div>
+            <div class="result-card green"><div class="result-label">WID Justo — EWZ Var.</div><div class="result-value green empty" id="i_res_wid_justo">—</div></div>
             <div class="result-card green"><div class="result-label">WID Máxima — EWZ Cot.</div><div class="result-value green empty" id="i_res_wid_max">—</div></div>
-            <div class="result-card red"><div class="result-label">WID Mínima — EWZ Cot.</div><div class="result-value red empty" id="i_res_wid_min">—</div></div>
+            <div class="result-card green"><div class="result-label">WID Mínima — EWZ Cot.</div><div class="result-value green empty" id="i_res_wid_min">—</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="section" style="margin-top:14px;">
+        <div class="section-header"><div class="section-pip"></div><span class="section-title">Legenda dos Níveis — WIN</span></div>
+        <div class="section-body" style="padding:14px 20px;">
+          <div style="display:flex;flex-wrap:wrap;gap:8px 16px;font-family:var(--mono);font-size:10px;">
+            <span style="color:#fff">J/JJ — justo e justíssimo</span>
+            <span style="color:#83C7FF">MAX — máxima</span>
+            <span style="color:#FF1744">MIN — mínima</span>
+            <span style="color:#FFE000">CME</span>
+            <span style="color:#FF6D00">OC1</span>
+            <span style="color:#B000FF">BAS — base</span>
+            <span style="color:#00E676">D1/D2 — EWZ/WID</span>
+            <span style="color:#FF1493">PX1/PX2/PX3 — PTAX</span>
           </div>
         </div>
       </div>
@@ -380,12 +395,12 @@ input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.1);}
           <div style="display:flex;flex-wrap:wrap;gap:8px 16px;font-family:var(--mono);font-size:10px;">
             <span style="color:#fff">J/JJ — justo e justíssimo</span>
             <span style="color:#83C7FF">MAX — máxima</span>
-            <span style="color:#FF4D5A">MIN — mínima</span>
-            <span style="color:#FFD23F">CME</span>
-            <span style="color:#FF8A3D">OC1</span>
-            <span style="color:#9B59FF">BAS — base</span>
-            <span style="color:#35D07F">D1/D2</span>
-            <span style="color:#FF62C4">PX1/PX2/PX3 — PTAX</span>
+            <span style="color:#FF1744">MIN — mínima</span>
+            <span style="color:#FFE000">CME</span>
+            <span style="color:#FF6D00">OC1</span>
+            <span style="color:#B000FF">BAS — base</span>
+            <span style="color:#00E676">D1/D2</span>
+            <span style="color:#FF1493">PX1/PX2/PX3 — PTAX</span>
           </div>
         </div>
       </div>
@@ -593,7 +608,7 @@ async function calcularIndice(){
     set('i_res_justo',data.results.justo,'gold'); set('i_res_justissimo',data.results.justissimo,'purple'); set('i_res_maxima',data.results.maxima,'green'); set('i_res_minima',data.results.minima,'red');
     const find=(id)=>data.levels.find(level=>level.levelId===id);
     const widJ=find('WID_J'),widMax=find('WID_MAX'),widMin=find('WID_MIN'),ibovMax=find('MAX_IBOV'),ibovMin=find('MIN_IBOV');
-    if(widJ)set('i_res_wid_justo',widJ.price,'gold'); if(widMax)set('i_res_wid_max',widMax.price,'green'); if(widMin)set('i_res_wid_min',widMin.price,'red'); if(ibovMax)set('i_res_maxima_ibov',ibovMax.price,'green'); if(ibovMin)set('i_res_minima_ibov',ibovMin.price,'red');
+    if(widJ)set('i_res_wid_justo',widJ.price,'green'); if(widMax)set('i_res_wid_max',widMax.price,'green'); if(widMin)set('i_res_wid_min',widMin.price,'green'); if(ibovMax)set('i_res_maxima_ibov',ibovMax.price,'green'); if(ibovMin)set('i_res_minima_ibov',ibovMin.price,'red');
     window.SasakiLevels.addLevels(frozenSessions.WIN,data.levels);
   } catch(e) { alert(e.message||'Erro ao calcular WIN.'); }
   finally { btn.disabled=false;btn.innerHTML='▶ CALCULAR ÍNDICE'; }
