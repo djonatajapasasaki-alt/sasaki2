@@ -586,7 +586,7 @@ function calcularIndice(){
       {asset:'WIN',event:'CALCULO',roundId:'R1',levelId:'JJ',type:'JJ',label:'JJ JUSTÍSSIMO',price:justissimo,percent:0},
       {asset:'WIN',event:'CALCULO',roundId:'R1',levelId:'MAX',type:'MAX',label:'VIX MAX S&P',price:maxima,percent:0},
       {asset:'WIN',event:'CALCULO',roundId:'R1',levelId:'MIN',type:'MIN',label:'VIX MIN S&P',price:minima,percent:0}
-    ].map(level=>Object.assign(level,window.SasakiVisualLevels.styleFor(level.type)));
+    ].map(level=>Object.assign(level,window.SasakiVisualLevels.styleFor(level.type),{width:2}));
     if(Number.isFinite(widJusto)){
       winLevels.push({asset:'WIN',event:'WID_EWZ_VAR',roundId:'R1',levelId:'WID_J',type:'J',label:'WID JUSTO EWZ VAR',price:widJusto,percent:0,color:'#FFFFFF',width:2});
       set('i_res_wid_justo',widJusto,'gold');
@@ -608,7 +608,7 @@ function calcularIndice(){
       window.SasakiLevels.addLevels(frozenSessions.WIN,[
         {asset:'WIN',event:'VIX_IBOV',roundId:'R1',levelId:'MAX_IBOV',type:'MAX',label:'IBOV MAX VIX',price:ibovMax,percent:0},
         {asset:'WIN',event:'VIX_IBOV',roundId:'R1',levelId:'MIN_IBOV',type:'MIN',label:'IBOV MIN VIX',price:ibovMin,percent:0}
-      ].map(level=>Object.assign(level,window.SasakiVisualLevels.styleFor(level.type))));
+      ].map(level=>Object.assign(level,window.SasakiVisualLevels.styleFor(level.type),{width:2})));
     }
   } catch(e) { alert("Erro ao calcular: "+e.message); }
   finally { btn.disabled=false;btn.innerHTML="▶ CALCULAR ÍNDICE"; }
@@ -635,7 +635,7 @@ function calcularGradeIndice(){
   const ajuste=parseFloat(document.getElementById("i_ajuste").value);
   if(isNaN(ajuste)){alert("Preencha o Ajuste.");return;}
   const tbody=document.getElementById("i_grade_tbody");tbody.innerHTML="";
-  const incoming=I_NIVEIS.map(n=>{const s=window.SasakiVisualLevels.styleFor(n.tipo==='abertura'?'J':'MAX');return {asset:'WIN',event:'GRADE',roundId:'R1',levelId:`${n.tipo}:${n.pct}`,type:n.tipo,label:n.label,price:Math.round(ajuste*(1+n.pct)),percent:n.pct*100,color:s.color,width:s.width};});
+  const incoming=I_NIVEIS.map(n=>{const s=window.SasakiVisualLevels.styleFor(n.tipo==='abertura'?'J':'MAX');return {asset:'WIN',event:'GRADE',roundId:'R1',levelId:`${n.tipo}:${n.pct}`,type:n.tipo,label:n.label,price:Math.round(ajuste*(1+n.pct)),percent:n.pct*100,color:s.color,width:2};});
   window.SasakiLevels.addLevels(frozenSessions.WIN,incoming);
   I_NIVEIS.forEach(n=>{
     const idx=ajuste*(1+n.pct),pts=Math.abs(n.pct)*ajuste;
