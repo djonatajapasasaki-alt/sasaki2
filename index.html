@@ -205,11 +205,18 @@ input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.1);}
             <div class="field"><label>VIX S&amp;P 500 Futuro</label><input type="text" inputmode="decimal" id="i_vix" placeholder="19.28" step="0.01"></div>
             <div class="field"><label>VIX S&amp;P B3 IBOV</label><input type="text" inputmode="decimal" id="i_vix_ibov" placeholder="19.28" step="0.01"></div>
           </div>
+          <div class="field-row">
+            <div class="field"><label>EWZ — Variação (%)</label><input type="text" inputmode="decimal" id="i_ewz_var" placeholder="+0.50 ou -0.50" step="0.01"></div>
+            <div class="field"><label>EWZ — Cotação/VIX</label><input type="text" inputmode="decimal" id="i_ewz_quote" placeholder="25.00" step="0.01"></div>
+          </div>
           <div class="results-grid">
             <div class="result-card green"><div class="result-label">Máxima S&amp;P 500</div><div class="result-value green empty" id="i_res_maxima">—</div></div>
             <div class="result-card red"><div class="result-label">Mínima S&amp;P 500</div><div class="result-value red empty" id="i_res_minima">—</div></div>
             <div class="result-card green"><div class="result-label">Máxima IBOV</div><div class="result-value green empty" id="i_res_maxima_ibov">—</div></div>
             <div class="result-card red"><div class="result-label">Mínima IBOV</div><div class="result-value red empty" id="i_res_minima_ibov">—</div></div>
+            <div class="result-card gold"><div class="result-label">WID Justo — EWZ Var.</div><div class="result-value gold empty" id="i_res_wid_justo">—</div></div>
+            <div class="result-card green"><div class="result-label">WID Máxima — EWZ Cot.</div><div class="result-value green empty" id="i_res_wid_max">—</div></div>
+            <div class="result-card red"><div class="result-label">WID Mínima — EWZ Cot.</div><div class="result-value red empty" id="i_res_wid_min">—</div></div>
           </div>
         </div>
       </div>
@@ -552,7 +559,9 @@ function calcularIndice(){
   const var_sp500=readField("i_var_sp500","percent");
   const var_micro=readField("i_var_micro","percent");
   const vix=readField("i_vix","decimal");
-  if([fechamento,var_sp500,var_micro,vix].some(isNaN)){alert("Preencha todos os campos.");return;}
+  const ewzVar=readField("i_ewz_var","percent");
+  const ewzQuote=readField("i_ewz_quote","decimal");
+  if([fechamento,var_sp500,var_micro,vix].some(isNaN)){alert("Preencha os campos obrigatórios do WIN.");return;}
   const btn=document.getElementById("btn-calc-indice");
   btn.disabled=true;btn.innerHTML='<span class="spinner"></span> CALCULANDO...';
   try {
@@ -563,7 +572,11 @@ function calcularIndice(){
     const vol=vix/Math.sqrt(252)/100;
     const maxima=arredondarMeio(justo*(1+vol));
     const minima=arredondarMeio(justo*(1-vol));
-    const set=(id,v,cls)=>{const el=document.getElementById(id);el.textContent=fmt3(v);el.className="result-value "+cls;};
+    const widJusto=Number.isFinite(ewzVar)?arredondarMeio(fechamento*(1+ewzVar/100)):NaN;
+    const widVol=Number.isFinite(ewzQuote)?ewzQuote/Math.sqrt(252)/100:NaN;
+    const widMax=Number.isFinite(widVol)?arredondarMeio(widJusto*(1+widVol)):NaN;
+    const widMin=Number.isFinite(widVol)?arredondarMeio(widJusto*(1-widVol)):NaN;
+    const set=(id,v,cls)=>{const el=document.getElementById(id);if(el&&Number.isFinite(v)){el.textContent=fmt3(v);el.className="result-value "+cls;}};
     set("i_res_justo",justo,"gold");
     set("i_res_justissimo",justissimo,"purple");
     set("i_res_maxima",maxima,"green");
@@ -574,6 +587,16 @@ function calcularIndice(){
       {asset:'WIN',event:'CALCULO',roundId:'R1',levelId:'MAX',type:'MAX',label:'MAX',price:maxima,percent:0},
       {asset:'WIN',event:'CALCULO',roundId:'R1',levelId:'MIN',type:'MIN',label:'MIN',price:minima,percent:0}
     ].map(level=>Object.assign(level,window.SasakiVisualLevels.styleFor(level.type)));
+    if(Number.isFinite(widJusto)){
+      winLevels.push({asset:'WIN',event:'WID_EWZ_VAR',roundId:'R1',levelId:'WID_J',type:'J',label:'WID JUSTO EWZ VAR',price:widJusto,percent:0,color:'#FFFFFF',width:2});
+      set('i_res_wid_justo',widJusto,'gold');
+    }
+    if(Number.isFinite(widMax)&&Number.isFinite(widMin)){
+      winLevels.push({asset:'WIN',event:'WID_EWZ_QUOTE',roundId:'R1',levelId:'WID_MAX',type:'MAX',label:'WID MAX EWZ COT',price:widMax,percent:0,color:'#83C7FF',width:2});
+      winLevels.push({asset:'WIN',event:'WID_EWZ_QUOTE',roundId:'R1',levelId:'WID_MIN',type:'MIN',label:'WID MIN EWZ COT',price:widMin,percent:0,color:'#FF4D5A',width:2});
+      set('i_res_wid_max',widMax,'green');
+      set('i_res_wid_min',widMin,'red');
+    }
     window.SasakiLevels.addLevels(frozenSessions.WIN,winLevels);
     const vixIbov=readField("i_vix_ibov","decimal");
     if(!isNaN(vixIbov)){
