@@ -10,7 +10,7 @@ assert.ok(win.levels.every((level) => typeof level.label === 'string' && level.l
 assert.ok(win.levels.every((level) => typeof level.color === 'string' && Number.isFinite(level.width)));
 assert.strictEqual(win.levels.find((level) => level.levelId === 'J').color, '#FFFFFF');
 assert.strictEqual(win.levels.find((level) => level.levelId === 'MAX').color, '#83C7FF');
-assert.strictEqual(win.levels.find((level) => level.levelId === 'MIN').color, '#FF4D5A');
+assert.strictEqual(win.levels.find((level) => level.levelId === 'MIN').color, '#FF1744');
 
 const wdo = calculateWdo({
   fechamento: '5417.20', varDxy: '-0.50', eurBrl: '5.9737', eurUsd: '1.1435', frp0: '18.10', casado: '10.68',
@@ -34,7 +34,7 @@ assert.strictEqual(winGrade.length, 29);
 assert.strictEqual(wdoGrade.length, 27);
 assert.strictEqual(winGrade.find((level) => level.percent === 0).color, '#FFFFFF');
 assert.strictEqual(winGrade.find((level) => level.percent > 0).color, '#83C7FF');
-assert.strictEqual(winGrade.find((level) => level.percent < 0).color, '#FF4D5A');
+assert.strictEqual(winGrade.find((level) => level.percent < 0).color, '#FF1744');
 assert.ok(winGrade.every((level) => level.width === 2));
 assert.ok(wdoGrade.every((level) => level.width === 2));
 
