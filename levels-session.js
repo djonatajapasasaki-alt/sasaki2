@@ -44,11 +44,12 @@
       const suffix = count > 1 ? ` ${String(level.asset || '').toUpperCase()} ${String(level.event || 'NIVEL').toUpperCase()} ${count}` : '';
       return { price: Number(level.price), label: `${base}${suffix}`, color: level.color || '#FFFFFF', width: Math.max(1, Math.min(10, Number(level.width) || 1)) };
     });
-    const inputs = levels.map((level, index) => `double p${index + 1} = getInput_Double("${level.label}", 0, 999999, 2, ${level.price.toFixed(4)});`).join('\n');
+    const inputs = levels.map((level, index) => `double p${index + 1} = ${level.price.toFixed(4)}; // ${level.label}`).join('\n');
     const lines = levels.map((level, index) => { const [r, g, b] = rgb(level.color); return `def l${index + 1} = newLineData();\nfor (int j = 0; j < n; j++) l${index + 1}.add(p${index + 1});\nl${index + 1}.setLabel("SASAKI | ${level.label} | " + String.format("%.2f", p${index + 1}));\nl${index + 1}.setColor(${r}, ${g}, ${b});\nl${index + 1}.setType(4);\nl${index + 1}.setThickness(${level.width});\nlinhas.add(l${index + 1});`; }).join('\n\n');
     return `// SASAKI - Indicador de níveis congelados para Tryd
 // Formato compatível com Script para Indicador da sua instalação.
 // Os valores são os preços congelados da sessão exportada.
+// Não há campos individuais para editar: o indicador abre compacto e mantém os nomes nas linhas.
 
 ${inputs}
 
