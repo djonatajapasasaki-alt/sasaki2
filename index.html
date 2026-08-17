@@ -584,16 +584,16 @@ function calcularIndice(){
     const winLevels=[
       {asset:'WIN',event:'CALCULO',roundId:'R1',levelId:'J',type:'J',label:'J JUSTO',price:justo,percent:0},
       {asset:'WIN',event:'CALCULO',roundId:'R1',levelId:'JJ',type:'JJ',label:'JJ JUSTÍSSIMO',price:justissimo,percent:0},
-      {asset:'WIN',event:'CALCULO',roundId:'R1',levelId:'MAX',type:'MAX',label:'MAX',price:maxima,percent:0},
-      {asset:'WIN',event:'CALCULO',roundId:'R1',levelId:'MIN',type:'MIN',label:'MIN',price:minima,percent:0}
+      {asset:'WIN',event:'CALCULO',roundId:'R1',levelId:'MAX',type:'MAX',label:'VIX MAX S&P',price:maxima,percent:0},
+      {asset:'WIN',event:'CALCULO',roundId:'R1',levelId:'MIN',type:'MIN',label:'VIX MIN S&P',price:minima,percent:0}
     ].map(level=>Object.assign(level,window.SasakiVisualLevels.styleFor(level.type)));
     if(Number.isFinite(widJusto)){
       winLevels.push({asset:'WIN',event:'WID_EWZ_VAR',roundId:'R1',levelId:'WID_J',type:'J',label:'WID JUSTO EWZ VAR',price:widJusto,percent:0,color:'#FFFFFF',width:2});
       set('i_res_wid_justo',widJusto,'gold');
     }
     if(Number.isFinite(widMax)&&Number.isFinite(widMin)){
-      winLevels.push({asset:'WIN',event:'WID_EWZ_QUOTE',roundId:'R1',levelId:'WID_MAX',type:'MAX',label:'WID MAX EWZ COT',price:widMax,percent:0,color:'#83C7FF',width:2});
-      winLevels.push({asset:'WIN',event:'WID_EWZ_QUOTE',roundId:'R1',levelId:'WID_MIN',type:'MIN',label:'WID MIN EWZ COT',price:widMin,percent:0,color:'#FF4D5A',width:2});
+      winLevels.push({asset:'WIN',event:'WID_EWZ_QUOTE',roundId:'R1',levelId:'WID_MAX',type:'MAX',label:'WID MAX EWZ COTACAO',price:widMax,percent:0,color:'#83C7FF',width:2});
+      winLevels.push({asset:'WIN',event:'WID_EWZ_QUOTE',roundId:'R1',levelId:'WID_MIN',type:'MIN',label:'WID MIN EWZ COTACAO',price:widMin,percent:0,color:'#FF4D5A',width:2});
       set('i_res_wid_max',widMax,'green');
       set('i_res_wid_min',widMin,'red');
     }
@@ -606,8 +606,8 @@ function calcularIndice(){
       set("i_res_maxima_ibov",ibovMax,"green");
       set("i_res_minima_ibov",ibovMin,"red");
       window.SasakiLevels.addLevels(frozenSessions.WIN,[
-        {asset:'WIN',event:'VIX_IBOV',roundId:'R1',levelId:'MAX_IBOV',type:'MAX',label:'MAX IBOV',price:ibovMax,percent:0},
-        {asset:'WIN',event:'VIX_IBOV',roundId:'R1',levelId:'MIN_IBOV',type:'MIN',label:'MIN IBOV',price:ibovMin,percent:0}
+        {asset:'WIN',event:'VIX_IBOV',roundId:'R1',levelId:'MAX_IBOV',type:'MAX',label:'IBOV MAX VIX',price:ibovMax,percent:0},
+        {asset:'WIN',event:'VIX_IBOV',roundId:'R1',levelId:'MIN_IBOV',type:'MIN',label:'IBOV MIN VIX',price:ibovMin,percent:0}
       ].map(level=>Object.assign(level,window.SasakiVisualLevels.styleFor(level.type))));
     }
   } catch(e) { alert("Erro ao calcular: "+e.message); }
@@ -674,8 +674,8 @@ function calcularDolar(){
   const wdoLevels=[
     {asset:'WDO',event:'CALCULO',roundId:'R1',levelId:'J',type:'J',label:'J JUSTO',price:justo,percent:0},
     {asset:'WDO',event:'CALCULO',roundId:'R1',levelId:'JJ',type:'JJ',label:'JJ JUSTÍSSIMO',price:justissimo,percent:0},
-    {asset:'WDO',event:'CALCULO',roundId:'R1',levelId:'MAX',type:'MAX',label:'MAX',price:maxJusto,percent:0},
-    {asset:'WDO',event:'CALCULO',roundId:'R1',levelId:'MIN',type:'MIN',label:'MIN',price:minJusto,percent:0}
+    {asset:'WDO',event:'CALCULO',roundId:'R1',levelId:'MAX',type:'MAX',label:'WDO MAX JUSTO',price:maxJusto,percent:0},
+    {asset:'WDO',event:'CALCULO',roundId:'R1',levelId:'MIN',type:'MIN',label:'WDO MIN JUSTO',price:minJusto,percent:0}
   ].map(level=>Object.assign(level,window.SasakiVisualLevels.styleFor(level.type)));
   window.SasakiLevels.addLevels(frozenSessions.WDO,wdoLevels);
   const extraWdoLevels=[];
@@ -728,10 +728,10 @@ function calcularDolar(){
     const ptaxStyle=window.SasakiVisualLevels.styleFor(roundId);
     window.SasakiLevels.addLevels(frozenSessions.WDO,[
       {asset:'WDO',event:'PTAX',roundId,levelId:'CENTER',type:roundId,label:`${ptaxStyle.label} CENTRO`,price:centro,percent:0,color:ptaxStyle.color,width:ptaxStyle.width},
-      {asset:'WDO',event:'PTAX',roundId,levelId:'MAX',type:'MAX',label:`${ptaxStyle.label} MAX +${varPct.toFixed(2).replace('.',',')}%`,price:maxPtax,percent:varPct,color:window.SasakiVisualLevels.styleFor('MAX').color,width:window.SasakiVisualLevels.styleFor('MAX').width},
-      {asset:'WDO',event:'PTAX',roundId,levelId:'MIN',type:'MIN',label:`${ptaxStyle.label} MIN -${varPct.toFixed(2).replace('.',',')}%`,price:minPtax,percent:-varPct,color:window.SasakiVisualLevels.styleFor('MIN').color,width:window.SasakiVisualLevels.styleFor('MIN').width},
-      {asset:'WDO',event:'PTAX',roundId,levelId:'STRESS_MAX',type:'MAX',label:`${ptaxStyle.label} ST+`,price:maxPtax+10,percent:varPct,color:ptaxStyle.color,width:ptaxStyle.width},
-      {asset:'WDO',event:'PTAX',roundId,levelId:'STRESS_MIN',type:'MIN',label:`${ptaxStyle.label} ST-`,price:minPtax-10,percent:-varPct,color:ptaxStyle.color,width:ptaxStyle.width}
+      {asset:'WDO',event:'PTAX',roundId,levelId:'MAX',type:'MAX',label:`WDO ${ptaxStyle.label} MAX +${varPct.toFixed(2).replace('.',',')}%`,price:maxPtax,percent:varPct,color:window.SasakiVisualLevels.styleFor('MAX').color,width:window.SasakiVisualLevels.styleFor('MAX').width},
+      {asset:'WDO',event:'PTAX',roundId,levelId:'MIN',type:'MIN',label:`WDO ${ptaxStyle.label} MIN -${varPct.toFixed(2).replace('.',',')}%`,price:minPtax,percent:-varPct,color:window.SasakiVisualLevels.styleFor('MIN').color,width:window.SasakiVisualLevels.styleFor('MIN').width},
+      {asset:'WDO',event:'PTAX',roundId,levelId:'STRESS_MAX',type:'MAX',label:`WDO ${ptaxStyle.label} STRESS MAX`,price:maxPtax+10,percent:varPct,color:ptaxStyle.color,width:ptaxStyle.width},
+      {asset:'WDO',event:'PTAX',roundId,levelId:'STRESS_MIN',type:'MIN',label:`WDO ${ptaxStyle.label} STRESS MIN`,price:minPtax-10,percent:-varPct,color:ptaxStyle.color,width:ptaxStyle.width}
     ]);
     html+=`<div class="ptax-col">
       <div class="ptax-col-title">${ptaxLabels[i]} ${i>=2?"(0,38%)":"(0,50%)"}</div>
