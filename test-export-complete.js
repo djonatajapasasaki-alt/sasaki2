@@ -1,17 +1,10 @@
 const fs = require('fs');
 const html = fs.readFileSync('./index.html', 'utf8');
-const required = [
-  "event:'GRADE'",
-  "event:'VIX_IBOV'",
-  "event:'OC1'",
-  "event:'BASE'",
-  "event:'SONHO'",
-  "event:'CME'",
-  "event:'PTAX'",
-  "const roundId=`PX${i+1}`",
-  "type:'CME'",
-  "type:'BASE'",
-  "type:'D1'",
-];
-for (const token of required) if (!html.includes(token)) throw new Error(`grupo ausente: ${token}`);
-console.log('export-complete: WIN/WDO têm grade, VIX IBOV, OC1, BASE, SONHO, CME e PTAX');
+const engine = fs.readFileSync('./api/protected-engine.js', 'utf8');
+if (!html.includes("/levels/calculate")) throw new Error('HTML não usa cálculo protegido.');
+if (!html.includes("kind:'GRADE'")) throw new Error('HTML não solicita grade protegida.');
+for (const token of ['OC1', 'BASE', 'SONHO', 'CME', 'PTAX', 'WID_EWZ_VAR', 'WID_EWZ_QUOTE']) {
+  if (!engine.includes(token)) throw new Error(`módulo protegido sem grupo: ${token}`);
+}
+if (html.includes('const I_NIVEIS=') || html.includes('const D_NIVEIS=')) throw new Error('listas de grade ainda estão expostas no HTML.');
+console.log('export-complete: cálculo e grupos proprietários estão no backend protegido');
