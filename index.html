@@ -578,8 +578,14 @@ function calcularIndice(){
     const vixIbov=readField("i_vix_ibov","decimal");
     if(!isNaN(vixIbov)){
       const volIbov=vixIbov/Math.sqrt(252)/100;
-      set("i_res_maxima_ibov",arredondarMeio(justo*(1+volIbov)),"green");
-      set("i_res_minima_ibov",arredondarMeio(justo*(1-volIbov)),"red");
+      const ibovMax=arredondarMeio(justo*(1+volIbov));
+      const ibovMin=arredondarMeio(justo*(1-volIbov));
+      set("i_res_maxima_ibov",ibovMax,"green");
+      set("i_res_minima_ibov",ibovMin,"red");
+      window.SasakiLevels.addLevels(frozenSessions.WIN,[
+        {asset:'WIN',event:'VIX_IBOV',roundId:'R1',levelId:'MAX_IBOV',type:'MAX',label:'MAX IBOV',price:ibovMax,percent:0},
+        {asset:'WIN',event:'VIX_IBOV',roundId:'R1',levelId:'MIN_IBOV',type:'MIN',label:'MIN IBOV',price:ibovMin,percent:0}
+      ].map(level=>Object.assign(level,window.SasakiVisualLevels.styleFor(level.type))));
     }
   } catch(e) { alert("Erro ao calcular: "+e.message); }
   finally { btn.disabled=false;btn.innerHTML="▶ CALCULAR ÍNDICE"; }
@@ -649,6 +655,7 @@ function calcularDolar(){
     {asset:'WDO',event:'CALCULO',roundId:'R1',levelId:'MIN',type:'MIN',label:'MIN',price:minJusto,percent:0}
   ].map(level=>Object.assign(level,window.SasakiVisualLevels.styleFor(level.type)));
   window.SasakiLevels.addLevels(frozenSessions.WDO,wdoLevels);
+  const extraWdoLevels=[];
 
   // OC1
   const oc1Map={fech:["d_oc1_fech","r_oc1_fech"],acordo:["d_oc1_acordo","r_oc1_acordo"],alto:["d_oc1_alto","r_oc1_alto"],baixo:["d_oc1_baixo","r_oc1_baixo"]};
@@ -656,29 +663,31 @@ function calcularDolar(){
     const v=readDynamicField(inp,"dollar_quote");
     if(!isNaN(v)&&!isNaN(casado)){
       const vReal=v>100?v:v*1000;
-      const el=document.getElementById(out);el.textContent=fmt2(arredondarMeio(vReal+casado));el.className="result-value gold";
+      const price=arredondarMeio(vReal+casado);
+      const el=document.getElementById(out);el.textContent=fmt2(price);el.className="result-value gold";
+      extraWdoLevels.push({asset:'WDO',event:'OC1',roundId:'R1',levelId:`${inp}`,type:'OC1',label:`OC1 ${out.replace('r_oc1_','').toUpperCase()}`,price,color:'#FF8A3D',width:2});
     }
   });
 
   // BASE
   if(!isNaN(paramAb)){
     const pAb=paramAb>100?paramAb:paramAb*1000;
-    if(!isNaN(casado)){const el=document.getElementById("r_base_ouver");el.textContent=fmt2(arredondarMeio(pAb+casado));el.className="result-value gold";}
-    const el2=document.getElementById("r_base_frp0");el2.textContent=fmt2(arredondarMeio(pAb+frp0));el2.className="result-value green";
-    const el3=document.getElementById("r_base_sem");el3.textContent=fmt2(arredondarMeio(pAb));el3.className="result-value blue";
+    if(!isNaN(casado)){const price=arredondarMeio(pAb+casado);const el=document.getElementById("r_base_ouver");el.textContent=fmt2(price);el.className="result-value gold";extraWdoLevels.push({asset:'WDO',event:'BASE',roundId:'R1',levelId:'COM_CASADO',type:'BASE',label:'BASE COM CASADO',price,color:'#9B59FF',width:2});}
+    const baseFrp=arredondarMeio(pAb+frp0);const el2=document.getElementById("r_base_frp0");el2.textContent=fmt2(baseFrp);el2.className="result-value green";extraWdoLevels.push({asset:'WDO',event:'BASE',roundId:'R1',levelId:'COM_FRP0',type:'BASE',label:'BASE COM FRP0',price:baseFrp,color:'#9B59FF',width:2});
+    const baseSem=arredondarMeio(pAb);const el3=document.getElementById("r_base_sem");el3.textContent=fmt2(baseSem);el3.className="result-value blue";extraWdoLevels.push({asset:'WDO',event:'BASE',roundId:'R1',levelId:'SEM_AJUSTE',type:'BASE',label:'BASE SEM AJUSTE',price:baseSem,color:'#9B59FF',width:2});
   }
 
   // SONHO
   const spotD2=readField("d_spot_d2","dollar_quote");
   const spotD1=readField("d_spot_d1","dollar_quote");
-  if(!isNaN(spotD2)&&!isNaN(casado)){const d2=spotD2>100?spotD2:spotD2*1000;const el=document.getElementById("r_sonho_d2");el.textContent=fmt2(arredondarMeio(d2+casado));el.className="result-value gold";}
-  if(!isNaN(spotD1)&&!isNaN(casado)){const d1=spotD1>100?spotD1:spotD1*1000;const el=document.getElementById("r_sonho_d1");el.textContent=fmt2(arredondarMeio(d1+casado));el.className="result-value purple";}
+  if(!isNaN(spotD2)&&!isNaN(casado)){const d2=spotD2>100?spotD2:spotD2*1000;const price=arredondarMeio(d2+casado);const el=document.getElementById("r_sonho_d2");el.textContent=fmt2(price);el.className="result-value gold";extraWdoLevels.push({asset:'WDO',event:'SONHO',roundId:'R1',levelId:'D2',type:'D1',label:'D2 SONHO',price,color:'#35D07F',width:2});}
+  if(!isNaN(spotD1)&&!isNaN(casado)){const d1=spotD1>100?spotD1:spotD1*1000;const price=arredondarMeio(d1+casado);const el=document.getElementById("r_sonho_d1");el.textContent=fmt2(price);el.className="result-value purple";extraWdoLevels.push({asset:'WDO',event:'SONHO',roundId:'R1',levelId:'D1',type:'D1',label:'D1 SONHO',price,color:'#35D07F',width:2});}
 
   // CME
   const cmeMap={durar:["d_cme_durar","r_cme_durar"],acordo:["d_cme_acordo","r_cme_acordo"],alto:["d_cme_alto","r_cme_alto"],baixo:["d_cme_baixo","r_cme_baixo"],abrir:["d_cme_abrir","r_cme_abrir"]};
   Object.values(cmeMap).forEach(([inp,out])=>{
     const v=readDynamicField(inp,"cme");
-    if(!isNaN(v)&&v>0){const el=document.getElementById(out);el.textContent=fmt2(arredondarMeio(1/v*1000));el.className="result-value gold";}
+    if(!isNaN(v)&&v>0){const price=arredondarMeio(1/v*1000);const el=document.getElementById(out);el.textContent=fmt2(price);el.className="result-value gold";extraWdoLevels.push({asset:'WDO',event:'CME',roundId:'R1',levelId:`${inp}`,type:'CME',label:`CME ${out.replace('r_cme_','').toUpperCase()}`,price,color:'#FFD23F',width:2});}
   });
 
   // PTAX
@@ -712,6 +721,7 @@ function calcularDolar(){
   });
   html+='</div>';
   document.getElementById("d_ptax_results").innerHTML=html;
+  window.SasakiLevels.addLevels(frozenSessions.WDO,extraWdoLevels);
 }
 
 const D_NIVEIS=[
