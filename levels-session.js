@@ -68,7 +68,7 @@ r = linhas;
   }
   function exportTrydGroup(session, group) {
     const groups = {
-      principal: new Set(['CALCULO','VIX_IBOV','WID_EWZ_VAR','WID_EWZ_QUOTE']),
+      principal: new Set(['CALCULO','VIX_IBOV','WID_EWZ_VAR','WID_EWZ_QUOTE','GRADE']),
       grade: new Set(['GRADE']),
       ptax: new Set(['PTAX']),
       extras: new Set(['OC1','BASE','SONHO','CME'])

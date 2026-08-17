@@ -10,9 +10,11 @@ levels.addLevels(session, [
 ]);
 for (const group of ['principal','grade','ptax','extras']) {
   const out = levels.exportTrydGroup(session, group);
-  if (out.includes('getInput_Double') === false) throw new Error(`formato anterior ausente em ${group}`);
+  if (!out.includes('getInput_Double')) throw new Error(`formato anterior ausente em ${group}`);
   if (!out.includes('setLabel("SASAKI |')) throw new Error(`nome ausente em ${group}`);
 }
-if (!html.includes("baixarScriptTrydGrupo('WIN','grade')")) throw new Error('botão WIN grade ausente');
-for (const group of ['grade','ptax','extras']) if (!html.includes(`baixarScriptTrydGrupo('WDO','${group}')`)) throw new Error(`botão WDO ${group} ausente`);
+const principal = levels.exportTrydGroup(session, 'principal');
+if (!principal.includes('GRADE WIN')) throw new Error('grade não está junto do principal');
+if (html.includes("baixarScriptTrydGrupo('WIN','grade')") || html.includes("baixarScriptTrydGrupo('WDO','grade')")) throw new Error('botão de grade separado ainda presente');
+for (const group of ['ptax','extras']) if (!html.includes(`baixarScriptTrydGrupo('WDO','${group}')`)) throw new Error(`botão WDO ${group} ausente`);
 console.log('tryd-groups: principal, grade, PTAX e extras validados com nomes');
