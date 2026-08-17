@@ -12,6 +12,19 @@
     return { session, added, kept, frozen: false };
   }
   function freeze(session) { session.frozen = true; return session; }
+  function updateStyles(session, updates) {
+    const byKey = new Map((updates || []).map((item) => [key(Object.assign({}, item, { sessionId: session.sessionId })), item]));
+    session.levels.forEach((level) => {
+      const change = byKey.get(key(level));
+      if (!change) return;
+      if (change.color !== undefined) level.color = String(change.color);
+      if (change.width !== undefined) {
+        const width = Number(change.width);
+        if (Number.isFinite(width)) level.width = Math.max(1, Math.min(10, width));
+      }
+    });
+    return session;
+  }
   function exportJson(session) { return JSON.stringify({ sessionId: session.sessionId, frozen: session.frozen, levels: session.levels }, null, 2); }
   function exportCsv(session) {
     const header = ['sessionId','asset','event','roundId','type','label','price','percent','color','width'];
@@ -77,5 +90,5 @@ r = linhas;
     return exportTrydIndicator(Object.assign({}, session, { levels: session.levels.filter((level) => allowed.has(level.event || '')) }));
   }
   function exportTrydGroovy(session) { return exportTrydGroup(session, 'principal'); }
-  return { key, createSession, addLevels, freeze, exportJson, exportCsv, exportTrydCsv, exportProfitCsv, exportProfitNtsl, exportTrydIndicator, exportTrydGroup, exportTrydGroovy };
+  return { key, createSession, addLevels, freeze, updateStyles, exportJson, exportCsv, exportTrydCsv, exportProfitCsv, exportProfitNtsl, exportTrydIndicator, exportTrydGroup, exportTrydGroovy };
 });

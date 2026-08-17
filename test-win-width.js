@@ -1,7 +1,7 @@
-const fs = require('fs');
-const html = fs.readFileSync('./index.html', 'utf8');
-if (!html.includes("styleFor(level.type),{width:2}")) throw new Error('níveis principais WIN não estão em espessura 2');
-if (!html.includes("WID JUSTO EWZ VAR',price:widJusto,percent:0,color:'#FFFFFF',width:2")) throw new Error('WID Justo não está em espessura 2');
-if (!html.includes("styleFor(level.type),{width:2})));")) throw new Error('IBOV não está em espessura 2');
-if (!html.includes('percent:n.pct*100,color:s.color,width:2')) throw new Error('grade WIN não está em espessura 2');
-console.log('win-width: níveis WIN, WID, IBOV e grade estão em espessura 2');
+const { STYLES, calculateGrade } = require('./api/protected-engine');
+for (const type of ['J','JJ','MAX','MIN','CME','OC1','BASE','D1','D2','PX1','PX2','PX3','GRADE_CENTER','GRADE_UP','GRADE_DOWN']) {
+  if (!STYLES[type] || STYLES[type].width !== 2) throw new Error(`estilo ${type} não está em espessura padrão 2`);
+}
+const grade = calculateGrade('WIN', 174000);
+if (!grade.every((level) => level.width === 2)) throw new Error('grade WIN não está em espessura padrão 2');
+console.log('win-width: estilos WIN/WDO e grade estão em espessura padrão 2 e podem ser ajustados na saída');

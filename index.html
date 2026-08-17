@@ -422,7 +422,6 @@ input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.1);}
   </div>
 </div>
 
-<script src="/calculation-core.js"></script>
 <script src="/levels-session.js"></script>
 <script src="/visual-levels.js"></script>
 <script>
@@ -582,231 +581,67 @@ function fmt3(n){return n.toLocaleString("pt-BR",{minimumFractionDigits:3,maximu
 function arredondarMeio(v){return v>=0?Math.round(v*2+0.4999999)/2:-Math.round(Math.abs(v)*2-0.4999999)/2;}
 
 // ── ÍNDICE ──
-function calcularIndice(){
-  const fechamento=readField("i_fechamento","win_points");
-  const var_sp500=readField("i_var_sp500","percent");
-  const var_micro=readField("i_var_micro","percent");
-  const vix=readField("i_vix","decimal");
-  const ewzVar=readField("i_ewz_var","percent");
-  const ewzQuote=readField("i_ewz_quote","decimal");
-  if([fechamento,var_sp500,var_micro,vix].some(isNaN)){alert("Preencha os campos obrigatórios do WIN.");return;}
-  const btn=document.getElementById("btn-calc-indice");
+async function calcularIndice(){
+  const payload={asset:'WIN',fechamento:readField('i_fechamento'),varSp500:readField('i_var_sp500'),varMicro:readField('i_var_micro'),vix:readField('i_vix'),ewzVar:readField('i_ewz_var'),ewzQuote:readField('i_ewz_quote'),vixIbov:readField('i_vix_ibov')};
+  if([payload.fechamento,payload.varSp500,payload.varMicro,payload.vix].some(isNaN)){alert('Preencha os campos obrigatórios do WIN.');return;}
+  const btn=document.getElementById('btn-calc-indice');
   btn.disabled=true;btn.innerHTML='<span class="spinner"></span> CALCULANDO...';
   try {
-    // Sequência equivalente à HP-12C, sem chamada externa:
-    // fechamento ENTER variação 100 ÷ % + = ajuste justo.
-    const justo=arredondarMeio(fechamento*(1+var_sp500/100));
-    const justissimo=arredondarMeio(justo*(1+var_micro/100));
-    const vol=vix/Math.sqrt(252)/100;
-    const maxima=arredondarMeio(justo*(1+vol));
-    const minima=arredondarMeio(justo*(1-vol));
-    const widJusto=Number.isFinite(ewzVar)?arredondarMeio(fechamento*(1+ewzVar/100)):NaN;
-    const widVol=Number.isFinite(ewzQuote)?ewzQuote/Math.sqrt(252)/100:NaN;
-    const widMax=Number.isFinite(widVol)?arredondarMeio(widJusto*(1+widVol)):NaN;
-    const widMin=Number.isFinite(widVol)?arredondarMeio(widJusto*(1-widVol)):NaN;
-    const set=(id,v,cls)=>{const el=document.getElementById(id);if(el&&Number.isFinite(v)){el.textContent=fmt3(v);el.className="result-value "+cls;}};
-    set("i_res_justo",justo,"gold");
-    set("i_res_justissimo",justissimo,"purple");
-    set("i_res_maxima",maxima,"green");
-    set("i_res_minima",minima,"red");
-    const winLevels=[
-      {asset:'WIN',event:'CALCULO',roundId:'R1',levelId:'J',type:'J',label:'J JUSTO',price:justo,percent:0},
-      {asset:'WIN',event:'CALCULO',roundId:'R1',levelId:'JJ',type:'JJ',label:'JJ JUSTÍSSIMO',price:justissimo,percent:0},
-      {asset:'WIN',event:'CALCULO',roundId:'R1',levelId:'MAX',type:'MAX',label:'VIX MAX S&P',price:maxima,percent:0},
-      {asset:'WIN',event:'CALCULO',roundId:'R1',levelId:'MIN',type:'MIN',label:'VIX MIN S&P',price:minima,percent:0}
-    ].map(level=>Object.assign(level,window.SasakiVisualLevels.styleFor(level.type),{width:2}));
-    if(Number.isFinite(widJusto)){
-      winLevels.push({asset:'WIN',event:'WID_EWZ_VAR',roundId:'R1',levelId:'WID_J',type:'J',label:'WID JUSTO EWZ VAR',price:widJusto,percent:0,color:'#FFFFFF',width:2});
-      set('i_res_wid_justo',widJusto,'gold');
-    }
-    if(Number.isFinite(widMax)&&Number.isFinite(widMin)){
-      winLevels.push({asset:'WIN',event:'WID_EWZ_QUOTE',roundId:'R1',levelId:'WID_MAX',type:'MAX',label:'WID MAX EWZ COTACAO',price:widMax,percent:0,color:'#83C7FF',width:2});
-      winLevels.push({asset:'WIN',event:'WID_EWZ_QUOTE',roundId:'R1',levelId:'WID_MIN',type:'MIN',label:'WID MIN EWZ COTACAO',price:widMin,percent:0,color:'#FF4D5A',width:2});
-      set('i_res_wid_max',widMax,'green');
-      set('i_res_wid_min',widMin,'red');
-    }
-    window.SasakiLevels.addLevels(frozenSessions.WIN,winLevels);
-    const vixIbov=readField("i_vix_ibov","decimal");
-    if(!isNaN(vixIbov)){
-      const volIbov=vixIbov/Math.sqrt(252)/100;
-      const ibovMax=arredondarMeio(justo*(1+volIbov));
-      const ibovMin=arredondarMeio(justo*(1-volIbov));
-      set("i_res_maxima_ibov",ibovMax,"green");
-      set("i_res_minima_ibov",ibovMin,"red");
-      window.SasakiLevels.addLevels(frozenSessions.WIN,[
-        {asset:'WIN',event:'VIX_IBOV',roundId:'R1',levelId:'MAX_IBOV',type:'MAX',label:'IBOV MAX VIX',price:ibovMax,percent:0},
-        {asset:'WIN',event:'VIX_IBOV',roundId:'R1',levelId:'MIN_IBOV',type:'MIN',label:'IBOV MIN VIX',price:ibovMin,percent:0}
-      ].map(level=>Object.assign(level,window.SasakiVisualLevels.styleFor(level.type),{width:2})));
-    }
-  } catch(e) { alert("Erro ao calcular: "+e.message); }
-  finally { btn.disabled=false;btn.innerHTML="▶ CALCULAR ÍNDICE"; }
+    const r=await fetch(`${API}/levels/calculate`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${currentUser?.token||''}`},body:JSON.stringify(payload)});
+    const data=await r.json(); if(!r.ok) throw new Error(data.error||'Falha no cálculo protegido do WIN.');
+    const set=(id,v,cls)=>{const el=document.getElementById(id);if(el&&Number.isFinite(Number(v))){el.textContent=fmt3(Number(v));el.className='result-value '+cls;}};
+    set('i_res_justo',data.results.justo,'gold'); set('i_res_justissimo',data.results.justissimo,'purple'); set('i_res_maxima',data.results.maxima,'green'); set('i_res_minima',data.results.minima,'red');
+    const find=(id)=>data.levels.find(level=>level.levelId===id);
+    const widJ=find('WID_J'),widMax=find('WID_MAX'),widMin=find('WID_MIN'),ibovMax=find('MAX_IBOV'),ibovMin=find('MIN_IBOV');
+    if(widJ)set('i_res_wid_justo',widJ.price,'gold'); if(widMax)set('i_res_wid_max',widMax.price,'green'); if(widMin)set('i_res_wid_min',widMin.price,'red'); if(ibovMax)set('i_res_maxima_ibov',ibovMax.price,'green'); if(ibovMin)set('i_res_minima_ibov',ibovMin.price,'red');
+    window.SasakiLevels.addLevels(frozenSessions.WIN,data.levels);
+  } catch(e) { alert(e.message||'Erro ao calcular WIN.'); }
+  finally { btn.disabled=false;btn.innerHTML='▶ CALCULAR ÍNDICE'; }
 }
 
-const I_NIVEIS=[
-  {label:"Notícias",pct:0.05338,tipo:"noticias"},{label:"Notícias",pct:0.04956,tipo:"noticias"},
-  {label:"Notícias",pct:0.04574,tipo:"noticias"},{label:"Notícias",pct:0.04192,tipo:"noticias"},
-  {label:"Notícias",pct:0.03820,tipo:"noticias"},{label:"Notícias",pct:0.03438,tipo:"noticias"},
-  {label:"Notícias",pct:0.03056,tipo:"noticias"},{label:"Notícias",pct:0.02674,tipo:"noticias"},
-  {label:"Notícias",pct:0.02292,tipo:"noticias"},{label:"EXTREMO",pct:0.01910,tipo:"extremo"},
-  {label:"P. SE LIGA",pct:0.01528,tipo:"pselliga"},{label:"PB",pct:0.01146,tipo:"pb"},
-  {label:"P. IMPORT.",pct:0.00764,tipo:"pimp"},{label:"",pct:0.00382,tipo:"noticias"},
-  {label:"ABERTURA",pct:0.00000,tipo:"abertura"},{label:"",pct:-0.00382,tipo:"noticias"},
-  {label:"P. IMPORT.",pct:-0.00764,tipo:"pimp"},{label:"PB",pct:-0.01146,tipo:"pb"},
-  {label:"P. SE LIGA",pct:-0.01528,tipo:"pselliga"},{label:"EXTREMO",pct:-0.01910,tipo:"extremo"},
-  {label:"Notícias",pct:-0.02292,tipo:"noticias"},{label:"Notícias",pct:-0.02674,tipo:"noticias"},
-  {label:"Notícias",pct:-0.03056,tipo:"noticias"},{label:"Notícias",pct:-0.03438,tipo:"noticias"},
-  {label:"Notícias",pct:-0.03820,tipo:"noticias"},{label:"Notícias",pct:-0.04192,tipo:"noticias"},
-  {label:"Notícias",pct:-0.04574,tipo:"noticias"},{label:"Notícias",pct:-0.04956,tipo:"noticias"},
-  {label:"Notícias",pct:-0.05338,tipo:"noticias"},
-];
-function calcularGradeIndice(){
-  const ajuste=parseFloat(document.getElementById("i_ajuste").value);
-  if(isNaN(ajuste)){alert("Preencha o Ajuste.");return;}
-  const tbody=document.getElementById("i_grade_tbody");tbody.innerHTML="";
-  const incoming=I_NIVEIS.map(n=>{const s=window.SasakiVisualLevels.styleFor(n.tipo==='abertura'?'J':'MAX');return {asset:'WIN',event:'GRADE',roundId:'R1',levelId:`${n.tipo}:${n.pct}`,type:n.tipo,label:n.label,price:Math.round(ajuste*(1+n.pct)),percent:n.pct*100,color:s.color,width:2};});
-  window.SasakiLevels.addLevels(frozenSessions.WIN,incoming);
-  I_NIVEIS.forEach(n=>{
-    const idx=ajuste*(1+n.pct),pts=Math.abs(n.pct)*ajuste;
-    const pctStr=n.pct===0?"AJUSTE":(n.pct>0?"+":"")+(n.pct*100).toFixed(3).replace(".",",")+"%";
-    const ptsStr=n.pct===0?"—":pts.toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2});
-    const idxStr=idx.toLocaleString("pt-BR",{minimumFractionDigits:0,maximumFractionDigits:0});
-    const ic=n.pct>0?"idx-up":n.pct<0?"idx-down":"idx-mid";
-    const lc={extremo:"color:var(--red)",pselliga:"color:var(--orange)",pb:"color:var(--green)",pimp:"color:var(--purple)",abertura:"color:var(--gold2)"}[n.tipo]||"color:var(--light)";
-    tbody.innerHTML+=`<tr class="row-${n.tipo}"><td style="font-size:10px;${lc}">${n.label}</td><td style="color:var(--light);font-size:11px;">${pctStr}</td><td class="pts-val" style="text-align:right;">${ptsStr}</td><td class="${ic}" style="text-align:right;font-size:13px;font-weight:500;">${idxStr}</td></tr>`;
-  });
+async function calcularGradeIndice(){
+  const ajuste=readField('i_ajuste'); if(isNaN(ajuste)){alert('Preencha o Ajuste.');return;}
+  try {
+    const r=await fetch(`${API}/levels/calculate`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${currentUser?.token||''}`},body:JSON.stringify({asset:'WIN',kind:'GRADE',center:ajuste})});
+    const data=await r.json(); if(!r.ok) throw new Error(data.error||'Falha na grade protegida do WIN.');
+    const tbody=document.getElementById('i_grade_tbody'); tbody.innerHTML='';
+    data.levels.forEach(n=>{const pct=Number(n.percent||0), idx=Number(n.price), pts=Math.abs(pct/100)*ajuste, pctStr=pct===0?'AJUSTE':(pct>0?'+':'')+pct.toFixed(3).replace('.',',')+'%', ptsStr=pct===0?'—':pts.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}), idxStr=idx.toLocaleString('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:0}), ic=pct>0?'idx-up':pct<0?'idx-down':'idx-mid', lc=n.gradeType==='extremo'?'color:var(--red)':n.gradeType==='pselliga'?'color:var(--orange)':n.gradeType==='pb'?'color:var(--green)':n.gradeType==='pimp'?'color:var(--purple)':n.gradeType==='abertura'?'color:var(--gold2)':'color:var(--light)'; tbody.innerHTML+=`<tr class="row-${n.gradeType}"><td style="font-size:10px;${lc}">${n.label}</td><td style="color:var(--light);font-size:11px;">${pctStr}</td><td class="pts-val" style="text-align:right;">${ptsStr}</td><td class="${ic}" style="text-align:right;font-size:13px;font-weight:500;">${idxStr}</td></tr>`;});
+    window.SasakiLevels.addLevels(frozenSessions.WIN,data.levels);
+  } catch(e){alert(e.message||'Erro ao calcular grade WIN.');}
 }
 
 // ── DÓLAR ──
-function calcularDolar(){
-  const fechamento=readField("d_fechamento","dollar_points");
-  const var_dxy=readField("d_var_dxy","percent");
-  const eurbrl=readField("d_eurbrl","dollar_points");
-  const eurusd=readField("d_eurusd","eur_usd");
-  const frp0=readField("d_frp0","frp0");
-  const casado=readField("d_casado","frp0")||0;
-  const paramAb=readField("d_param_ab","dollar_quote");
-  if([fechamento,var_dxy,eurbrl,eurusd,frp0].some(isNaN)){alert("Preencha os campos obrigatórios.");return;}
-
-  // Ajuste Arbitrado 1 e 2
-  const justo=arredondarMeio(fechamento*(1+var_dxy/100));
-  const maxJusto=arredondarMeio(justo*(1+0.50/100));
-  const minJusto=arredondarMeio(justo*(1-0.50/100));
-  const eurusdReal=eurusd>10?eurusd/1000:eurusd;
-  const justissimo=arredondarMeio((eurbrl/eurusdReal)+frp0);
-
-  const set=(id,v,cls)=>{const el=document.getElementById(id);el.textContent=fmt2(v);el.className="result-value "+cls;};
-  set("d_res_justo",justo,"gold");
-  set("d_res_max_justo",maxJusto,"green");
-  set("d_res_min_justo",minJusto,"red");
-  set("d_res_justissimo",justissimo,"purple");
-  const wdoLevels=[
-    {asset:'WDO',event:'CALCULO',roundId:'R1',levelId:'J',type:'J',label:'J JUSTO',price:justo,percent:0},
-    {asset:'WDO',event:'CALCULO',roundId:'R1',levelId:'JJ',type:'JJ',label:'JJ JUSTÍSSIMO',price:justissimo,percent:0},
-    {asset:'WDO',event:'CALCULO',roundId:'R1',levelId:'MAX',type:'MAX',label:'WDO MAX JUSTO',price:maxJusto,percent:0},
-    {asset:'WDO',event:'CALCULO',roundId:'R1',levelId:'MIN',type:'MIN',label:'WDO MIN JUSTO',price:minJusto,percent:0}
-  ].map(level=>Object.assign(level,window.SasakiVisualLevels.styleFor(level.type)));
-  window.SasakiLevels.addLevels(frozenSessions.WDO,wdoLevels);
-  const extraWdoLevels=[];
-
-  // OC1
-  const oc1Map={fech:["d_oc1_fech","r_oc1_fech"],acordo:["d_oc1_acordo","r_oc1_acordo"],alto:["d_oc1_alto","r_oc1_alto"],baixo:["d_oc1_baixo","r_oc1_baixo"]};
-  Object.values(oc1Map).forEach(([inp,out])=>{
-    const v=readDynamicField(inp,"dollar_quote");
-    if(!isNaN(v)&&!isNaN(casado)){
-      const vReal=v>100?v:v*1000;
-      const price=arredondarMeio(vReal+casado);
-      const el=document.getElementById(out);el.textContent=fmt2(price);el.className="result-value gold";
-      extraWdoLevels.push({asset:'WDO',event:'OC1',roundId:'R1',levelId:`${inp}`,type:'OC1',label:`OC1 ${out.replace('r_oc1_','').toUpperCase()}`,price,color:'#FF8A3D',width:2});
-    }
-  });
-
-  // BASE
-  if(!isNaN(paramAb)){
-    const pAb=paramAb>100?paramAb:paramAb*1000;
-    if(!isNaN(casado)){const price=arredondarMeio(pAb+casado);const el=document.getElementById("r_base_ouver");el.textContent=fmt2(price);el.className="result-value gold";extraWdoLevels.push({asset:'WDO',event:'BASE',roundId:'R1',levelId:'COM_CASADO',type:'BASE',label:'BASE COM CASADO',price,color:'#9B59FF',width:2});}
-    const baseFrp=arredondarMeio(pAb+frp0);const el2=document.getElementById("r_base_frp0");el2.textContent=fmt2(baseFrp);el2.className="result-value green";extraWdoLevels.push({asset:'WDO',event:'BASE',roundId:'R1',levelId:'COM_FRP0',type:'BASE',label:'BASE COM FRP0',price:baseFrp,color:'#9B59FF',width:2});
-    const baseSem=arredondarMeio(pAb);const el3=document.getElementById("r_base_sem");el3.textContent=fmt2(baseSem);el3.className="result-value blue";extraWdoLevels.push({asset:'WDO',event:'BASE',roundId:'R1',levelId:'SEM_AJUSTE',type:'BASE',label:'BASE SEM AJUSTE',price:baseSem,color:'#9B59FF',width:2});
-  }
-
-  // SONHO
-  const spotD2=readField("d_spot_d2","dollar_quote");
-  const spotD1=readField("d_spot_d1","dollar_quote");
-  if(!isNaN(spotD2)&&!isNaN(casado)){const d2=spotD2>100?spotD2:spotD2*1000;const price=arredondarMeio(d2+casado);const el=document.getElementById("r_sonho_d2");el.textContent=fmt2(price);el.className="result-value gold";extraWdoLevels.push({asset:'WDO',event:'SONHO',roundId:'R1',levelId:'D2',type:'D1',label:'D2 SONHO',price,color:'#35D07F',width:2});}
-  if(!isNaN(spotD1)&&!isNaN(casado)){const d1=spotD1>100?spotD1:spotD1*1000;const price=arredondarMeio(d1+casado);const el=document.getElementById("r_sonho_d1");el.textContent=fmt2(price);el.className="result-value purple";extraWdoLevels.push({asset:'WDO',event:'SONHO',roundId:'R1',levelId:'D1',type:'D1',label:'D1 SONHO',price,color:'#35D07F',width:2});}
-
-  // CME
-  const cmeMap={durar:["d_cme_durar","r_cme_durar"],acordo:["d_cme_acordo","r_cme_acordo"],alto:["d_cme_alto","r_cme_alto"],baixo:["d_cme_baixo","r_cme_baixo"],abrir:["d_cme_abrir","r_cme_abrir"]};
-  Object.values(cmeMap).forEach(([inp,out])=>{
-    const v=readDynamicField(inp,"cme");
-    if(!isNaN(v)&&v>0){const price=arredondarMeio(1/v*1000);const el=document.getElementById(out);el.textContent=fmt2(price);el.className="result-value gold";extraWdoLevels.push({asset:'WDO',event:'CME',roundId:'R1',levelId:`${inp}`,type:'CME',label:`CME ${out.replace('r_cme_','').toUpperCase()}`,price,color:'#FFD23F',width:2});}
-  });
-
-  // PTAX
-  const ptaxVals=[readField("d_ptax1","ptax")||0,readField("d_ptax2","ptax")||0,readField("d_ptax3","ptax")||0];
-  const frp0Ptax=[readField("d_frp0_ptax1","frp0")||frp0,readField("d_frp0_ptax2","frp0")||frp0,readField("d_frp0_ptax3","frp0")||frp0];
-  const ptaxLabels=["PTAX 01","PTAX 02","PTAX 03"];
-  let html='<div class="ptax-grid">';
-  ptaxVals.forEach((ptax,i)=>{
-    if(ptax===0){html+=`<div class="ptax-col"><div class="ptax-col-title">${ptaxLabels[i]}</div><div class="ptax-val"><div class="lbl2">—</div><div class="val empty">Não informado</div></div></div>`;return;}
-    const varPct=i<2?0.50:0.38;
-    const centro=arredondarMeio(ptax+frp0Ptax[i]);
-    const maxPtax=arredondarMeio(centro*(1+varPct/100));
-    const minPtax=arredondarMeio(centro*(1-varPct/100));
-    const roundId=`PX${i+1}`;
-    const ptaxStyle=window.SasakiVisualLevels.styleFor(roundId);
-    window.SasakiLevels.addLevels(frozenSessions.WDO,[
-      {asset:'WDO',event:'PTAX',roundId,levelId:'CENTER',type:roundId,label:`${ptaxStyle.label} CENTRO`,price:centro,percent:0,color:ptaxStyle.color,width:ptaxStyle.width},
-      {asset:'WDO',event:'PTAX',roundId,levelId:'MAX',type:'MAX',label:`WDO ${ptaxStyle.label} MAX +${varPct.toFixed(2).replace('.',',')}%`,price:maxPtax,percent:varPct,color:window.SasakiVisualLevels.styleFor('MAX').color,width:window.SasakiVisualLevels.styleFor('MAX').width},
-      {asset:'WDO',event:'PTAX',roundId,levelId:'MIN',type:'MIN',label:`WDO ${ptaxStyle.label} MIN -${varPct.toFixed(2).replace('.',',')}%`,price:minPtax,percent:-varPct,color:window.SasakiVisualLevels.styleFor('MIN').color,width:window.SasakiVisualLevels.styleFor('MIN').width},
-      {asset:'WDO',event:'PTAX',roundId,levelId:'STRESS_MAX',type:'MAX',label:`WDO ${ptaxStyle.label} STRESS MAX`,price:maxPtax+10,percent:varPct,color:ptaxStyle.color,width:ptaxStyle.width},
-      {asset:'WDO',event:'PTAX',roundId,levelId:'STRESS_MIN',type:'MIN',label:`WDO ${ptaxStyle.label} STRESS MIN`,price:minPtax-10,percent:-varPct,color:ptaxStyle.color,width:ptaxStyle.width}
-    ]);
-    html+=`<div class="ptax-col">
-      <div class="ptax-col-title">${ptaxLabels[i]} ${i>=2?"(0,38%)":"(0,50%)"}</div>
-      <div class="ptax-val"><div class="lbl2">Centro</div><div class="val mid">${fmt2(centro)}</div></div>
-      <div class="ptax-val"><div class="lbl2">Máxima</div><div class="val up">${fmt2(maxPtax)}</div></div>
-      <div class="ptax-val"><div class="lbl2">Mínima</div><div class="val dn">${fmt2(minPtax)}</div></div>
-      <div class="ptax-val"><div class="lbl2">Stress Max</div><div class="val stress">${fmt2(maxPtax+10)}</div></div>
-      <div class="ptax-val"><div class="lbl2">Stress Min</div><div class="val stress">${fmt2(minPtax-10)}</div></div>
-    </div>`;
-  });
-  html+='</div>';
-  document.getElementById("d_ptax_results").innerHTML=html;
-  window.SasakiLevels.addLevels(frozenSessions.WDO,extraWdoLevels);
+async function calcularDolar(){
+  const payload={asset:'WDO',fechamento:readField('d_fechamento'),varDxy:readField('d_var_dxy'),eurBrl:readField('d_eurbrl'),eurUsd:readField('d_eurusd'),frp0:readField('d_frp0'),casado:readField('d_casado'),paramAb:readField('d_param_ab'),spotD2:readField('d_spot_d2'),spotD1:readField('d_spot_d1'),oc1Fech:readField('d_oc1_fech'),oc1Acordo:readField('d_oc1_acordo'),oc1Alto:readField('d_oc1_alto'),oc1Baixo:readField('d_oc1_baixo'),cmeDurar:readField('d_cme_durar'),cmeAcordo:readField('d_cme_acordo'),cmeAlto:readField('d_cme_alto'),cmeBaixo:readField('d_cme_baixo'),cmeAbrir:readField('d_cme_abrir'),ptax1:readField('d_ptax1'),ptax2:readField('d_ptax2'),ptax3:readField('d_ptax3'),frp0Ptax1:readField('d_frp0_ptax1'),frp0Ptax2:readField('d_frp0_ptax2'),frp0Ptax3:readField('d_frp0_ptax3')};
+  if([payload.fechamento,payload.varDxy,payload.eurBrl,payload.eurUsd,payload.frp0].some(isNaN)){alert('Preencha os campos obrigatórios.');return;}
+  const btn=document.getElementById('btn-calc-dolar'); btn.disabled=true;btn.innerHTML='<span class="spinner"></span> CALCULANDO...';
+  try {
+    const r=await fetch(`${API}/levels/calculate`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${currentUser?.token||''}`},body:JSON.stringify(payload)});
+    const data=await r.json(); if(!r.ok) throw new Error(data.error||'Falha no cálculo protegido do WDO.');
+    const set=(id,v,cls)=>{const el=document.getElementById(id);if(el&&Number.isFinite(Number(v))){el.textContent=fmt2(Number(v));el.className='result-value '+cls;}};
+    set('d_res_justo',data.results.justo,'gold'); set('d_res_max_justo',data.results.maxJusto,'green'); set('d_res_min_justo',data.results.minJusto,'red'); set('d_res_justissimo',data.results.justissimo,'purple');
+    const find=(event,id)=>data.levels.find(level=>level.event===event&&level.levelId===id);
+    const ocMap={OC1_FECH:'r_oc1_fech',OC1_ACORDO:'r_oc1_acordo',OC1_ALTO:'r_oc1_alto',OC1_BAIXO:'r_oc1_baixo'}; Object.entries(ocMap).forEach(([id,out])=>{const item=find('OC1',id);if(item)set(out,item.price,'gold');});
+    const baseMap={COM_CASADO:'r_base_ouver',COM_FRP0:'r_base_frp0',SEM_AJUSTE:'r_base_sem'}; Object.entries(baseMap).forEach(([id,out])=>{const item=find('BASE',id);if(item)set(out,item.price,id==='COM_FRP0'?'green':id==='SEM_AJUSTE'?'blue':'gold');});
+    const d2=find('SONHO','D2'),d1=find('SONHO','D1'); if(d2)set('r_sonho_d2',d2.price,'gold'); if(d1)set('r_sonho_d1',d1.price,'purple');
+    const cmeMap={DURAR:'r_cme_durar',ACORDO:'r_cme_acordo',ALTO:'r_cme_alto',BAIXO:'r_cme_baixo',ABRIR:'r_cme_abrir'}; Object.entries(cmeMap).forEach(([id,out])=>{const item=find('CME',`CME_${id}`);if(item)set(out,item.price,'gold');});
+    let html='<div class="ptax-grid">'; ['PX1','PX2','PX3'].forEach((px,i)=>{const center=find('PTAX','CENTER')?.roundId===px?find('PTAX','CENTER'):data.levels.find(level=>level.event==='PTAX'&&level.roundId===px&&level.levelId==='CENTER'); const max=data.levels.find(level=>level.event==='PTAX'&&level.roundId===px&&level.levelId==='MAX'); const min=data.levels.find(level=>level.event==='PTAX'&&level.roundId===px&&level.levelId==='MIN'); const smx=data.levels.find(level=>level.event==='PTAX'&&level.roundId===px&&level.levelId==='STRESS_MAX'); const smn=data.levels.find(level=>level.event==='PTAX'&&level.roundId===px&&level.levelId==='STRESS_MIN'); html+=`<div class="ptax-col"><div class="ptax-col-title">PTAX 0${i+1} ${i>=2?'(0,38%)':'(0,50%)'}</div><div class="ptax-val"><div class="lbl2">Centro</div><div class="val mid">${center?fmt2(center.price):'Não informado'}</div></div><div class="ptax-val"><div class="lbl2">Máxima</div><div class="val up">${max?fmt2(max.price):'—'}</div></div><div class="ptax-val"><div class="lbl2">Mínima</div><div class="val dn">${min?fmt2(min.price):'—'}</div></div><div class="ptax-val"><div class="lbl2">Stress Max</div><div class="val stress">${smx?fmt2(smx.price):'—'}</div></div><div class="ptax-val"><div class="lbl2">Stress Min</div><div class="val stress">${smn?fmt2(smn.price):'—'}</div></div></div>`; }); html+='</div>'; document.getElementById('d_ptax_results').innerHTML=html;
+    window.SasakiLevels.addLevels(frozenSessions.WDO,data.levels);
+  } catch(e) { alert(e.message||'Erro ao calcular WDO.'); }
+  finally { btn.disabled=false;btn.innerHTML='▶ CALCULAR DÓLAR'; }
 }
 
-const D_NIVEIS=[
-  {label:"Notícias",pct:0.0165,tipo:"noticias"},{label:"Notícias",pct:0.0150,tipo:"noticias"},
-  {label:"Notícias",pct:0.0135,tipo:"noticias"},{label:"EXTREMO",pct:0.0120,tipo:"extremo"},
-  {label:"P. SE LIGA",pct:0.0100,tipo:"pselliga"},{label:"P. IMPORT.",pct:0.0095,tipo:"pimp"},
-  {label:"P. IMPORT.",pct:0.0080,tipo:"pimp"},{label:"P. IMPORT.",pct:0.0075,tipo:"pimp"},
-  {label:"P. IMPORT.",pct:0.0065,tipo:"pimp"},{label:"P.PB",pct:0.0050,tipo:"pb"},
-  {label:"",pct:0.0040,tipo:"noticias"},{label:"P. IMPORT.",pct:0.0035,tipo:"pimp"},
-  {label:"P. BAIXA VOL",pct:0.0025,tipo:"pbaixa"},{label:"ABERTURA",pct:0.0000,tipo:"abertura"},
-  {label:"P. BAIXA VOL",pct:-0.0025,tipo:"pbaixa"},{label:"P. IMPORT.",pct:-0.0035,tipo:"pimp"},
-  {label:"",pct:-0.0040,tipo:"noticias"},{label:"P.PB",pct:-0.0050,tipo:"pb"},
-  {label:"P. IMPORT.",pct:-0.0065,tipo:"pimp"},{label:"P. IMPORT.",pct:-0.0075,tipo:"pimp"},
-  {label:"P. IMPORT.",pct:-0.0080,tipo:"pimp"},{label:"P. IMPORT.",pct:-0.0095,tipo:"pimp"},
-  {label:"P. SE LIGA",pct:-0.0100,tipo:"pselliga"},{label:"EXTREMO",pct:-0.0120,tipo:"extremo"},
-  {label:"Notícias",pct:-0.0135,tipo:"noticias"},{label:"Notícias",pct:-0.0150,tipo:"noticias"},
-  {label:"Notícias",pct:-0.0165,tipo:"noticias"},
-];
-function calcularGradeDolar(){
-  const ajuste=readField("d_ajuste","dollar_points");
-  if(isNaN(ajuste)){alert("Preencha o Centro.");return;}
-  const tbody=document.getElementById("d_grade_tbody");tbody.innerHTML="";
-  const incoming=D_NIVEIS.map(n=>{const s=window.SasakiVisualLevels.styleFor(n.tipo==='abertura'?'J':'MAX');return {asset:'WDO',event:'GRADE',roundId:'R1',levelId:`${n.tipo}:${n.pct}`,type:n.tipo,label:n.label,price:window.SasakiCalc.roundTick(ajuste*(1+n.pct),0.5),percent:n.pct*100,color:s.color,width:s.width};});
-  window.SasakiLevels.addLevels(frozenSessions.WDO,incoming);
-  D_NIVEIS.forEach(n=>{
-    const idx=ajuste*(1+n.pct),pts=Math.abs(n.pct)*ajuste;
-    const pctStr=n.pct===0?"CENTRO":(n.pct>0?"+":"")+(n.pct*100).toFixed(2).replace(".",",")+"%";
-    const ptsStr=n.pct===0?"—":pts.toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2});
-    const idxStr=idx.toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2});
-    const ic=n.pct>0?"idx-up":n.pct<0?"idx-down":"idx-mid";
-    const lc={extremo:"color:var(--red)",pselliga:"color:var(--orange)",pb:"color:var(--green)",pimp:"color:var(--purple)",pbaixa:"color:var(--blue)",abertura:"color:var(--gold2)"}[n.tipo]||"color:var(--light)";
-    tbody.innerHTML+=`<tr class="row-${n.tipo}"><td style="font-size:10px;${lc}">${n.label}</td><td style="color:var(--light);font-size:11px;">${pctStr}</td><td class="pts-val" style="text-align:right;">${ptsStr}</td><td class="${ic}" style="text-align:right;font-size:13px;font-weight:500;">${idxStr}</td></tr>`;
-  });
+async function calcularGradeDolar(){
+  const ajuste=readField('d_ajuste'); if(isNaN(ajuste)){alert('Preencha o Centro.');return;}
+  try {
+    const r=await fetch(`${API}/levels/calculate`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${currentUser?.token||''}`},body:JSON.stringify({asset:'WDO',kind:'GRADE',center:ajuste})});
+    const data=await r.json(); if(!r.ok) throw new Error(data.error||'Falha na grade protegida do WDO.');
+    const tbody=document.getElementById('d_grade_tbody'); tbody.innerHTML='';
+    data.levels.forEach(n=>{const pct=Number(n.percent||0), idx=Number(n.price), pts=Math.abs(pct/100)*ajuste, pctStr=pct===0?'CENTRO':(pct>0?'+':'')+pct.toFixed(2).replace('.',',')+'%', ptsStr=pct===0?'—':pts.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}), idxStr=idx.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}), ic=pct>0?'idx-up':pct<0?'idx-down':'idx-mid', lc=n.gradeType==='extremo'?'color:var(--red)':n.gradeType==='pselliga'?'color:var(--orange)':n.gradeType==='pb'?'color:var(--green)':n.gradeType==='pimp'?'color:var(--purple)':n.gradeType==='pbaixa'?'color:var(--blue)':n.gradeType==='abertura'?'color:var(--gold2)':'color:var(--light)'; tbody.innerHTML+=`<tr class="row-${n.gradeType}"><td style="font-size:10px;${lc}">${n.label}</td><td style="color:var(--light);font-size:11px;">${pctStr}</td><td class="pts-val" style="text-align:right;">${ptsStr}</td><td class="${ic}" style="text-align:right;font-size:13px;font-weight:500;">${idxStr}</td></tr>`;});
+    window.SasakiLevels.addLevels(frozenSessions.WDO,data.levels);
+  } catch(e){alert(e.message||'Erro ao calcular grade WDO.');}
 }
+
 </script>
 </body>
 </html>

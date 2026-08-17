@@ -1,4 +1,5 @@
 const crypto = require('crypto');
+const { calculateWin, calculateWdo, calculateGrade } = require('./protected-engine');
 
 const SUPABASE_URL = 'https://jgjszczoakntswjhmzse.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpnanN6Y3pvYWtudHN3amhtenNlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4MDY0ODMsImV4cCI6MjA5ODM4MjQ4M30.EynPilNZXamRAy1DvYAEfLKUBnDLnGelTnSKzvgzwQw';
@@ -77,6 +78,23 @@ export default async function handler(req, res) {
     if (!tk) return null;
     const rows = await db('GET', `usuarios?token=eq.${encodeURIComponent(tk)}&ativo=eq.true&select=email,ativo,token`);
     return rows[0] || null;
+  }
+
+  if (url.includes('/levels/calculate') && method === 'POST') {
+    try {
+      const user = await authenticatedUser();
+      if (!user) return res.status(401).json({ error: 'Sessão inválida.' });
+      const body = await readBody();
+      const asset = String(body.asset || '').toUpperCase();
+      if (String(body.kind || '').toUpperCase() === 'GRADE') {
+        return res.status(200).json({ asset, results: {}, levels: calculateGrade(asset, body.center) });
+      }
+      const result = asset === 'WIN' ? calculateWin(body) : asset === 'WDO' ? calculateWdo(body) : null;
+      if (!result) return res.status(400).json({ error: 'Ativo inválido.' });
+      return res.status(200).json({ asset: result.asset, results: result.results, levels: result.levels });
+    } catch (e) {
+      return res.status(400).json({ error: e.message || 'Erro ao calcular níveis.' });
+    }
   }
 
   if (url.includes('/macro/history') && method === 'GET') {
