@@ -9,9 +9,9 @@ levels.addLevels(session, [
   { asset:'WDO', event:'PTAX', roundId:'PX1', levelId:'MIN2', type:'MIN', label:'MIN', price:98, color:'#FF4D5A', width:2 },
 ]);
 const groovy = levels.exportTrydIndicator(session);
-const labels = groovy.split('\n').filter((line) => line.includes('setLabel("SASAKI |')).map((line) => line.split('setLabel("SASAKI | ')[1].split(' | ')[0].trim());
+const labels = groovy.split('\n').filter((line) => line.includes('setLabel("SASAKI |')).map((line) => line.split('setLabel("SASAKI | ')[1].split('" +')[0].trim());
 if (new Set(labels).size !== labels.length) throw new Error(`rótulos duplicados: ${labels.join('|')}`);
-if (!labels.some((x) => x.includes('WIN WID'))) throw new Error('origem WID ausente');
-if (!labels.some((x) => x.includes('WDO PTAX'))) throw new Error('origem PTAX ausente');
+if (!labels.some((x) => x.includes('WIN | WID'))) throw new Error('origem WID ausente');
+if (!labels.some((x) => x.includes('WDO | PTAX'))) throw new Error('origem PTAX ausente');
 console.log(labels.join('\n'));
 console.log('unique-labels: todos os rótulos Tryd são únicos');
