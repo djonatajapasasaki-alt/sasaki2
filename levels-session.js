@@ -80,11 +80,14 @@ r = linhas;
 `;
   }
   function exportTrydGroup(session, group) {
+    const principalEvents = ['CALCULO','VIX_IBOV','WID_EWZ_VAR','WID_EWZ_QUOTE','GRADE','OC1','BASE','SONHO','CME'];
     const groups = {
-      principal: new Set(['CALCULO','VIX_IBOV','WID_EWZ_VAR','WID_EWZ_QUOTE','GRADE']),
+      principal: new Set(principalEvents),
+      // aliases legados mantidos para não quebrar chamadas antigas;
+      // a interface nova usa somente Principal e PTAX.
       grade: new Set(['GRADE']),
       ptax: new Set(['PTAX']),
-      extras: new Set(['OC1','BASE','SONHO','CME'])
+      extras: new Set(principalEvents)
     };
     const allowed = groups[group] || groups.principal;
     return exportTrydIndicator(Object.assign({}, session, { levels: session.levels.filter((level) => allowed.has(level.event || '')) }));

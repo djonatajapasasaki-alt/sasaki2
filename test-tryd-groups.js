@@ -15,6 +15,7 @@ for (const group of ['principal','grade','ptax','extras']) {
 }
 const principal = levels.exportTrydGroup(session, 'principal');
 if (!principal.includes('GRADE WIN')) throw new Error('grade não está junto do principal');
-if (html.includes("baixarScriptTrydGrupo('WIN','grade')") || html.includes("baixarScriptTrydGrupo('WDO','grade')")) throw new Error('botão de grade separado ainda presente');
-for (const group of ['ptax','extras']) if (!html.includes(`baixarScriptTrydGrupo('WDO','${group}')`)) throw new Error(`botão WDO ${group} ausente`);
-console.log('tryd-groups: principal, grade, PTAX e extras validados com nomes');
+if (!principal.includes('CME ACORDO')) throw new Error('CME não está junto do principal');
+if (!html.includes("baixarScriptTrydGrupo('WDO','ptax')")) throw new Error('botão WDO PTAX ausente');
+if (html.includes("baixarScriptTrydGrupo('WDO','extras')") || html.includes("baixarScriptTrydGrupo('WIN','extras')")) throw new Error('botão Extras separado ainda presente');
+console.log('tryd-groups: Principal contém níveis WDO/WIN; PTAX é o único grupo separado');
