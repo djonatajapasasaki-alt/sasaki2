@@ -422,7 +422,6 @@ input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.1);}
               <button class="btn-calc" onclick="baixarPonte('WDO','tryd')">TRYD CSV</button>
               <button class="btn-calc" onclick="baixarScriptPlataforma('WDO','tryd')">GROOVY PRINCIPAL</button>
               <button class="btn-calc" onclick="baixarScriptTrydGrupo('WDO','ptax')">GROOVY PTAX</button>
-              <button class="btn-calc" onclick="baixarScriptTrydGrupo('WDO','extras')">GROOVY EXTRAS</button>
               <button class="btn-calc" onclick="baixarPonte('WDO','profit')">PROFIT CSV</button>
               <button class="btn-calc" onclick="baixarScriptPlataforma('WDO','profit')">NTSL</button>
             </div>
@@ -472,10 +471,11 @@ function baixarScriptPlataforma(asset,platform){
 function baixarScriptTrydGrupo(asset, group){
   const session=frozenSessions[asset];
   if(!session||!session.levels.length){alert('Calcule os níveis antes de exportar o script.');return;}
-  const grouped=session.levels.filter(level=>({principal:['CALCULO','VIX_IBOV','WID_EWZ_VAR','WID_EWZ_QUOTE'],grade:['GRADE'],ptax:['PTAX'],extras:['OC1','BASE','SONHO','CME']}[group]||[]).includes(level.event||''));
+  const grouped=session.levels.filter(level=>({principal:['CALCULO','VIX_IBOV','WID_EWZ_VAR','WID_EWZ_QUOTE','GRADE','OC1','BASE','SONHO','CME'],ptax:['PTAX']}[group]||[]).includes(level.event||''));
   if(!grouped.length){alert('Nenhum nível deste grupo foi calculado ainda.');return;}
   const text=window.SasakiLevels.exportTrydGroup(Object.assign({},session,{levels:grouped}),group);
-  downloadText(`${asset.toLowerCase()}-tryd-${group}-${sessionDay}.groovy`,text,'text/plain');
+  const filenameGroup = group === 'ptax' ? 'ptax' : 'principal';
+  downloadText(`${asset.toLowerCase()}-tryd-${filenameGroup}-${sessionDay}.groovy`,text,'text/plain');
 }
 function readField(id, profile){
   const el=document.getElementById(id);
