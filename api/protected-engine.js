@@ -94,11 +94,19 @@ function calculateWdo(input) {
   ];
   const casado = finite(number(input.casado)) ? number(input.casado) : 0;
   const paramAb = number(input.paramAb);
-  const oc1 = { fech: number(input.oc1Fech), acordo: number(input.oc1Acordo), alto: number(input.oc1Alto), baixo: number(input.oc1Baixo) };
+  // OC1: os quatro campos oficiais são Fechamento, Mínima, Média e Máxima.
+  // Mantemos aliases internos antigos apenas para não quebrar payloads já salvos.
+  const oc1 = {
+    fechamento: number(input.oc1Fech),
+    minima: number(input.oc1Min ?? input.oc1Baixo),
+    media: number(input.oc1Media ?? input.oc1Acordo),
+    maxima: number(input.oc1Max ?? input.oc1Alto),
+  };
   Object.entries(oc1).forEach(([name, value]) => {
     if (!finite(value)) return;
     const realValue = value > 100 ? value : value * 1000;
-    levels.push(level('WDO', 'OC1', 'R1', `OC1_${name.toUpperCase()}`, 'OC1', `OC1 ${name.toUpperCase()}`, roundHalf(realValue + casado)));
+    const label = `OC1 ${name.toUpperCase()}`;
+    levels.push(level('WDO', 'OC1', 'R1', `OC1_${name.toUpperCase()}`, 'OC1', label, roundHalf(realValue + casado)));
   });
   if (finite(paramAb)) {
     const base = paramAb > 100 ? paramAb : paramAb * 1000;

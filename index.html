@@ -307,15 +307,15 @@ input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.1);}
           </div>
           <div class="field-row four">
             <div class="field"><label>Fechamento</label><input type="text" inputmode="decimal" id="d_oc1_fech" placeholder="5.0715" step="0.0001"></div>
-            <div class="field"><label>Acordo/Anterior</label><input type="text" inputmode="decimal" id="d_oc1_acordo" placeholder="0.19605" step="0.0001"></div>
-            <div class="field"><label>Alto</label><input type="text" inputmode="decimal" id="d_oc1_alto" placeholder="5.0968" step="0.0001"></div>
-            <div class="field"><label>Baixo</label><input type="text" inputmode="decimal" id="d_oc1_baixo" placeholder="5.0515" step="0.0001"></div>
+            <div class="field"><label>Mínima</label><input type="text" inputmode="decimal" id="d_oc1_min" placeholder="5.2070" step="0.0001"></div>
+            <div class="field"><label>Média</label><input type="text" inputmode="decimal" id="d_oc1_media" placeholder="5.2124" step="0.0001"></div>
+            <div class="field"><label>Máxima</label><input type="text" inputmode="decimal" id="d_oc1_max" placeholder="5.2150" step="0.0001"></div>
           </div>
           <div class="results-grid">
             <div class="result-card gold"><div class="result-label">OC1 Fechamento</div><div class="result-value gold empty" id="r_oc1_fech">—</div></div>
-            <div class="result-card purple"><div class="result-label">OC1 Acordo/Ant.</div><div class="result-value purple empty" id="r_oc1_acordo">—</div></div>
-            <div class="result-card green"><div class="result-label">OC1 Alto</div><div class="result-value green empty" id="r_oc1_alto">—</div></div>
-            <div class="result-card red"><div class="result-label">OC1 Baixo</div><div class="result-value red empty" id="r_oc1_baixo">—</div></div>
+            <div class="result-card red"><div class="result-label">OC1 Mínima</div><div class="result-value red empty" id="r_oc1_min">—</div></div>
+            <div class="result-card purple"><div class="result-label">OC1 Média</div><div class="result-value purple empty" id="r_oc1_media">—</div></div>
+            <div class="result-card green"><div class="result-label">OC1 Máxima</div><div class="result-value green empty" id="r_oc1_max">—</div></div>
           </div>
         </div>
       </div>
@@ -629,7 +629,7 @@ async function calcularGradeIndice(){
 
 // ── DÓLAR ──
 async function calcularDolar(){
-  const payload={asset:'WDO',fechamento:readField('d_fechamento'),varDxy:readField('d_var_dxy'),eurBrl:readField('d_eurbrl'),eurUsd:readField('d_eurusd'),frp0:readField('d_frp0'),casado:readField('d_casado'),paramAb:readField('d_param_ab'),spotD2:readField('d_spot_d2'),spotD1:readField('d_spot_d1'),oc1Fech:readField('d_oc1_fech'),oc1Acordo:readField('d_oc1_acordo'),oc1Alto:readField('d_oc1_alto'),oc1Baixo:readField('d_oc1_baixo'),cmeDurar:readField('d_cme_durar'),cmeAcordo:readField('d_cme_acordo'),cmeAlto:readField('d_cme_alto'),cmeBaixo:readField('d_cme_baixo'),cmeAbrir:readField('d_cme_abrir'),ptax1:readField('d_ptax1'),ptax2:readField('d_ptax2'),ptax3:readField('d_ptax3'),frp0Ptax1:readField('d_frp0_ptax1'),frp0Ptax2:readField('d_frp0_ptax2'),frp0Ptax3:readField('d_frp0_ptax3')};
+  const payload={asset:'WDO',fechamento:readField('d_fechamento'),varDxy:readField('d_var_dxy'),eurBrl:readField('d_eurbrl'),eurUsd:readField('d_eurusd'),frp0:readField('d_frp0'),casado:readField('d_casado'),paramAb:readField('d_param_ab'),spotD2:readField('d_spot_d2'),spotD1:readField('d_spot_d1'),oc1Fech:readField('d_oc1_fech'),oc1Min:readField('d_oc1_min'),oc1Media:readField('d_oc1_media'),oc1Max:readField('d_oc1_max'),cmeDurar:readField('d_cme_durar'),cmeAcordo:readField('d_cme_acordo'),cmeAlto:readField('d_cme_alto'),cmeBaixo:readField('d_cme_baixo'),cmeAbrir:readField('d_cme_abrir'),ptax1:readField('d_ptax1'),ptax2:readField('d_ptax2'),ptax3:readField('d_ptax3'),frp0Ptax1:readField('d_frp0_ptax1'),frp0Ptax2:readField('d_frp0_ptax2'),frp0Ptax3:readField('d_frp0_ptax3')};
   if([payload.fechamento,payload.varDxy,payload.eurBrl,payload.eurUsd,payload.frp0].some(isNaN)){alert('Preencha os campos obrigatórios.');return;}
   const btn=document.getElementById('btn-calc-dolar'); btn.disabled=true;btn.innerHTML='<span class="spinner"></span> CALCULANDO...';
   try {
@@ -638,7 +638,7 @@ async function calcularDolar(){
     const set=(id,v,cls)=>{const el=document.getElementById(id);if(el&&Number.isFinite(Number(v))){el.textContent=fmt2(Number(v));el.className='result-value '+cls;}};
     set('d_res_justo',data.results.justo,'gold'); set('d_res_max_justo',data.results.maxJusto,'green'); set('d_res_min_justo',data.results.minJusto,'red'); set('d_res_justissimo',data.results.justissimo,'purple');
     const find=(event,id)=>data.levels.find(level=>level.event===event&&level.levelId===id);
-    const ocMap={OC1_FECH:'r_oc1_fech',OC1_ACORDO:'r_oc1_acordo',OC1_ALTO:'r_oc1_alto',OC1_BAIXO:'r_oc1_baixo'}; Object.entries(ocMap).forEach(([id,out])=>{const item=find('OC1',id);if(item)set(out,item.price,'gold');});
+    const ocMap={OC1_FECHAMENTO:['r_oc1_fech','gold'],OC1_MINIMA:['r_oc1_min','red'],OC1_MEDIA:['r_oc1_media','purple'],OC1_MAXIMA:['r_oc1_max','green']}; Object.entries(ocMap).forEach(([id,[out,cls]])=>{const item=find('OC1',id);if(item)set(out,item.price,cls);});
     const baseMap={COM_CASADO:'r_base_ouver',COM_FRP0:'r_base_frp0',SEM_AJUSTE:'r_base_sem'}; Object.entries(baseMap).forEach(([id,out])=>{const item=find('BASE',id);if(item)set(out,item.price,id==='COM_FRP0'?'green':id==='SEM_AJUSTE'?'blue':'gold');});
     const d2=find('SONHO','D2'),d1=find('SONHO','D1'); if(d2)set('r_sonho_d2',d2.price,'gold'); if(d1)set('r_sonho_d1',d1.price,'purple');
     const cmeMap={DURAR:'r_cme_durar',ACORDO:'r_cme_acordo',ALTO:'r_cme_alto',BAIXO:'r_cme_baixo',ABRIR:'r_cme_abrir'}; Object.entries(cmeMap).forEach(([id,out])=>{const item=find('CME',`CME_${id}`);if(item)set(out,item.price,'gold');});
@@ -659,6 +659,20 @@ async function calcularGradeDolar(){
   } catch(e){alert(e.message||'Erro ao calcular grade WDO.');}
 }
 
+// Enter avança para o próximo campo editável, sem alterar a entrada direta nem os cálculos.
+document.addEventListener('keydown', (event) => {
+  if (event.key !== 'Enter') return;
+  const target = event.target;
+  if (!(target instanceof HTMLInputElement || target instanceof HTMLSelectElement || target instanceof HTMLTextAreaElement)) return;
+  if (target.type === 'button' || target.type === 'submit' || target.type === 'password') return;
+  const fields = [...document.querySelectorAll('input:not([type="hidden"]):not([disabled]), select:not([disabled]), textarea:not([disabled])')]
+    .filter((field) => field.offsetParent !== null && field.tabIndex !== -1);
+  const index = fields.indexOf(target);
+  if (index < 0 || index >= fields.length - 1) return;
+  event.preventDefault();
+  fields[index + 1].focus();
+  if (typeof fields[index + 1].select === 'function') fields[index + 1].select();
+});
 </script>
 </body>
 </html>
