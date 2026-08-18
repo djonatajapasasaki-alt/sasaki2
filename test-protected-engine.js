@@ -20,6 +20,10 @@ const wdo = calculateWdo({
 assert.strictEqual(wdo.asset, 'WDO');
 assert.ok(wdo.levels.some((level) => level.event === 'PTAX' && level.roundId === 'PX1'));
 assert.ok(wdo.levels.some((level) => level.event === 'OC1'));
+const oc1Ids = wdo.levels.filter((level) => level.event === 'OC1').map((level) => level.levelId);
+assert.deepStrictEqual(oc1Ids, ['OC1_FECHAMENTO', 'OC1_MINIMA', 'OC1_MEDIA', 'OC1_MAXIMA']);
+assert.deepStrictEqual(wdo.levels.filter((level) => level.event === 'OC1').map((level) => level.label), ['OC1 FECHAMENTO', 'OC1 MINIMA', 'OC1 MEDIA', 'OC1 MAXIMA']);
+assert.ok(wdo.levels.filter((level) => level.event === 'CME').every((level) => level.label.startsWith('CME ')));
 assert.ok(wdo.levels.some((level) => level.event === 'BASE'));
 assert.ok(wdo.levels.some((level) => level.event === 'SONHO'));
 assert.ok(wdo.levels.some((level) => level.event === 'CME'));
