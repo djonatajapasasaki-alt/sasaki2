@@ -44,8 +44,27 @@
   }
   function rgb(hex) { const clean = String(hex || '#FFFFFF').replace('#', '').padEnd(6, 'F').slice(0, 6); return [parseInt(clean.slice(0, 2), 16), parseInt(clean.slice(2, 4), 16), parseInt(clean.slice(4, 6), 16)]; }
   function exportProfitNtsl(session) {
-    const levels = session.levels.slice(0, 99); const lines = ['// SASAKI WDO/WIN - indicador de níveis congelados','// Profit/NTSL: cole no Editor de Estratégias como Estratégia de Indicadores.','// Os valores são constantes da sessão exportada e não se movem durante o pregão.','input',...levels.map((level, index) => `  N${index + 1}(${Number(level.price).toFixed(4)});`),'var','  i : Integer;','begin'];
-    levels.forEach((level, index) => { const plot = index + 1; const [r, g, b] = rgb(level.color); lines.push(`  PlotN(${plot}, N${plot});`); lines.push(`  SetPlotColor(${plot}, RGB(${r},${g},${b}));`); lines.push(`  SetPlotWidth(${plot}, ${Math.max(1, Math.min(5, Number(level.width) || 1))});`); });
+    const levels = session.levels.slice(0, 99);
+    const lines = [
+      '// SASAKI WDO/WIN - camada visual de níveis congelados',
+      '// Profit/NTSL: somente preço, nível, nome, cor e espessura da sessão.',
+      '// Sem fórmulas proprietárias: o cálculo é feito no app/servidor.',
+      '// Os valores são constantes e não se movem durante o pregão.',
+      'input',
+      ...levels.map((level, index) => `  N${index + 1}(${Number(level.price).toFixed(4)});`),
+      'var',
+      '  i : Integer;',
+      'begin'
+    ];
+    levels.forEach((level, index) => {
+      const plot = index + 1;
+      const [r, g, b] = rgb(level.color);
+      const label = String(level.label || level.type || `NIVEL ${plot}`).replace(/[\\\r\n]/g, ' ').replace(/--/g, '—');
+      lines.push(`  // Plot ${plot} | ${level.asset || ''} | ${level.event || ''} | ${label} | Preco ${Number(level.price).toFixed(4)} | Cor ${level.color || '#FFFFFF'} | Espessura ${Math.max(1, Math.min(5, Number(level.width) || 1))}`);
+      lines.push(`  PlotN(${plot}, N${plot});`);
+      lines.push(`  SetPlotColor(${plot}, RGB(${r},${g},${b}));`);
+      lines.push(`  SetPlotWidth(${plot}, ${Math.max(1, Math.min(5, Number(level.width) || 1))});`);
+    });
     lines.push('end;'); return lines.join('\n');
   }
   function exportTrydIndicator(session) {
