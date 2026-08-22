@@ -22,7 +22,7 @@ const STYLES = {
   PX2: { color: '#FF1493', width: 2 },
   PX3: { color: '#FF1493', width: 2 },
   GRADE_CENTER: { color: '#FFFFFF', width: 2 },
-  GRADE_UP: { color: '#83C7FF', width: 2 },
+  GRADE_UP: { color: '#0057B8', width: 2 },
   GRADE_DOWN: { color: '#FF1744', width: 2 },
   EWZ: { color: '#00E676', width: 2 },
 };

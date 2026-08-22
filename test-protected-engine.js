@@ -37,7 +37,7 @@ const wdoGrade = calculateGrade('WDO', '5417.50');
 assert.strictEqual(winGrade.length, 29);
 assert.strictEqual(wdoGrade.length, 27);
 assert.strictEqual(winGrade.find((level) => level.percent === 0).color, '#FFFFFF');
-assert.strictEqual(winGrade.find((level) => level.percent > 0).color, '#83C7FF');
+assert.strictEqual(winGrade.find((level) => level.percent > 0).color, '#0057B8');
 assert.strictEqual(winGrade.find((level) => level.percent < 0).color, '#FF1744');
 assert.ok(winGrade.every((level) => level.width === 2));
 assert.ok(wdoGrade.every((level) => level.width === 2));
