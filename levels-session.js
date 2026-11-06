@@ -68,10 +68,12 @@
       const plot = index + 1;
       const [r, g, b] = rgb(level.color);
       const label = String(level.label || level.type || `NIVEL ${plot}`).replace(/[\\\r\n]/g, ' ').replace(/--/g, '—');
+      const textLabel = label.replace(/"/g, "'");
       lines.push(`  // Plot ${plot} | ${level.asset || ''} | ${level.event || ''} | ${label} | Preco ${Number(level.price).toFixed(4)} | Cor ${level.color || '#FFFFFF'} | Espessura ${Math.max(1, Math.min(5, Number(level.width) || 1))}`);
       lines.push(`  PlotN(${plot}, ${names[index]});`);
       lines.push(`  SetPlotColor(${plot}, RGB(${r},${g},${b}));`);
       lines.push(`  SetPlotWidth(${plot}, ${Math.max(1, Math.min(5, Number(level.width) || 1))});`);
+      lines.push(`  if (LastBarOnChart) then PlotText("${textLabel}", RGB(${r},${g},${b}), 3, 7, ${names[index]});`);
     });
     lines.push('end;'); return lines.join('\n');
   }

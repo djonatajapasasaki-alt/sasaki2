@@ -6,7 +6,7 @@ levels.addLevels(session, [
 ]);
 const ntsl = levels.exportProfitNtsl(session);
 const groovy = levels.exportTrydIndicator(session);
-if (!ntsl.includes('PlotN(1, J_JUSTO_1);') || !ntsl.includes('RGB(255,255,255)') || !ntsl.includes('SetPlotWidth(1, 2);')) throw new Error('NTSL não contém o nível/cor/espessura esperados.');
+if (!ntsl.includes('PlotN(1, J_JUSTO_1);') || !ntsl.includes('PlotText("J JUSTO", RGB(255,255,255), 3, 7, J_JUSTO_1);') || !ntsl.includes('RGB(255,255,255)') || !ntsl.includes('SetPlotWidth(1, 2);')) throw new Error('NTSL não contém o nível/cor/espessura/texto esperados.');
 if (groovy.includes('import stScript.process.api') || groovy.includes('class SasakiFrozenLevelsProcess')) throw new Error('Indicador ainda usa formato de processo.');
 if (!groovy.includes('getInput_Double("WDO | CALCULO | J JUSTO"') || !groovy.includes('newLines()') || !groovy.includes('newLineData()') || !groovy.includes('r = linhas;')) throw new Error('Indicador Tryd não contém a estrutura esperada.');
 if (!groovy.includes('5125.5000') || !groovy.includes('WDO | PTAX | PX1 MAX +0,50%') || !groovy.includes('setColor(255, 255, 255)')) throw new Error('Indicador não contém níveis/cores esperados.');
