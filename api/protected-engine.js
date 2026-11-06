@@ -22,10 +22,11 @@ const STYLES = {
   PX2: { color: '#FF1493', width: 2 },
   PX3: { color: '#FF1493', width: 2 },
   GRADE_CENTER: { color: '#F0C96A', width: 2 },
-  GRADE_NOTICIAS: { color: '#8888AA', width: 2 },
-  GRADE_EXTREMO: { color: '#FF3A3A', width: 2 },
-  GRADE_PSELLIGA: { color: '#FF8C00', width: 2 },
-  GRADE_PB: { color: '#00D97E', width: 2 },
+  GRADE_NOTICIAS_UP: { color: '#00F080', width: 2 },
+  GRADE_NOTICIAS_DOWN: { color: '#FF3B4D', width: 2 },
+  GRADE_EXTREMO: { color: '#9B59FF', width: 2 },
+  GRADE_PSELLIGA: { color: '#FF8A3D', width: 2 },
+  GRADE_PB: { color: '#FFD23F', width: 2 },
   GRADE_PIMP: { color: '#8B5CF6', width: 2 },
   GRADE_PBAIXA: { color: '#3B82F6', width: 2 },
   GRADE_ABERTURA: { color: '#F0C96A', width: 2 },
@@ -161,9 +162,11 @@ function calculateGrade(asset, center) {
   if (!source) throw new Error('Ativo inválido para grade.');
   return source.map(([pct, label, type], index) => {
     const price = asset === 'WIN' ? Math.round(base * (1 + pct)) : roundTick(base * (1 + pct), 0.5);
-    const styleType = pct === 0 ? 'GRADE_CENTER' : `GRADE_${type.toUpperCase()}`;
+    const styleType = pct === 0 ? 'GRADE_CENTER' : type === 'noticias' ? `GRADE_NOTICIAS_${pct > 0 ? 'UP' : 'DOWN'}` : `GRADE_${type.toUpperCase()}`;
     const displayLabel = label || `${pct >= 0 ? '+' : ''}${(pct * 100).toFixed(3).replace('.', ',')}%`;
-    return level(asset, 'GRADE', 'R1', `${type}:${pct}`, styleType, displayLabel, price, { percent: pct * 100, gradeType: type, levelIndex: index });
+    const exportBaseLabel = type === 'noticias' ? 'Notícias' : displayLabel;
+    const percentLabel = pct === 0 ? displayLabel : `${exportBaseLabel || 'Notícias'} ${pct > 0 ? '+' : ''}${(pct * 100).toFixed(3).replace('.', ',')}%`;
+    return level(asset, 'GRADE', 'R1', `${type}:${pct}`, styleType, displayLabel, price, { percent: pct * 100, gradeType: type, exportLabel: percentLabel, levelIndex: index });
   });
 }
 

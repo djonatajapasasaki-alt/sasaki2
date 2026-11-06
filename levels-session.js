@@ -29,17 +29,17 @@
   function exportCsv(session) {
     const header = ['sessionId','asset','event','roundId','type','label','price','percent','color','width'];
     const lines = [header.join(';')];
-    session.levels.forEach((level) => lines.push(header.map((field) => String(level[field] == null ? '' : level[field]).replace(/;/g, ',')).join(';')));
+    session.levels.forEach((level) => lines.push(header.map((field) => String(field === 'label' ? (level.exportLabel || level.label) : (level[field] == null ? '' : level[field])).replace(/;/g, ',')).join(';')));
     return lines.join('\n');
   }
   function exportTrydCsv(session) {
     const header = ['Ativo','Preco','Rotulo','Cor','Espessura','Evento','Rodada','Sessao']; const lines = [header.join(';')];
-    session.levels.forEach((level) => lines.push([level.asset, level.price, level.label || level.type, level.color || '#FFFFFF', level.width || 1, level.event || '', level.roundId || '', level.sessionId || ''].map((value) => String(value).replace(/;/g, ',')).join(';')));
+    session.levels.forEach((level) => lines.push([level.asset, level.price, level.exportLabel || level.label || level.type, level.color || '#FFFFFF', level.width || 1, level.event || '', level.roundId || '', level.sessionId || ''].map((value) => String(value).replace(/;/g, ',')).join(';')));
     return lines.join('\n');
   }
   function exportProfitCsv(session) {
     const header = ['Ativo','Preco','Nome','CorHex','Largura','Evento','Rodada','Sessao']; const lines = [header.join(';')];
-    session.levels.forEach((level) => lines.push([level.asset, level.price, level.label || level.type, level.color || '#FFFFFF', level.width || 1, level.event || '', level.roundId || '', level.sessionId || ''].map((value) => String(value).replace(/;/g, ',')).join(';')));
+    session.levels.forEach((level) => lines.push([level.asset, level.price, level.exportLabel || level.label || level.type, level.color || '#FFFFFF', level.width || 1, level.event || '', level.roundId || '', level.sessionId || ''].map((value) => String(value).replace(/;/g, ',')).join(';')));
     return lines.join('\n');
   }
   function rgb(hex) { const clean = String(hex || '#FFFFFF').replace('#', '').padEnd(6, 'F').slice(0, 6); return [parseInt(clean.slice(0, 2), 16), parseInt(clean.slice(2, 4), 16), parseInt(clean.slice(4, 6), 16)]; }
@@ -52,7 +52,7 @@
       const identifier = /^[A-Z_]/.test(normalized) ? normalized : `NIVEL_${normalized}`;
       return `${identifier.slice(0, 24)}_${index + 1}`;
     };
-    const names = levels.map((level, index) => safeIdentifier(level.label || level.type, index));
+    const names = levels.map((level, index) => safeIdentifier(level.exportLabel || level.label || level.type, index));
     const lines = [
       '// SASAKI WDO/WIN - camada visual de níveis congelados',
       '// Profit/NTSL: somente preço, nível, nome, cor e espessura da sessão.',
@@ -67,7 +67,7 @@
     levels.forEach((level, index) => {
       const plot = index + 1;
       const [r, g, b] = rgb(level.color);
-      const label = String(level.label || level.type || `NIVEL ${plot}`).replace(/[\\\r\n]/g, ' ').replace(/--/g, '—');
+      const label = String(level.exportLabel || level.label || level.type || `NIVEL ${plot}`).replace(/[\\\r\n]/g, ' ').replace(/--/g, '—');
       const textLabel = label.replace(/"/g, "'");
       lines.push(`  // Plot ${plot} | ${level.asset || ''} | ${level.event || ''} | ${label} | Preco ${Number(level.price).toFixed(4)} | Cor ${level.color || '#FFFFFF'} | Espessura ${Math.max(1, Math.min(5, Number(level.width) || 1))}`);
       lines.push(`  PlotN(${plot}, ${names[index]});`);
@@ -80,7 +80,7 @@
   function exportTrydIndicator(session) {
     const usedLabels = new Map();
     const levels = session.levels.map((level, index) => {
-      const base = String(level.label || level.type || '').replace(/["\\]/g, '') || `NIVEL ${index + 1}`;
+      const base = String(level.exportLabel || level.label || level.type || '').replace(/["\\]/g, '') || `NIVEL ${index + 1}`;
       const asset = String(level.asset || 'ATIVO').toUpperCase();
       const event = String(level.event || 'NIVEL').toUpperCase();
       const namedBase = `${asset} | ${event} | ${base}`;
