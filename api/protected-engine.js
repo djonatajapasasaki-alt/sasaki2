@@ -21,7 +21,15 @@ const STYLES = {
   PX1: { color: '#FF1493', width: 2 },
   PX2: { color: '#FF1493', width: 2 },
   PX3: { color: '#FF1493', width: 2 },
-  GRADE_CENTER: { color: '#FFFFFF', width: 2 },
+  GRADE_CENTER: { color: '#F0C96A', width: 2 },
+  GRADE_NOTICIAS: { color: '#8888AA', width: 2 },
+  GRADE_EXTREMO: { color: '#FF3A3A', width: 2 },
+  GRADE_PSELLIGA: { color: '#FF8C00', width: 2 },
+  GRADE_PB: { color: '#00D97E', width: 2 },
+  GRADE_PIMP: { color: '#8B5CF6', width: 2 },
+  GRADE_PBAIXA: { color: '#3B82F6', width: 2 },
+  GRADE_ABERTURA: { color: '#F0C96A', width: 2 },
+  // aliases mantidos para exports antigos e compatibilidade visual.
   GRADE_UP: { color: '#0057B8', width: 2 },
   GRADE_DOWN: { color: '#FF1744', width: 2 },
   EWZ: { color: '#00E676', width: 2 },
@@ -153,8 +161,9 @@ function calculateGrade(asset, center) {
   if (!source) throw new Error('Ativo inválido para grade.');
   return source.map(([pct, label, type], index) => {
     const price = asset === 'WIN' ? Math.round(base * (1 + pct)) : roundTick(base * (1 + pct), 0.5);
-    const styleType = pct === 0 ? 'GRADE_CENTER' : pct > 0 ? 'GRADE_UP' : 'GRADE_DOWN';
-    return level(asset, 'GRADE', 'R1', `${type}:${pct}`, styleType, label, price, { percent: pct * 100, gradeType: type, levelIndex: index });
+    const styleType = pct === 0 ? 'GRADE_CENTER' : `GRADE_${type.toUpperCase()}`;
+    const displayLabel = label || `${pct >= 0 ? '+' : ''}${(pct * 100).toFixed(3).replace('.', ',')}%`;
+    return level(asset, 'GRADE', 'R1', `${type}:${pct}`, styleType, displayLabel, price, { percent: pct * 100, gradeType: type, levelIndex: index });
   });
 }
 

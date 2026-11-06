@@ -36,9 +36,12 @@ const winGrade = calculateGrade('WIN', '174000');
 const wdoGrade = calculateGrade('WDO', '5417.50');
 assert.strictEqual(winGrade.length, 29);
 assert.strictEqual(wdoGrade.length, 27);
-assert.strictEqual(winGrade.find((level) => level.percent === 0).color, '#FFFFFF');
-assert.strictEqual(winGrade.find((level) => level.percent > 0).color, '#0057B8');
-assert.strictEqual(winGrade.find((level) => level.percent < 0).color, '#FF1744');
+assert.strictEqual(winGrade.find((level) => level.percent === 0).color, '#F0C96A');
+assert.strictEqual(winGrade.find((level) => level.gradeType === 'extremo').color, '#FF3A3A');
+assert.strictEqual(winGrade.find((level) => level.gradeType === 'pselliga').color, '#FF8C00');
+assert.strictEqual(winGrade.find((level) => level.gradeType === 'pb').color, '#00D97E');
+assert.strictEqual(winGrade.find((level) => level.gradeType === 'pimp').color, '#8B5CF6');
+assert.ok(winGrade.some((level) => level.gradeType === 'noticias' && /%$/.test(level.label)));
 assert.ok(winGrade.every((level) => level.width === 2));
 assert.ok(wdoGrade.every((level) => level.width === 2));
 
