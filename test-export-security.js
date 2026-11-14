@@ -14,12 +14,11 @@ for (const output of [groovy, ntsl]) {
   assert.ok(output.includes('5212.4000') || output.includes('5212.4'));
   assert.ok(output.includes('OC1 MEDIA'));
   assert.ok(output.includes('WID JUSTO EWZ VAR'));
-  assert.ok(output.includes('Plot') || output.includes('newLineData'));
+  assert.ok(output.includes('HorizontalLineCustom') || output.includes('newLineData'));
   assert.ok(!/calculateWdo|calculateWin|roundHalf|Math\.sqrt|beta|alpha|paramAb|frp0Ptax/i.test(output));
 }
 assert.ok(groovy.includes('setColor(176, 0, 255)'));
-assert.ok(ntsl.includes('#B000FF'));
-assert.ok(ntsl.includes('SetPlotColor'));
-assert.ok(ntsl.includes('SetPlotWidth'));
+assert.ok(ntsl.includes('RGB(176,0,255)'));
+assert.ok(ntsl.includes('HorizontalLineCustom(5212.4000'));
 assert.ok(groovy.includes('getInput_Double'));
 console.log('export-security: visual-only Groovy/NTSL OK');

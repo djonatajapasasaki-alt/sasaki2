@@ -45,35 +45,28 @@
   function rgb(hex) { const clean = String(hex || '#FFFFFF').replace('#', '').padEnd(6, 'F').slice(0, 6); return [parseInt(clean.slice(0, 2), 16), parseInt(clean.slice(2, 4), 16), parseInt(clean.slice(4, 6), 16)]; }
   function exportProfitNtsl(session) {
     const levels = session.levels.slice(0, 99);
-    const safeIdentifier = (value, index) => {
-      const normalized = String(value || `NIVEL_${index + 1}`)
-        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-        .toUpperCase().replace(/[^A-Z0-9]+/g, '_').replace(/^_|_$/g, '') || `NIVEL_${index + 1}`;
-      const identifier = /^[A-Z_]/.test(normalized) ? normalized : `NIVEL_${normalized}`;
-      return `${identifier.slice(0, 24)}_${index + 1}`;
-    };
-    const names = levels.map((level, index) => safeIdentifier(level.exportLabel || level.label || level.type, index));
     const lines = [
-      '// SASAKI WDO/WIN - camada visual de níveis congelados',
-      '// Profit/NTSL: somente preço, nível, nome, cor e espessura da sessão.',
+      '// SASAKI WDO/WIN - níveis congelados para Profit/NTSL',
+      '// HorizontalLineCustom cria a linha e o nome juntos.',
       '// Sem fórmulas proprietárias: o cálculo é feito no app/servidor.',
       '// Os valores são constantes e não se movem durante o pregão.',
-      'input',
-      ...levels.map((level, index) => `  ${names[index]}(${Number(level.price).toFixed(4)});`),
-      'var',
-      '  i : Integer;',
       'begin'
     ];
+    const ordered = levels.slice().sort((a, b) => Number(a.price) - Number(b.price));
+    const positions = new Map();
+    ordered.forEach((level, index) => {
+      const previous = ordered[index - 1];
+      const close = previous && Math.abs(Number(level.price) - Number(previous.price)) <= (String(level.asset).toUpperCase() === 'WDO' ? 2 : 3);
+      if (close) positions.set(level, index % 2 ? 'tpBottomRight' : 'tpTopRight');
+      else positions.set(level, 'tpTopRight');
+    });
     levels.forEach((level, index) => {
-      const plot = index + 1;
       const [r, g, b] = rgb(level.color);
-      const label = String(level.exportLabel || level.label || level.type || `NIVEL ${plot}`).replace(/[\\\r\n]/g, ' ').replace(/--/g, '—');
-      const textLabel = label.replace(/"/g, "'");
-      lines.push(`  // Plot ${plot} | ${level.asset || ''} | ${level.event || ''} | ${label} | Preco ${Number(level.price).toFixed(4)} | Cor ${level.color || '#FFFFFF'} | Espessura ${Math.max(1, Math.min(5, Number(level.width) || 1))}`);
-      lines.push(`  PlotN(${plot}, ${names[index]});`);
-      lines.push(`  SetPlotColor(${plot}, RGB(${r},${g},${b}));`);
-      lines.push(`  SetPlotWidth(${plot}, ${Math.max(1, Math.min(5, Number(level.width) || 1))});`);
-      lines.push(`  if (LastBarOnChart) then PlotText("${textLabel}", RGB(${r},${g},${b}), 3, 7, ${names[index]});`);
+      const label = String(level.exportLabel || level.label || level.type || `NIVEL ${index + 1}`).replace(/[\\\r\n]/g, ' ').replace(/--/g, '—');
+      const textPosition = positions.get(level) || 'tpTopRight';
+      const width = Math.max(1, Math.min(5, Number(level.width) || 1));
+      lines.push(`  // ${level.asset || ''} | ${level.event || ''} | ${label}`);
+      lines.push(`  HorizontalLineCustom(${Number(level.price).toFixed(4)}, RGB(${r},${g},${b}), ${width}, 0, "${label.replace(/"/g, "'")}", 7, ${textPosition}, 0, 0, 0);`);
     });
     lines.push('end;'); return lines.join('\n');
   }

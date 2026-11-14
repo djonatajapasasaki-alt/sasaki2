@@ -6,7 +6,7 @@ levels.addLevels(session, [
 ]);
 const ntsl = levels.exportProfitNtsl(session);
 const groovy = levels.exportTrydIndicator(session);
-if (!ntsl.includes('PlotN(1, J_JUSTO_1);') || !ntsl.includes('PlotText("J JUSTO", RGB(255,255,255), 3, 7, J_JUSTO_1);') || !ntsl.includes('RGB(255,255,255)') || !ntsl.includes('SetPlotWidth(1, 2);')) throw new Error('NTSL não contém o nível/cor/espessura/texto esperados.');
+if (!ntsl.includes('HorizontalLineCustom(5125.5000, RGB(255,255,255), 2, 0, "J JUSTO", 7, tpTopRight, 0, 0, 0);') || !ntsl.includes('HorizontalLineCustom(5151.0000, RGB(131,199,255), 1, 0, "PX1 MAX +0,50%", 7, tpTopRight, 0, 0, 0);') || ntsl.includes('PlotN(') || ntsl.includes('PlotText(')) throw new Error('NTSL não contém o HorizontalLineCustom esperado para preço/cor/espessura/nome.');
 if (groovy.includes('import stScript.process.api') || groovy.includes('class SasakiFrozenLevelsProcess')) throw new Error('Indicador ainda usa formato de processo.');
 if (!groovy.includes('getInput_Double("WDO | CALCULO | J JUSTO"') || !groovy.includes('newLines()') || !groovy.includes('newLineData()') || !groovy.includes('r = linhas;')) throw new Error('Indicador Tryd não contém a estrutura esperada.');
 if (!groovy.includes('5125.5000') || !groovy.includes('WDO | PTAX | PX1 MAX +0,50%') || !groovy.includes('setColor(255, 255, 255)')) throw new Error('Indicador não contém níveis/cores esperados.');
